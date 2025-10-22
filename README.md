@@ -1,2 +1,6 @@
-# CASA00013-Foundations-in Spatial-Data-Science-Project
-This repository is a collection of documents for the Group Project for the CASA0013 Foundations in Spatial Data Science Module
+# CASA0013-Foundations of Spatial Data Science
+Foundations of Spatial Data Science 2025/2026
+
+This repository contains practicals and notes from the _Foundations_ module. 
+
+You can find the original [here](https://jreades.github.io/fsds/)
