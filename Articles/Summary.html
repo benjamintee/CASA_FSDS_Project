@@ -283,18 +283,21 @@ table thead th {
 <td><a href="https://www.sciencedirect.com/science/article/pii/S0167923620302086">Alsudais et al.&nbsp;(2021)</a></td>
 <td>Data audit of Inside Airbnb dataset.</td>
 <td><ul>
-<li><p>Identified significant errors: mismatched coordinates, duplicates, missing values</p></li>
-<li><p>Warns that many empirical studies using this data may be biased.</p></li>
-<li><p>Highlights the need for careful data cleaning and validation.</p></li>
+<li><p>Identified possible issues of incorrect data added to insideairbnb dataset, due to new features included by airbnb.</p></li>
+<li><p>Limitations of insideairbnb dataset, website due to nature of web-scraping. Subject to web-scraper’s performance, and affected by ‘spam’ included by airbnb’s to weed out scrapers. Inside Airbnb only provides minimal information on the data collection process with the use of python scripts.</p></li>
+<li><p>Main issue arises from the process of comparing between listings.csv.gz to reviews.csv.gz, and the assumption that one review is only related to one listing. Since Nov 2016, Airbnb introduced “Airbnb experiences” which also carries unique ID for the same property, but might give rise to reviews for an experience instead of a home stay.</p></li>
+<li><p>Low number of IDs with incorrect data suggest that while issue requires attention, not severe to affect published papers.</p></li>
+<li><p>Possible issue of reproduceability due to presence of multiple subsets and versions of the dataset.</p></li>
 </ul></td>
 </tr>
 <tr class="even">
 <td><a href="https://insideairbnb.com/reports/how-airbnbs-data-hid-the-facts-in-new-york-city.pdf">Cox et al.&nbsp;(2016)</a></td>
 <td>New York City. Analysis of Airbnb-released data and media reporting.</td>
 <td><ul>
-<li><p>Airbnb manipulated data to under report commercial listings.</p></li>
+<li><p>On 1 Dec 2015, Airbnb made data available about it’s business in New York city, but report highlights issues that 1,000 listings were purged in the first three weeks of Novemenbt.</p></li>
+<li><p>Airbnb manipulated data to under report commercial listings, and paint a misleading picture of its business.</p></li>
 <li><p>Casual home-sharing overstated relative to professional hosts.</p></li>
-<li><p>Platform opacity protects corporate interests and complicates policy making</p></li>
+<li><p>Platform opacity protects corporate interests and complicates policy making, need to be careful of data integrity, especially if motivated by public relations gains.</p></li>
 </ul></td>
 </tr>
 </tbody>
