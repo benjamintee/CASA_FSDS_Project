@@ -8,4 +8,4 @@ The assignment overview can be fouund [here](https://jreades.github.io/fsds/asse
 - Content requirements are [here](https://jreades.github.io/fsds/assessments/content.html)
 - Additional resources are [here](https://jreades.github.io/fsds/assessments/resources.html)
 
-Summary of insights and findings from readings on Airbnb found [here](https://benjamintee.github.io/CASA_FSDS_Project/Articles/summary.html)
+Summary of insights and findings from readings on Airbnb found [here](https://benjamintee.github.io/CASA_FSDS_Project/Articles/Summary.html)
