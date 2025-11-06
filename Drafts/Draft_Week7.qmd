@@ -73,6 +73,8 @@ jupyter:
 
     -   in each MSOA / LSOA
 
+Loading the data and viewing the structure of the data and columns
+
 ```{python}
 import pandas as pd
 
@@ -86,21 +88,23 @@ print(df.columns)
 df.info()
 ```
 
+Answering some quick questions. How many unique listings were on Airbnb? How many unique hosts were there?
+
 ```{python}
 # Counting the number of unique IDs
 unique_ids = df['id'].nunique()
-print(unique_ids)
+print(f"There were {unique_ids:,.0f} unique IDs in the listings.")
 
 # Counting the numnber of unique hosts 
 unique_hosts = df['host_id'].nunique()
-print(unique_hosts)
+print(f"There were {unique_hosts:,.0f} unique hosts.")
 
 # Different property types and room types
 unique_ptypes = df['property_type'].unique()
 print(unique_ptypes)
+
 unique_rtypes = df['room_type'].unique()
 print(unique_rtypes)
-
 ```
 
 # Code Examples
