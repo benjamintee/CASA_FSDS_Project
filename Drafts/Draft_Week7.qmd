@@ -73,19 +73,59 @@ jupyter:
 
     -   in each MSOA / LSOA
 
-Loading the data and viewing the structure of the data and columns
+**1.1 Load Airbnb data and view structure of the dataset**
 
 ```{python}
 import pandas as pd
 
 # Set filepath and read csv data using pandas
-listpath_2025 = "https://orca.casa.ucl.ac.uk/~jreades/data/20250615-London-listings.csv.gz"  
-df = pd.read_csv(listpath_2025, compression='gzip')
+ymd  = '20250615'
+city = 'London'
+host = 'https://orca.casa.ucl.ac.uk'
+url  = f'{host}/~jreades/data/{ymd}-{city}-listings.csv.gz'
 
+# Download first 1,000 rows for EDA
+df = pd.read_csv(url, compression='gzip', nrows = 1000, low_memory=False)
+```
+
+```{python}
 # View data structure, column names and types 
-print(df.shape)       
-print(df.columns)
-df.info()
+print(f"Data frame is {df.shape[0]:,} rows x {df.shape[1]} columns")
+
+# View basic information about the dataset 
+df.info(verbose = True)
+
+# Generate a list of column names to identify variables of interest 
+print(df.columns.to_list())
+```
+
+```{python}
+# Subsetting columns of interest 
+cols = ['id', 'listing_url', 'last_scraped', 'name', 
+    'description', 'host_id', 'host_name', 'host_since', 
+    'host_location', 'host_about', 'host_is_superhost', 
+    'host_listings_count', 'host_total_listings_count', 
+    'host_verifications', 'latitude', 'longitude', 
+    'property_type', 'room_type', 'accommodates', 
+    'bathrooms', 'bathrooms_text', 'bedrooms', 'beds', 
+    'amenities', 'price', 'minimum_nights', 'maximum_nights', 
+    'availability_365', 'number_of_reviews', 
+    'first_review', 'last_review', 'review_scores_rating', 
+    'license', 'reviews_per_month']
+print(f"Cols contains {len(cols)} columns.")
+```
+
+```{python}
+# Downloading the full data with columns of interest 
+df = pd.read_csv(url, compression='gzip', low_memory=False, usecols=cols)
+print(f"Data frame is {df.shape[0]:,} rows x {df.shape[1]} columns")
+```
+
+**1.2 Basic cleaning and exploration of dataset**
+
+```{python}
+# Removing NA and NaN values
+# Converting columns to specified types 
 ```
 
 Answering some quick questions. How many unique listings were on Airbnb? How many unique hosts were there?
