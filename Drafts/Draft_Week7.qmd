@@ -119,13 +119,105 @@ print(f"Cols contains {len(cols)} columns.")
 # Downloading the full data with columns of interest 
 df = pd.read_csv(url, compression='gzip', low_memory=False, usecols=cols)
 print(f"Data frame is {df.shape[0]:,} rows x {df.shape[1]} columns")
+
+df.info(verbose = True)
 ```
 
 **1.2 Basic cleaning and exploration of dataset**
 
+First, we attempt to identify and remove rows with NA and NaN values. Fortunately, all the rows had a specific id and there were no NAs in the id.
+
 ```{python}
-# Removing NA and NaN values
-# Converting columns to specified types 
+# Removing rows with NA in id 
+df.drop(df[df.id.isna()].index.array, axis=0, inplace=True)
+print(f"Data frame contains {df.shape[0]:,} rows.")
+
+# Counting the NA data by columns
+df.isnull().sum(axis=0).sort_values(ascending=False).head(10)
+
+# Drop the two columns with the most number of NA data (license, host_about) 
+df.drop(columns=['license','host_about'], inplace=True)
+
+# Next, we look out for rows which may have multiple NA values
+df.isnull().sum(axis=1).sort_values(ascending=False).head(10)
+
+# Looking at the probability distribution of the rows with multiple NA values 
+probs = df.isnull().sum(axis=1)
+print(type(probs))       
+probs.plot.hist(bins=30) 
+
+# Dropping rows missing more than 8 values which may be problematic 
+cutoff = 5 # Set cutoff for 5 
+problematic_rows = df.loc[probs > cutoff]
+df.drop(probs[probs > cutoff].index, inplace=True)
+print(f"df now contains {df.shape[0]:,} rows, and we dropped {problematic_rows.shape[0]:,} rows")
+```
+
+Next, we want to assign the correct variable types to each column for efficiency in processing.
+
+```{python}
+# Fixing the host_is_superhost column and converting it to boolean
+bools = ['host_is_superhost']
+df.sample(5, random_state=43)[bools]
+
+for b in bools:
+    print(f"Converting {b}")
+    df[b] = df[b].replace({'f':False, 't':True}).astype('bool')
+
+# Fixing the columns with dates in them, and converting it to dates 
+dates = ['last_scraped','host_since','first_review','last_review']
+
+print(f"Currently {dates[1]} is of type '{df[dates[1]].dtype}'", "\n")
+df.sample(5, random_state=43)[dates]
+
+for d in dates:
+    print("Converting " + d)
+    df[d] = pd.to_datetime(df[d])
+
+# Fixing the columns that are supposed to be categories, convert to category 
+cats = ['property_type','room_type']
+for c in cats:
+    print(f"Converting {c}")
+    df[c] = df[c].astype('category')
+
+# Fixing the column with price where there are odd symbols like $ and , 
+money = ['price']
+for m in money:
+    print(f"Converting {m}")
+    df[m] = df[m].str.replace('$','', regex=False).str.replace(',', '', regex = False).astype('float')
+
+# Fixing integers 
+ints  = ['id','host_id','host_listings_count','host_total_listings_count','accommodates',
+         'beds','minimum_nights','maximum_nights','availability_365']
+for i in ints:
+    print(f"Converting {i}")
+    try:
+        df[i] = df[i].astype('float').astype('int')
+    except ValueError as e:
+        print("  - !!!Converting to unsigned 16-bit integer!!!")
+        df[i] = df[i].astype('float').astype(pd.UInt16Dtype())
+```
+
+Finally, we validate the data to check and understand if the various columns are in order.
+
+```{python}
+df.info()
+```
+
+And we can export the cleaned and formatted file to folder
+
+```{python}
+from pathlib import Path
+path = Path(f'Data/clean/{Path(url).name}') 
+print(f"Writing to: {path}")
+
+if not path.parent.exists(): 
+    print(f"Creating {path.parent}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+if not path.exists():  
+    df.to_csv(path, index=False)
+    print("Done.")
 ```
 
 Answering some quick questions. How many unique listings were on Airbnb? How many unique hosts were there?
