@@ -73,7 +73,7 @@ jupyter:
 
     -   in each MSOA / LSOA
 
-### **1.1 Load Airbnb listings data and view structure of the dataset**
+### **1.1 Load Airbnb listings data and view structure** 
 
 ```{python}
 import pandas as pd
@@ -119,11 +119,10 @@ print(f"Cols contains {len(cols)} columns.")
 # Downloading the full data with columns of interest 
 df = pd.read_csv(url, compression='gzip', low_memory=False, usecols=cols)
 print(f"Data frame is {df.shape[0]:,} rows x {df.shape[1]} columns")
-
 df.info(verbose = True)
 ```
 
-### **1.2 Basic cleaning of dataset**
+### **1.2 Basic cleaning of listings dataset**
 
 First, we attempt to identify and remove rows with NA and NaN values. Fortunately, all the rows had a specific id and there were no NAs in the id.
 
@@ -220,7 +219,7 @@ if not path.exists():
     print("Done.")
 ```
 
-### **1.3 Quick data exploration** 
+### **1.3 Quick exploration of listings dataset**
 
 Answering some quick questions. How many unique listings were on Airbnb? How many unique hosts were there?
 
@@ -240,6 +239,80 @@ print(unique_ptypes)
 unique_rtypes = df['room_type'].unique()
 print(unique_rtypes)
 ```
+
+### 1.4 Load Airbnb reviews data and view structure
+
+```{python}
+# Set filepath and read csv data using pandas
+ymd  = '20250615'
+city = 'London'
+host = 'https://orca.casa.ucl.ac.uk'
+url  = f'{host}/~jreades/data/{ymd}-{city}-reviews.csv.gz'
+
+# Download first 1,000 rows for EDA
+df_reviews = pd.read_csv(url, compression='gzip', nrows = 1000, low_memory=False)
+```
+
+```{python}
+# View data structure, column names and types 
+print(f"Data frame is {df_reviews.shape[0]:,} rows x {df_reviews.shape[1]} columns")
+
+# View basic information about the dataset 
+df_reviews.info(verbose = True)
+
+# Downloading the full data 
+df_reviews = pd.read_csv(url, compression='gzip', low_memory=False)
+print(f"Data frame is {df_reviews.shape[0]:,} rows x {df_reviews.shape[1]} columns")
+```
+
+### 1.5 Cleaning of reviews data
+
+```{python}
+# Removing rows with NA in listing id, id, and reviewer id 
+df_reviews.drop(df_reviews[df_reviews.id.isna()].index.array, axis=0, inplace=True)
+df_reviews.drop(df_reviews[df_reviews.listing_id.isna()].index.array, axis=0, inplace=True)
+df_reviews.drop(df_reviews[df_reviews.reviewer_id.isna()].index.array, axis=0, inplace=True)
+
+print(f"Data frame contains {df_reviews.shape[0]:,} rows.")
+
+# Counting the NA data by columns
+df_reviews.isnull().sum(axis=0).sort_values(ascending=False).head(10)
+```
+
+```{python}
+# Fixing the columns with dates in them, and converting it to dates 
+df_reviews['date'] = pd.to_datetime(df_reviews['date'])
+
+# Fixing integers 
+ints  = ['id', 'listing_id', 'reviewer_id']
+for i in ints:
+    print(f"Converting {i}")
+    try:
+        df_reviews[i] = df_reviews[i].astype('float').astype('int')
+    except ValueError as e:
+        print("  - !!!Converting to unsigned 16-bit integer!!!")
+        df_reviews[i] = df_reviews[i].astype('float').astype(pd.UInt16Dtype())
+
+# The comments column is excessively large and is beyond the scope of the project, so we are dropping it 
+df_reviews.drop(columns=['comments'], inplace=True)
+```
+
+And, we can export the clean data for further analysis
+
+```{python}
+path = Path(f'Data/clean/{Path(url).name}') 
+print(f"Writing to: {path}")
+
+if not path.parent.exists(): 
+    print(f"Creating {path.parent}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+if not path.exists():  
+    df_reviews.to_csv(path, index=False)
+    print("Done.")
+```
+
+It appears that the reviews data is cumulative based on the listing_id.
 
 {{< pagebreak >}}
 
