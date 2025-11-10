@@ -73,7 +73,7 @@ jupyter:
 
     -   in each MSOA / LSOA
 
-**1.1 Load Airbnb data and view structure of the dataset**
+### **1.1 Load Airbnb listings data and view structure of the dataset**
 
 ```{python}
 import pandas as pd
@@ -123,7 +123,7 @@ print(f"Data frame is {df.shape[0]:,} rows x {df.shape[1]} columns")
 df.info(verbose = True)
 ```
 
-**1.2 Basic cleaning and exploration of dataset**
+### **1.2 Basic cleaning of dataset**
 
 First, we attempt to identify and remove rows with NA and NaN values. Fortunately, all the rows had a specific id and there were no NAs in the id.
 
@@ -220,6 +220,8 @@ if not path.exists():
     print("Done.")
 ```
 
+### **1.3 Quick data exploration** 
+
 Answering some quick questions. How many unique listings were on Airbnb? How many unique hosts were there?
 
 ```{python}
@@ -237,71 +239,6 @@ print(unique_ptypes)
 
 unique_rtypes = df['room_type'].unique()
 print(unique_rtypes)
-```
-
-# Code Examples
-
-This page has example code to show you can include outputs while hiding code in Quarto, as well as some tools for interpolating data in the text.
-
-See the raw file for examples of how to hide computational output as there is code hidden here.
-
-```{python}
-#| echo: True 
-# This code will be shown, 
-# but the next block will not
-import os
-import pandas as pd
-```
-
-```{python}
-# This code is not shown because echo was
-# set to False in the header. You should
-# think carefully about whether you want
-# or need to show any code to the reader
-# in the PDf.
-host = 'https://orca.casa.ucl.ac.uk'
-path = '~jreades/data'
-file = '20250615-London-listings.parquet'
-
-if os.path.exists(file):
-  df = pd.read_parquet(file)
-else: 
-  df = pd.read_parquet(f'{host}/{path}/{file}')
-  df.to_parquet(file)
-```
-
-An inline citation example: As discussed on @insideairbnb, there are many...
-
-A parenthetical citation example: There are many ways to research Airbnb [see, for example, @insideairbnb]...
-
-```{python}
-#| output: asis
-# This is one way to write dynamic text. 'As is' means
-# it will interpret the result as regular Quarto markdown 
-# so the below `print` statement becomes plain text with
-# the size of the dataframe interpolated into the string.
-# When Quarto is done running the Python code what's left
-# is plain-text and that is then treated as a paragraph
-# like it would be if you'd written it in Quarto.
-print(f"One of way to embed output in the text looks like this: after cleaning, we were left with {df.shape[0]:,} rows of data.")
-```
-
-```{python}
-# The other way is to ensure that your variables are *simple* 
-# data types that Quarto can understand. So notice below that
-# we just have a single, inline `{python} with the value of
-# the row directly inserted into the sentence. his should also work, but is sometimes less predictably
-# reliable.
-row_count = f"{df.shape[0]:,}"
-```
-
-The other way is to interpolate it directly into the sentence like this (`{python} row_count`); however, I've found it less reliable and it really requires you to be careful about data types. So `{python} print(f"{df.shape[0]:,}")` probably won't work and you'll just see some Python code instead.
-
-And here's a nice little chart straight into the document!
-
-```{python}
-ax = df.host_listings_count.plot.hist(bins=50);
-ax.set_xlim([0,500]);
 ```
 
 {{< pagebreak >}}
