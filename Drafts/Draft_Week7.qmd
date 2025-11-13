@@ -73,7 +73,7 @@ jupyter:
 
     -   in each MSOA / LSOA
 
-### **1.1 Load Airbnb listings data and view structure** 
+### **1.1 Load Airbnb listings data and view structure**
 
 ```{python}
 import pandas as pd
@@ -314,7 +314,7 @@ if not path.exists():
 
 It appears that the reviews data is cumulative based on the listing_id.
 
-### 1.6 Load data from on the stock of domestic properties 
+### 1.6 Load data from on the stock of domestic properties
 
 We are interested in the number of domestic properties in London and how this has changed over time. We draw from the UK Valuation Office (VOA) which provides statistics on the stock of domestic properties by Council Tax Band. Thus far, this approach provides the most comprehensive estimate of the stock of local properties in London. The data is split across 8 bands as follows:
 
@@ -345,12 +345,35 @@ df_stock.info()
 ```
 
 ```{python}
-# Filter for MSOA data and ecodes that fall within London 
-df_stock = df_stock[
+# Filter for LA data and ecodes that fall within Greater London 
+df_stock_LA = df_stock[
     (df_stock['geography'] == 'LAUA') &
     (df_stock['ecode'].str.startswith('E090'))
 ]
-df_stock = df_stock.reset_index(drop=True)
+#df_stock = df_stock.reset_index(drop=True)
+```
+
+```{python}
+"""
+This block first extracts names of london boroughs, then filters the df_stock to select only the MSOAs with name strings that contain any of the london borough names, hence forming a dataframe of property stock by MSOA in Greater London only
+"""
+
+#list of london boroughs
+london_boroughs = df_stock_LA.area_name.unique().tolist()
+
+# Build regex pattern — escape special chars and join with |
+pattern = "|".join([rf"\b{b.replace(' ', r'\s+')}\b" for b in london_boroughs])
+
+# Filter for MSOA data and ecodes that fall within Greater London 
+df_stock_MSOA = df_stock[
+    (df_stock['geography'] == 'MSOA') &
+    (df_stock['area_name'].str.contains(pattern, case=False, na=False, regex=True))
+]
+```
+
+```{python}
+#delete df_stock to save memory
+del(df_stock)
 ```
 
 {{< pagebreak >}}
