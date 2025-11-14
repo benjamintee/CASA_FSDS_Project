@@ -65,7 +65,60 @@ for i, r in df.iterrows():
   if r["room_type"] == "Entire home/apt":
     entire_homes.append(r)
   
-entire_homes_df = pd.DataFrame(entire_homes)
+entire_homes_df = pd.DataFrame(entire_homes) # Ensure data is still a pandas df
 
-print(len(entire_homes_df))
+eh_length = len(entire_homes_df)
+print(eh_length)
+```
+
+```{python}
+# Find the proportion of Airbnbs that are entire homes
+print(f'Rounghly {round((eh_length/df_length)*100)}% of Airbnbs in London are entire homes or flats.')
+```
+
+From this simple analysis alone, we see that Airbnb certainly has a tendency to attract entire homes and apartments as its primary form of short term rental housing. Whether this is purposeful from the company cannot be determined from this analysis, though 57,168 entire homes and apartments that could be used for full time residant housing will certainly have an effect on the housing market.
+
+Now I want to display in a bar chart and a pie chart the total counts of each room type and their proportions.
+
+```{python}
+import matplotlib.pyplot as plt
+```
+
+```{python}
+
+room_types = df["room_type"].value_counts()
+
+# The next lines come from Geeks for Geeks
+# Function to add value labels on top of bars
+def add_labels(x, y):
+    for i in range(len(x)):
+        plt.text(i, y[i], y[i], ha='center', 
+                 bbox=dict(facecolor='#ABD7EB', alpha=0.8))
+
+x = ["Entire home/apt", "Private room", "Shared room", "Hotel room"]
+y = [57168, 28367, 180, 101]
+
+plt.figure(figsize=(10, 5))
+plt.bar(x,y, color = "salmon")
+add_labels(x,y)
+# Adding title and labels
+plt.title("Airbnb Types in London")
+plt.xlabel("Room Types")
+plt.ylabel("Count")
+
+# Display the chart
+plt.show()
+```
+
+```{python}
+
+room_counts = df["room_type"].value_counts()
+
+# Plot
+plt.figure(figsize=(6, 6))
+plt.pie(room_counts, labels=room_counts.index, autopct="%1.1f%%", startangle=90, colors=["#ABD7EB", "#F4A261", "#E76F51", "#2A9D8F"])
+plt.title("Proportion of Room Types in London Listings")
+plt.axis("equal")  # Ensures pie is a circle
+plt.show()
+
 ```
