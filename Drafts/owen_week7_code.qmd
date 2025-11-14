@@ -4,23 +4,68 @@ format: html
 editor: visual
 ---
 
-## Quarto
+# Week 7 Code
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+## Questions to Answer
 
-## Running Code
+**1. What is the share of Airbnbs in London that are entire homes or apartments?**
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+-   Use pandas to group listings by type
 
-```{r}
-1 + 1
+-   Create a plot showing percent and totals
+
+**2. How many professional landlords are there in London?**
+
+-   What is the difference between a professional landlord and a commercial landlord?
+
+    -   Does this difference matter for out analysis
+
+-   Start by analyzing anyone/organization that owns more than 5 Airbnbs
+
+    -   group Airbnbs by host and count listings per host
+
+-   Income from these properties vs. median income in London
+
+--------------------------------------------------------------------------------------------------------------------
+
+**Data setup**
+
+Load the pandas package and data
+
+```{python}
+import pandas as pd
 ```
 
-You can add options to executable code like this
+```{python}
+df = pd.read_csv("C:/Users/Owen Hughes/Desktop/CASA/UCL_Work/CASA_FSDS_Project/Data/clean/20250615-London-listings.csv/20250615-London-listings.csv")
 
-```{r}
-#| echo: false
-2 * 2
+df.head(4)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+--------------------------------------------------------------------------------------------------------------------
+
+**1. What is the share of Airbnbs in London that are entire homes or apartments?**
+
+-   The most useful column for this analysis is room_type as groups and counts can be made to determine the proportion of Airbnbs that are entire houses or flats. Additionally, the length of the data set will used to calculate said proportion.
+
+```{python}
+# attain length of data set for calculation of proportion
+df_length = len(df)
+print(df_length)
+```
+
+```{python}
+# run a for loop to create a new data set with only entire homes apartments 
+# take the length of this
+
+print(df["room_type"].unique())
+
+entire_homes = []
+for i, r in df.iterrows():
+  if r["room_type"] == "Entire home/apt":
+    entire_homes.append(r)
+  
+entire_homes_df = pd.DataFrame(entire_homes)
+
+print(len(entire_homes_df))
+```
