@@ -221,7 +221,7 @@ if not path.exists():
 
 ### **1.3 Load and clean data on Housing Stock by MSOA and Borough**
 
-We are interested in the number of domestic properties in London and how this has changed over time. We draw from the UK Valuation Office (VOA) which provides statistics on the stock of domestic properties by Council Tax Band. Thus far, this approach provides the most comprehensive estimate of the stock of local properties in London. We then filter for MSOAs within Greater London. 
+We are interested in the number of domestic properties in London and how this has changed over time. We draw from the UK Valuation Office (VOA) which provides statistics on the stock of domestic properties by Council Tax Band. Thus far, this approach provides the most comprehensive estimate of the stock of local properties in London. We then filter for MSOAs within Greater London.
 
 ```{python}
 # Set the parameters to retrieve the downloaded data from LSOA 
@@ -281,9 +281,9 @@ unique_rtypes = df['room_type'].unique()
 print(unique_rtypes)
 ```
 
-### 1.4 Spatial Analysis of 2025 listings data 
+### 1.4 Spatial Analysis of 2025 listings data
 
-Let's take a look at the spatial distribution of Airbnb listings across London. Where are Airbnb's located and how do the numbers differ by Boroughs and MSOAs?  
+Let's take a look at the spatial distribution of Airbnb listings across London. Where are Airbnb's located and how do the numbers differ by Boroughs and MSOAs?
 
 ```{python}
 import geopandas as gpd
@@ -315,7 +315,7 @@ gdf = gpd.GeoDataFrame(df,
       geometry=gpd.points_from_xy(df.longitude, df.latitude, crs='epsg:4326')).to_crs(epsg=27700)
 ```
 
-Let's plot a chart! 
+Let's plot a chart!
 
 ```{python}
 import matplotlib.pyplot as plt
@@ -350,7 +350,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-How about the density of the listings relative to the total housing stock? For this we need to bring out the housing stock data. Given that the latest stock data relates to 2024, we shall use the 2024 data by MSOA. 
+How about the density of the listings relative to the total housing stock? For this we need to bring out the housing stock data. Given that the latest stock data relates to 2024, we shall use the 2024 data by MSOA.
 
 ```{python}
 import numpy as np
@@ -384,7 +384,8 @@ plt.tight_layout()
 plt.show()
 ```
 
-```{python} 
+```{python}
+#create a map of listings/stock using continous colour scheme
 fig, ax = plt.subplots(1, 1, figsize=(10, 8))
 
 MSOA.plot(
@@ -408,12 +409,112 @@ cbar_ax.set_ylabel(
     rotation=90,   
     labelpad=15)
 
-fig.text(0.03, 0.02, "Source: Listings data obtained from InsideAirbnb, \nHousing Stock retreived from Valuation Office Agency (VOA), \nAdministrative boundaries from data.gov.uk", ha='left', fontsize=12a)
+fig.text(0.03, 0.02, "Source: Listings data obtained from InsideAirbnb, \nHousing Stock retreived from Valuation Office Agency (VOA), \nAdministrative boundaries from data.gov.uk", ha='left', fontsize=12)
 
 plt.tight_layout()
 plt.show()
 ```
 
+```{python}
+#create a map of listings/stock using Jenks breaks, seemingly telling a different story
+
+import mapclassify
+from matplotlib.patches import Patch
+
+# Jenks classification
+classifier = mapclassify.NaturalBreaks(MSOA['listing_prop2025'], k=5)
+MSOA['jenks_class'] = classifier.yb  # 0..k-1
+
+# Prepare class boundaries for labels
+bin_edges = [round(b, 3) for b in classifier.bins]  # rounded nicely
+labels = []
+prev = MSOA['listing_prop2025'].min()
+for b in bin_edges:
+    labels.append(f"{prev} – {b}")
+    prev = b
+
+# Assign colors
+k = len(bin_edges)
+cmap = plt.cm.viridis
+colors = [cmap(i / (k-1)) for i in range(k)]
+
+# Create figure
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+
+# Plot each class separately for categorical legend
+for i, color in enumerate(colors):
+    MSOA[MSOA['jenks_class'] == i].plot(
+        ax=ax,
+        color=color,
+        edgecolor="gray",
+        linewidth=0.35
+    )
+
+# Plot borough boundaries on top
+BORO.boundary.plot(ax=ax, edgecolor='black', linewidth=1.0)
+
+# Create custom legend with class boundaries
+legend_handles = [Patch(facecolor=color, edgecolor='gray', label=label)
+                  for color, label in zip(colors, labels)]
+ax.legend(handles=legend_handles, title="Listings as Percentage of Housing Stock /%")
+
+# Titles and annotations
+ax.set_title("Airbnb Listings as a Proportion of Housing Stock (2025)", fontsize=18, pad=15)
+ax.axis("off")
+fig.text(
+    0.03, 0.02,
+    "Source: Listings data obtained from InsideAirbnb, \nHousing Stock retrieved from Valuation Office Agency (VOA), \nAdministrative boundaries from data.gov.uk",
+    ha='left',
+    fontsize=12
+)
+
+plt.tight_layout()
+plt.show()
+```
+
+How about conducting the analysis at borough scale?
+
+```{python}
+#aggregation of listings to boroughs by count
+gdf_BORO = gpd.sjoin(gdf, BORO[['gss_code', 'geometry']], how='left', predicate='within')
+BORO = BORO.merge(gdf_BORO.groupby('gss_code').size().rename('listings2025'), on='gss_code', how='left')
+BORO['listings2025'] = BORO['listings2025'].fillna(0).astype(int)
+
+# Filter the total stock data for 2024
+df_stock_BORO2025 = df_stock_LA[df_stock_LA['Year'] == 2024]
+
+#rename BORO columns
+BORO = BORO.rename(columns={'gss_code': 'ecode'}).dissolve(by='ecode', as_index=False)
+
+#Merge in the data on the count of all_properties to borough by gss_code
+BORO = BORO.merge(df_stock_BORO2025[['ecode','all_properties']], on='ecode', how='left')
+BORO = BORO.rename(columns={'all_properties': 'allprop2024'})
+
+## Count listings as a proportion of total housing stock
+BORO['listing_prop2025'] = (BORO['listings2025'] / BORO['allprop2024']) * 100
+BORO['listing_prop2025'] = BORO['listing_prop2025'].replace([np.inf, -np.inf], np.nan).fillna(0)
+```
+
+```{python}
+sorted_pairs = sorted(zip(BORO['listing_prop2025'], BORO['name']))  # sort by values
+sorted_values, sorted_categories = zip(*sorted_pairs)
+
+plt.figure(figsize=(8,6))
+plt.bar(sorted_categories, sorted_values)
+
+plt.xlabel('Boroughs')
+plt.ylabel('Listings as percentage of Housing Stock (%)')
+plt.title('Airbnb Listings as a Proportion of Housing Stock by Boroughs (2025)')
+plt.xticks(rotation=90)  # rotate x-axis labels vertically
+
+# Show plot
+plt.show()
+```
+
+```{python}
+#stops the code from running from here by deliberately throwing an error
+print have_a_love_day
+```
 
 ### 1.5 Load Airbnb reviews data and view structure
 
