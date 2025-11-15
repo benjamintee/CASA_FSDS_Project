@@ -203,7 +203,7 @@ Finally, we validate the data to check and understand if the various columns are
 df.info()
 ```
 
-And we can export the cleaned and formatted file to folder
+Export the cleaned and formatted file to folder
 
 ```{python}
 from pathlib import Path
@@ -217,6 +217,47 @@ if not path.parent.exists():
 if not path.exists():  
     df.to_csv(path, index=False)
     print("Done.")
+```
+
+### **1.3 Load and clean data on Housing Stock by MSOA and Borough**
+
+We are interested in the number of domestic properties in London and how this has changed over time. We draw from the UK Valuation Office (VOA) which provides statistics on the stock of domestic properties by Council Tax Band. Thus far, this approach provides the most comprehensive estimate of the stock of local properties in London. We then filter for MSOAs within Greater London. 
+
+```{python}
+# Set the parameters to retrieve the downloaded data from LSOA 
+host = 'https://raw.githubusercontent.com/benjamintee/'
+years = [2020, 2021, 2022, 2023, 2024]
+
+df_stock = pd.concat(
+    [pd.read_csv(f'{host}/CASA_FSDS_Project/main/Data/CTSOP1_1_{y}_03_31.csv').assign(Year=y)
+     for y in years],
+    ignore_index=True)
+
+df_stock.info()
+
+# Filter for LA data and ecodes that fall within Greater London 
+df_stock_LA = df_stock[
+    (df_stock['geography'] == 'LAUA') &
+    (df_stock['ecode'].str.startswith('E090'))
+]
+
+# Filter and select MSOAs within Greater London 
+"""
+This block first extracts names of london boroughs, then filters the df_stock to select only the MSOAs with name strings that contain any of the london borough names, hence forming a dataframe of property stock by MSOA in Greater London only
+"""
+
+#list of london boroughs
+london_boroughs = df_stock_LA.area_name.unique().tolist()
+
+# Build regex pattern — escape special chars and join with |
+pattern = "|".join([rf"\b{b.replace(' ', r'\s+')}\b" for b in london_boroughs])
+
+# Filter for MSOA data and ecodes that fall within Greater London 
+df_stock_MSOA = df_stock[
+    (df_stock['geography'] == 'MSOA') &
+    (df_stock['area_name'].str.contains(pattern, case=False, na=False, regex=True))
+]
+
 ```
 
 ### **1.3 Quick exploration of listings dataset**
@@ -240,7 +281,141 @@ unique_rtypes = df['room_type'].unique()
 print(unique_rtypes)
 ```
 
-### 1.4 Load Airbnb reviews data and view structure
+### 1.4 Spatial Analysis of 2025 listings data 
+
+Let's take a look at the spatial distribution of Airbnb listings across London. Where are Airbnb's located and how do the numbers differ by Boroughs and MSOAs?  
+
+```{python}
+import geopandas as gpd
+
+# Load MSOA 2021 geopackage and BORO files from GitHub
+host = 'https://raw.githubusercontent.com/benjamintee/'
+ddir = 'CASA_FSDS_Project/main/Data/'
+
+BORO = gpd.read_file(f'{host}/{ddir}/LONDON_BOROUGH.gpkg').to_crs(epsg=27700)
+MSOA = gpd.read_file(f'{host}/{ddir}/MSOA_DEC_2021_BOUNDARIES.gpkg').to_crs(epsg=27700)
+
+# Clip MSOA Boundaries to those within London Broughs and only retain Polygons and MultiPolygons
+LONDON = gpd.GeoDataFrame(geometry=[BORO.dissolve().geometry.iloc[0]], crs= '27700')
+MSOA = gpd.clip(MSOA, LONDON)
+MSOA = MSOA[MSOA.geometry.type.isin(["Polygon", "MultiPolygon"])]
+
+# Undertake an inner spatial join to retain the MSOA that fall within Greater London Boundaries 
+MSOA = gpd.sjoin(MSOA, BORO[['name', 'ons_inner', 'sub_2011', 'geometry']], how='inner',predicate='intersects')
+
+# Retain columns of interest and rename for better readability 
+MSOA = MSOA[['MSOA21CD', 'MSOA21NM', 'geometry', 'name', 'ons_inner', 'sub_2011']].rename(
+    columns={
+        'MSOA21CD': 'ecode', 
+        'MSOA21NM': 'MSOA_name', 
+        'name' : 'BORO_name'}).dissolve(by='ecode' , as_index=False)
+
+# Converting listing pandas dataframe to a geopandas dataframe with CRS 4326, and then convert to CRS 27700 
+gdf = gpd.GeoDataFrame(df,
+      geometry=gpd.points_from_xy(df.longitude, df.latitude, crs='epsg:4326')).to_crs(epsg=27700)
+```
+
+Let's plot a chart! 
+
+```{python}
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+
+MSOA.plot(ax=ax, facecolor="none", edgecolor="lightgray", linewidth=0.7)
+BORO.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=1.3)
+gdf.plot(ax=ax, color="dodgerblue", alpha=0.7, markersize=0.1)
+
+# Custom legend handle for Airbnb points
+legend_elements = [
+    Line2D([0], [0],
+           marker='o',
+           color='w',
+           markerfacecolor='dodgerblue',
+           markersize=8,
+           linestyle='',
+           label="Airbnb Listing (2025)")
+]
+
+ax.legend(handles=legend_elements,
+          loc='upper right',
+          frameon= True)
+
+ax.set_title("Spatial Distribution of Airbnb Listings in London (2025)", fontsize=16, pad=15)
+fig.text(0.5, 0.02, "Source: InsideAirbnb, data.gov.uk", ha='center', fontsize=12)
+ax.axis("off")
+
+plt.tight_layout()
+plt.show()
+```
+
+How about the density of the listings relative to the total housing stock? For this we need to bring out the housing stock data. Given that the latest stock data relates to 2024, we shall use the 2024 data by MSOA. 
+
+```{python}
+import numpy as np
+
+# Filter the total stock data for 2024
+df_stock_MSOA2025 = df_stock_MSOA[df_stock_MSOA['Year'] == 2024]
+
+# Merge in the data on the count of all_properties to MSOA by ecode
+MSOA = MSOA.merge(df_stock_MSOA2025[['ecode', 'all_properties']], on='ecode', how='left')
+MSOA = MSOA.rename(columns={'all_properties': 'allprop2024'})
+
+# Count Airbnb listings inside each MSOA polygon
+gdf_MSOA = gpd.sjoin(gdf, MSOA[['ecode', 'geometry']], how='left', predicate='within')
+MSOA = MSOA.merge(gdf_MSOA.groupby('ecode').size().rename('listings2025'), on='ecode', how='left')
+MSOA['listings2025'] = MSOA['listings2025'].fillna(0).astype(int)
+
+# Count listings as a proportion of total housing stock
+MSOA['listing_prop2025'] = (MSOA['listings2025'] / MSOA['allprop2024']) * 100
+MSOA['listing_prop2025'] = MSOA['listing_prop2025'].replace([np.inf, -np.inf], np.nan).fillna(0)
+```
+
+```{python}
+# Plot a histogram of the distribution of listing proportions by MSOA  
+plt.figure(figsize=(8,6))
+plt.hist(MSOA['listing_prop2025'], bins=40,  edgecolor='black', alpha=0.8)
+
+plt.title("Distribution of Airbnb Listings as a Proportion of Housing Stock")
+plt.xlabel("Listings as percentage of Housing Stock (%)")
+plt.ylabel("Number of MSOAs")
+plt.tight_layout()
+plt.show()
+```
+
+```{python} 
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+
+MSOA.plot(
+    ax=ax,
+    column='listing_prop2025',
+    cmap='viridis',
+    edgecolor="gray",
+    linewidth=0.35,
+    legend=True)
+
+BORO.boundary.plot(ax=ax, edgecolor='black', linewidth= 1.0)
+
+ax.set_title("Airbnb Listings as a Proportion of Housing Stock (2025)", fontsize=18, pad=15)
+ax.axis("off")
+
+cbar_ax = fig.axes[-1]           
+cbar_ax.tick_params(labelsize=16)
+cbar_ax.set_ylabel(
+    "Listings as Percentage of Housing Stock",
+    fontsize=16,
+    rotation=90,   
+    labelpad=15)
+
+fig.text(0.03, 0.02, "Source: Listings data obtained from InsideAirbnb, \nHousing Stock retreived from Valuation Office Agency (VOA), \nAdministrative boundaries from data.gov.uk", ha='left', fontsize=12a)
+
+plt.tight_layout()
+plt.show()
+```
+
+
+### 1.5 Load Airbnb reviews data and view structure
 
 ```{python}
 # Set filepath and read csv data using pandas
@@ -265,7 +440,7 @@ df_reviews = pd.read_csv(url, compression='gzip', low_memory=False)
 print(f"Data frame is {df_reviews.shape[0]:,} rows x {df_reviews.shape[1]} columns")
 ```
 
-### 1.5 Cleaning of reviews data
+### 1.6 Cleaning of reviews data
 
 ```{python}
 # Removing rows with NA in listing id, id, and reviewer id 
@@ -313,63 +488,6 @@ if not path.exists():
 ```
 
 It appears that the reviews data is cumulative based on the listing_id.
-
-### 1.6 Load data from on the stock of domestic properties
-
-We are interested in the number of domestic properties in London and how this has changed over time. We draw from the UK Valuation Office (VOA) which provides statistics on the stock of domestic properties by Council Tax Band. Thus far, this approach provides the most comprehensive estimate of the stock of local properties in London. The data is split across 8 bands as follows:
-
-| **Band** | **Value of property (at 1 April 1991)** |
-|:---------|:----------------------------------------|
-| A        | Up to £40,000                           |
-| B        | £40,001 up to £52,000                   |
-| C        | £52,001 up to £68,000                   |
-| D        | £68,001 up to £88,000                   |
-| E        | £88,001 up to £120,000                  |
-| F        | £120,001 up to £160,000                 |
-| G        | £160,001 up to £320,000                 |
-| H        | £320,001 and above                      |
-
-Specifically, we are interested in data at MSOA level and for areas within London, and reference Table CTSOP1.1 from 2020-2024.
-
-```{python}
-# Set the parameters to retrieve the downloaded data
-host = 'https://raw.githubusercontent.com/benjamintee/'
-years = ['2020', '2021', '2022', '2023', '2024']
-
-df_stock = pd.concat(
-    [pd.read_csv(f'{host}/CASA_FSDS_Project/main/Data/CTSOP1_1_{y}_03_31.csv').assign(Year=y)
-     for y in years],
-    ignore_index=True)
-
-df_stock.info()
-```
-
-```{python}
-# Filter for LA data and ecodes that fall within Greater London 
-df_stock_LA = df_stock[
-    (df_stock['geography'] == 'LAUA') &
-    (df_stock['ecode'].str.startswith('E090'))
-]
-#df_stock = df_stock.reset_index(drop=True)
-```
-
-```{python}
-"""
-This block first extracts names of london boroughs, then filters the df_stock to select only the MSOAs with name strings that contain any of the london borough names, hence forming a dataframe of property stock by MSOA in Greater London only
-"""
-
-#list of london boroughs
-london_boroughs = df_stock_LA.area_name.unique().tolist()
-
-# Build regex pattern — escape special chars and join with |
-pattern = "|".join([rf"\b{b.replace(' ', r'\s+')}\b" for b in london_boroughs])
-
-# Filter for MSOA data and ecodes that fall within Greater London 
-df_stock_MSOA = df_stock[
-    (df_stock['geography'] == 'MSOA') &
-    (df_stock['area_name'].str.contains(pattern, case=False, na=False, regex=True))
-]
-```
 
 ```{python}
 #delete df_stock to save memory
