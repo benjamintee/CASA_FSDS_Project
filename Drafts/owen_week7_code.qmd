@@ -26,11 +26,17 @@ editor: visual
 
 -   Income from these properties vs. median income in London
 
---------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 **Data setup**
 
 Load the pandas package and data
+
+```{r}
+#library(reticulate)
+#py_install('pandas')
+#py_install('matplotlib')
+```
 
 ```{python}
 import pandas as pd
@@ -42,7 +48,7 @@ df = pd.read_csv("C:/Users/Owen Hughes/Desktop/CASA/UCL_Work/CASA_FSDS_Project/D
 df.head(4)
 ```
 
---------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 **1. What is the share of Airbnbs in London that are entire homes or apartments?**
 
@@ -76,7 +82,7 @@ print(eh_length)
 print(f'Rounghly {round((eh_length/df_length)*100)}% of Airbnbs in London are entire homes or flats.')
 ```
 
-From this simple analysis alone, we see that Airbnb certainly has a tendency to attract entire homes and apartments as its primary form of short term rental housing. Whether this is purposeful from the company cannot be determined from this analysis, though 57,168 entire homes and apartments that could be used for full time residant housing will certainly have an effect on the housing market.
+From this simple analysis alone, we see that Airbnb certainly has a tendency to attract entire homes and apartments as its primary form of short term rental housing. Whether this is purposeful from the company cannot be determined from this analysis, though 57,168 entire homes and apartments that could be used for full time resident housing will certainly have an effect on the housing market.
 
 Now I want to display in a bar chart and a pie chart the total counts of each room type and their proportions.
 
@@ -122,3 +128,11 @@ plt.axis("equal")  # Ensures pie is a circle
 plt.show()
 
 ```
+
+--------------------------------------------------------------------------------------------------------------------
+
+**What is a Professional Landlord? What is a Commercial Landlord?**
+
+We know from the paper by James Todd et al. that "a unit increase in the number of Airbnb properties listings yielded a singnificant increase on the house price by £11.59 per square meter" (215). Additionally, both the paper by Todd et al. and Cox and Slee recgonize that "multi listing hosts" are significant drivers of this increase in rent and Airbnbs profit in London (Cox and Slee, 2).
+
+Our initial starting point was to use 5 properties as the threshold for professional and commercial landlords, though both the papers above suggest that a more accurate cutoff may be just 2 entire home/apt properties. Though this is still an inherently arbitrary quantification, maintaining status quo from other relevant studies is useful for us.
