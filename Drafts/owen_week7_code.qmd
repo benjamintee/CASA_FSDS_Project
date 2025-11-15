@@ -1,0 +1,370 @@
+---
+title: "Owen_Week7_Code"
+format: html
+editor: visual
+---
+
+# Week 7 Code
+
+## Questions to Answer
+
+**1. What is the share of Airbnbs in London that are entire homes or apartments?**
+
+-   Use pandas to group listings by type
+
+-   Create a plot showing percent and totals
+
+**2. How many professional landlords are there in London?**
+
+-   What is the difference between a professional landlord and a commercial landlord?
+
+    -   Does this difference matter for out analysis
+
+-   Start by analyzing anyone/organization that owns more than 2 entire home/apt Airbnbs
+
+    -   group Airbnbs by host and count listings per host
+
+-   Income from these properties vs. median income in London
+
+------------------------------------------------------------------------
+
+**Data setup**
+
+Load the pandas package and data
+
+```{r}
+library(reticulate)
+py_install('pandas')
+py_install('matplotlib')
+```
+
+```{python}
+import pandas as pd
+```
+
+```{python}
+df = pd.read_csv("C:/Users/Owen Hughes/Desktop/CASA/UCL_Work/CASA_FSDS_Project/Data/clean/20250615-London-listings.csv/20250615-London-listings.csv")
+
+df.head(4)
+```
+
+------------------------------------------------------------------------
+
+**1. What is the share of Airbnbs in London that are entire homes or apartments?**
+
+-   The most useful column for this analysis is room_type as groups and counts can be made to determine the proportion of Airbnbs that are entire houses or flats. Additionally, the length of the data set will used to calculate said proportion.
+
+```{python}
+# attain length of data set for calculation of proportion
+df_length = len(df)
+print(df_length)
+```
+
+```{python}
+# run a for loop to create a new data set with only entire homes apartments 
+# take the length of this
+
+print(df["room_type"].unique())
+
+entire_homes = []
+for i, r in df.iterrows():
+  if r["room_type"] == "Entire home/apt":
+    entire_homes.append(r)
+  
+entire_homes_df = pd.DataFrame(entire_homes) # Ensure data is still a pandas df
+
+eh_length = len(entire_homes_df)
+print(eh_length)
+```
+
+```{python}
+# Find the proportion of Airbnbs that are entire homes
+print(f'Rounghly {round((eh_length/df_length)*100)}% of Airbnbs in London are entire homes or flats.')
+```
+
+From this simple analysis alone, we see that Airbnb certainly has a tendency to attract entire homes and apartments as its primary form of short term rental housing. Whether this is purposeful from the company cannot be determined from this analysis, though 57,168 entire homes and apartments that could be used for full time resident housing will certainly have an effect on the housing market.
+
+Now I want to display in a bar chart and a pie chart the total counts of each room type and their proportions.
+
+```{python}
+import matplotlib.pyplot as plt
+```
+
+```{python}
+
+room_types = df["room_type"].value_counts()
+
+# The next lines come from Geeks for Geeks
+# Function to add value labels on top of bars
+def add_labels(x, y):
+    for i in range(len(x)):
+        plt.text(i, y[i], y[i], ha='center', 
+                 bbox=dict(facecolor='#ABD7EB', alpha=0.8))
+
+x = ["Entire home/apt", "Private room", "Shared room", "Hotel room"]
+y = [57168, 28367, 180, 101]
+
+plt.figure(figsize=(10, 5))
+plt.bar(x,y, color = "salmon")
+add_labels(x,y)
+# Adding title and labels
+plt.title("Airbnb Types in London")
+plt.xlabel("Room Types")
+plt.ylabel("Count")
+
+# Display the chart
+plt.show()
+```
+
+```{python}
+
+room_counts = df["room_type"].value_counts()
+
+# Plot
+plt.figure(figsize=(6, 6))
+plt.pie(room_counts, labels=room_counts.index, autopct="%1.1f%%", startangle=90, colors=["#ABD7EB", "#F4A261", "#E76F51", "#2A9D8F"])
+plt.title("Proportion of Room Types in London Listings")
+plt.axis("equal")  # Ensures pie is a circle
+plt.show()
+
+```
+
+------------------------------------------------------------------------
+
+**What is a Professional Landlord? What is a Commercial Landlord?**
+
+We know from the paper by James Todd et al. that "a unit increase in the number of Airbnb properties listings yielded a significant increase on the house price by £11.59 per square meter" (215). Additionally, both the paper by Todd et al. and Cox and Slee recognize that "multi listing hosts" are significant drivers of this increase in rent and Airbnbs profit in London (Cox and Slee, 2).
+
+Our initial starting point was to use 5 properties as the threshold for professional and commercial landlords, though both the papers above suggest that a more accurate cutoff may be just 2 entire home/apt properties. Though this is still an inherently arbitrary quantification, maintaining status quo from other relevant studies is useful for us.
+
+Additionally, a significant assumption for using these papers as the basis for this section of analysis is that we treat professional and commercial landlords in the same way in the analysis. The overall argument from both papers suggests that multi listing hosts are significantly responsible fro rising rent prices and Airbnb profit. In this sense, the only difference between a professional and commercial landlord is the quantity of properties listed and whether it is an individual or company that owns said properties. For the sake of this analysis, no differentiation will be made between the two.
+
+Lastly, Inside Airbnb also provides basic information regarding average income of Airbnbs in London in two categories: All and Recent/Frequently Booked. After the analysis to determine how many professional landlords there are, and assuming all their properties make the average income, an analysis of each professional/commercial landlord's income will follow. This can be compared to 2022-2023 London mean and median income from London Datastore.
+
+Cox, Murray, and Tom Slee. “How Airbnb’s Data Hid the Facts in New York City.” *Inside Airbnb*, 10 Feb. 2016, insideairbnb.com/reports/how-airbnbs-data-hid-the-facts-in-new-york-city.pdf.
+
+Todd, James, et al. “Assessing the impacts of airbnb listings on London house prices.” *Environment and Planning B: Urban Analytics and City Science*, vol. 49, no. 1, 22 Mar. 2021, pp. 206–222, https://doi.org/10.1177/23998083211001836.
+
+**Group landlords by listings to find the professional/commercial hosts**
+
+```{python}
+# As suggeseted in the papers, filter only the entire home/apts
+# Use the same data set from above
+entire_homes_df.head(4)
+```
+
+```{python}
+# count the rows for each host using the host_id column
+host_listings_count = entire_homes_df.groupby("host_id").size().reset_index(name='count')
+host_listings_count.head(4)
+```
+
+```{python}
+# order the new data in descending so it is easy to see which host has the most listings
+
+host_listings_count = host_listings_count.sort_values(by = 'count', ascending = False)
+host_listings_count.head(4)
+```
+
+Now that we have the data for all hosts that own an entire home/apt rental, let's now make 2 new data sets: one with all the single listing hosts and one with all the multi listing hosts.
+
+```{python}
+multi_list_host = []
+single_list_host = []
+for i, r in host_listings_count.iterrows():
+  if r['count'] >= 2:
+    multi_list_host.append(r)
+  else:
+    single_list_host.append(r)
+
+multi_list_host_df = pd.DataFrame(multi_list_host)
+single_list_host_df = pd.DataFrame(single_list_host)
+
+multi_list_host_df.head(3)
+single_list_host_df.head(3)
+```
+
+how many professional/commercial landlords are there?
+
+```{python}
+pro_hosts = len(multi_list_host_df)
+print(f'There are {pro_hosts} professional and commercial Airbnb hosts in London.')
+```
+
+```{python}
+sing_hosts = len(single_list_host_df)
+print(f'There are {sing_hosts} single (entire home/apt) Airbnb hosts in London.')
+```
+
+**Now that we have the amount of professional landlords, single listing landlords for entire homes/apt we can move onto income comparisons.**
+
+```{python}
+# how much does each host earn with the two different avg Airbnb incomes
+# the income values come from Inside Airbnb
+
+multi_list_host_df['all_rentals_income'] = multi_list_host_df['count'] * 6728
+multi_list_host_df['frequent_rentals_income'] = multi_list_host_df['count'] * 24910
+
+single_list_host_df['all_rentals_income'] = single_list_host_df['count'] * 6728
+single_list_host_df['frequent_rentals_income'] = single_list_host_df['count'] * 24910
+```
+
+Now I have a low estimate for how much each property makes with the all_rentals_income and frequent_rentals_income column. Additionally, the London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. Now let's make a new column to compare how many times more or less that the airbnb multi and single hosts earned compared to the averages.
+
+```{python}
+# How many times more or less does a professional ladlord make
+
+multi_list_host_df['all_by_mean'] = round(multi_list_host_df['all_rentals_income'] / 59000,2)
+
+multi_list_host_df['all_by_median'] = round(multi_list_host_df['all_rentals_income'] / 34100,2)
+
+multi_list_host_df['frequent_by_mean'] = round(multi_list_host_df['frequent_rentals_income'] / 59000,2)
+
+multi_list_host_df['frequent_by_median'] = round(multi_list_host_df['frequent_rentals_income'] / 34100,2)
+```
+
+What does this mean?
+
+```{python}
+# What is the total income of pro/commercial hosts for each category
+all_total_pro = multi_list_host_df['all_rentals_income'].sum()
+print(f'Professional hosts make an estimated £{all_total_pro:,.3f} when considering the average income among all Airbnb listings in London.')
+print(' ')
+freq_total_pro = multi_list_host_df['frequent_rentals_income'].sum()
+print(f'Professional hosts make an estimated £{freq_total_pro:,.3f} when considering the average income among frequently rented Airbnb listings in London.')
+print(' ')
+print('------------------------------------------------------------------')
+print(' ')
+
+# What is the total income of single entire home hosts
+all_total_sing = single_list_host_df['all_rentals_income'].sum()
+print(f'Single hosts make an estimated £{all_total_sing:,.3f} when considering the average income among all Airbnb listings in London.')
+print(' ')
+freq_total_sing = single_list_host_df['frequent_rentals_income'].sum()
+print(f'Single hosts make an estimated £{freq_total_sing:,.3f} when considering the average income among frequntly rented Airbnb listings in London.')
+print(' ')
+print('------------------------------------------------------------------')
+print(' ')
+
+# what percent of all host income is made by pro/commerical hosts
+print(f'Professional hosts make roughly {round(all_total_pro/(all_total_pro+all_total_sing)*100,2)}% of all entire home/apt rental income.')
+print(' ')
+m_len = len(multi_list_host_df)
+s_len = len(single_list_host_df)
+m_count = multi_list_host_df['count'].sum()
+print(f'Professional hosts make up {round(m_len/(m_len + s_len)*100,2)}% of entire home/apt hosts, but {round(m_count/(m_count+s_len)*100,2)}% of properties.')
+print(' ')
+print('------------------------------------------------------------------')
+print(' ')
+
+# How many and what percent of hosts make more than mean/median income per category
+all_mean1 = (multi_list_host_df['all_by_mean'] > 1).sum()
+all_median1 = (multi_list_host_df['all_by_median'] > 1).sum()
+freq_mean1 = (multi_list_host_df['frequent_by_mean'] > 1).sum()
+freq_median1 = (multi_list_host_df['frequent_by_median'] > 1).sum()
+print(f'Using all rental average income and mean London income \n{round(all_mean1/m_len*100,2)}% of professional hosts make more than average in london.')
+print(' ')
+print(f'Using all rental average income and median London income \n{round(all_median1/m_len*100,2)}% of professional hosts make more than average in london.')
+print(' ')
+print(f'Using frequent rental average income and mean London income \n{round(freq_mean1/m_len*100,2)}% of professional hosts make more than average in london.')
+print(' ')
+print(f'Using frequent rental average income and median London income \n{round(freq_median1/m_len*100,2)}% of professional hosts make more than average in london.')
+print(' ')
+print('------------------------------------------------------------------')
+print(' ')
+
+# What percent of the total income is made from hosts who make more than the mean/ median per categroy
+all_total_pro = all_total_pro # remind myself of the variable name
+freq_total_pro = freq_total_pro # remind myself of the variable name
+all_mean2 = multi_list_host_df[multi_list_host_df["all_by_mean"] > 1]["all_rentals_income"].sum()
+all_median2 = multi_list_host_df[multi_list_host_df["all_by_median"] > 1]["all_rentals_income"].sum()
+freq_mean2 = multi_list_host_df[multi_list_host_df["frequent_by_mean"] > 1]["frequent_rentals_income"].sum()
+freq_median2 = multi_list_host_df[multi_list_host_df["frequent_by_median"] > 1]["frequent_rentals_income"].sum()
+print(f'Using all rental average income and mean London income \n{round(all_mean2/all_total_pro*100,2)}% of total professional host income is made by self sustaining hosts.')
+print(' ')
+print(f'Using all rental average income and median London income \n{round(all_median2/all_total_pro*100,2)}% of total professional host income is made by self sustaining hosts.')
+print(' ')
+print(f'Using frequent rental average income and mean London income \n{round(freq_mean2/freq_total_pro*100,2)}% of total professional host income is made by self sustaining hosts.')
+print(' ')
+print(f'Using frequent rental average income and median London income \n{round(freq_median2/freq_total_pro*100,2)}% of total professional host income is made by self sustaining hosts.')
+```
+
+What if the threshold for pros was considered to be 5 listings?
+
+```{python}
+# adjust professionals to 5
+# How many and what percent of hosts make more than mean/median income per category
+five_list = multi_list_host_df[multi_list_host_df['count']>=5]
+all_mean5 = (five_list['all_by_mean'] > 1).sum()
+all_median5 = (five_list['all_by_median'] > 1).sum()
+freq_mean5 = (five_list['frequent_by_mean'] > 1).sum()
+freq_median5 = (five_list['frequent_by_median'] > 1).sum()
+m_len5 = len(five_list)
+print('The next values show the same data above adjusted for a 5 listing treshold to be considered a professional or commercial host.')
+print(' ')
+print('------------------------------------------------------------------')
+print(' ')
+print(f'Using all rental average income and mean London income \n{round(all_mean5/m_len5*100,2)}% of professional hosts make more than average in london.')
+print(' ')
+print(f'Using all rental average income and median London income \n{round(all_median5/m_len5*100,2)}% of professional hosts make more than average in london. \nImportant to note that all those who don\' make more than average make 99% of the average.')
+print(' ')
+print(f'Using frequent rental average income and mean London income \n{round(freq_mean5/m_len5*100,2)}% of professional hosts make more than average in london.')
+print(' ')
+print(f'Using frequent rental average income and median London income \n{round(freq_median5/m_len5*100,2)}% of professional hosts make more than average in london.')
+print('------------------------------------------------------------------')
+
+# What percent of the total income is made from hosts who make more than the mean/ median per categroy
+all_total_pro5 = five_list['all_rentals_income'].sum() 
+freq_total_pro5 = five_list['frequent_rentals_income'].sum()
+all5_mean = five_list[five_list["all_by_mean"] > 1]["all_rentals_income"].sum()
+all5_median = five_list[five_list["all_by_median"] > 1]["all_rentals_income"].sum()
+freq5_mean = five_list[five_list["frequent_by_mean"] > 1]["frequent_rentals_income"].sum()
+freq5_median = five_list[five_list["frequent_by_median"] > 1]["frequent_rentals_income"].sum()
+print(f'Using all rental average income and mean London income \n{round(all5_mean/all_total_pro5*100,2)}% of total professional host income is made by self sustaining hosts')
+print(' ')
+print(f'Using all rental average income and median London income \n{round(all5_median/all_total_pro5*100,2)}% of total professional host income is made by self sustaining hosts')
+print(' ')
+print(f'Using frequent rental average income and mean London income \n{round(freq5_mean/freq_total_pro5*100,2)}% of total income is made by self sustaining hosts')
+print(' ')
+print(f'Using frequent rental average income and median London income \n{round(freq5_median/freq_total_pro5*100,2)}% of total professional host income is made by self sustaining hosts')
+```
+
+Let's summarize this data in a data frame
+
+```{python}
+pro_host_income_dict = {
+  "threshold":["2 Listings","5 Listings"],
+  "all_mean":[14.79, 49.90],
+  "all_median":[24.64, 83.23],
+  "freq_mean":[53.46, float(100)],
+  "freq_median":[float(100), float(100)]
+}
+pro_host_income = pd.DataFrame(pro_host_income_dict)
+pro_host_income.set_index("threshold", inplace=True)
+pro_host_income
+```
+
+Let's display this data in a chart
+
+```{python}
+
+pro_host_income_t = pro_host_income.T
+pro_host_income_t = pro_host_income_t.apply(pd.to_numeric, errors='coerce')
+
+# Plot grouped bar chart
+colors = ['#2A9D8F', 'salmon']
+
+ax = pro_host_income_t.plot(kind='bar', figsize=(8, 5), color=colors)
+plt.xticks(rotation=45)
+for container in ax.containers:
+    ax.bar_label(container, fmt='%.0f', label_type='edge', padding=3)
+plt.title('How Many Professional Hosts Earn More than Average')
+plt.ylabel('Percent')
+plt.xlabel('Conditions')
+plt.legend(title='Group')
+plt.tight_layout()
+plt.show()
+
+```
+
+The primary conclusions to this analysis affirm many of the ideas brought up by Cox, Slee, and Todd. Entire homes and apartments make up 66% of all Airbnb rentals in which undoubtedly puts a strain on the local housing market. However, among the owners of these entire home listings, over half of the individual listings and income are owned and profitted by only 15% of the unique hosts. This directly displays that, whether purposeful or not, Airbnb has become a site in which immense amount of business is conducted by professional and commercial landlords. Additionally, sustaining oneself as profession landlord is evidently a legitimate and often very lucrative endeavor. As seen in the chart directly above, assuming that most professional landlords keep all of their properties frequently rented, 100% of all hosts that own 5 listings make more money than the London average, regardeless of whether mean or median income is used. The same is true for two property listing owners when using median income and frequent listing income. This drops to just over half as mean income is analyzed, and below a quarter when adjusting for all listing average income. Despite this, the chart certainly displays the ability for multi-property listing hosts to make very successful businesses out of Airbnb renting.
