@@ -590,9 +590,338 @@ if not path.exists():
 
 It appears that the reviews data is cumulative based on the listing_id.
 
+### Bonus: Downloading Airbnb Listings from 2021-2025
+
 ```{python}
-#delete df_stock to save memory
-del(df_stock)
+import pandas as pd
+
+# Looking at the file structure in orca, 2024/2025 have one structure, 2022/2023 have one structure and 2021 has another structure. The following codes help to specify the necessary urls. 
+host = 'https://orca.casa.ucl.ac.uk'
+city = 'London'
+
+# Set up config file with specific patterns for each download year
+config = {
+    "2025": {"date": "20250615",  "pattern": f"{host}/~jreades/data/{{date}}-{city}-listings.csv.gz"},
+    "2024": {"date": "20240614",  "pattern": f"{host}/~jreades/data/{{date}}-{city}-listings.csv.gz"},
+    "2023": {"date": "2023-09-06", "pattern": f"{host}/~jreades/data/{{date}}-listings.csv.gz"},
+    "2022": {"date": "2022-09-10", "pattern": f"{host}/~jreades/data/{{date}}-listings.csv.gz"},
+    "2021": {"date": "2021-10",    "pattern": f"{host}/~jreades/data/{city}-{{date}}-listings.csv.gz"}
+}
+
+# Subsetting columns of interest 
+cols = ['id', 'listing_url', 'last_scraped', 'name', 
+    'description', 'host_id', 'host_name', 'host_since', 
+    'host_location', 'host_is_superhost', 
+    'host_listings_count', 'host_total_listings_count', 
+    'host_verifications', 'latitude', 'longitude', 
+    'property_type', 'room_type', 'accommodates', 
+    'bathrooms', 'bathrooms_text', 'bedrooms', 'beds', 
+    'amenities', 'price', 'minimum_nights', 'maximum_nights', 
+    'availability_365', 'number_of_reviews', 
+    'first_review', 'last_review', 'review_scores_rating', 'reviews_per_month']
+
+# Set up empty dictionary dfs 
+dfs = {}
+
+# Set up a loop to read in the data into the dictionary sequentially
+for year, info in config.items():
+    date    = info["date"]
+    pattern = info["pattern"]
+    url     = pattern.format(date=date)
+
+    print("Loading:", year, url)
+    dfs[year] = pd.read_csv(url, compression='gzip', low_memory=False, usecols= cols)
+
+    # Print shape of the dataframe just loaded
+    print(f" → df_{year}: {dfs[year].shape[0]:,} rows × {dfs[year].shape[1]} columns\n")
+
+print("Done!")
+```
+
+### Bonus: Cleaning Airbnb Listings from 2021-2025
+```{python} 
+for year, df in dfs.items():
+
+    # Removing rows with NA in id
+    before = df.shape[0]
+    df.drop(df[df['id'].isna()].index, inplace=True)
+
+    # Dropping rows missing more than 6 values which may be problematic - these rows tend to be those without reviews (4 columns) and two additional columns (e.g. bedrooms, bathrooms, price)
+    cutoff = 6
+    probs = df.isnull().sum(axis=1)
+    problematic_rows = df.loc[probs > cutoff]
+    df.drop(problematic_rows.index, inplace=True)
+
+    # Print summary for reference
+    after = df.shape[0]
+    dropped = before - after
+
+    print(f" → df_{year} now contains {after:,} rows. "
+          f"(Dropped {dropped:,} rows due to missing data)")
+
+    print("Done!")
+```
+
+### Bonus: Visualising the Growth in Airbnb Listings from 2021-2025
+```{python}
+# Load MSOA 2021 geopackage and BORO files from GitHub
+host = 'https://raw.githubusercontent.com/benjamintee/'
+ddir = 'CASA_FSDS_Project/main/Data/'
+
+BORO = gpd.read_file(f'{host}/{ddir}/LONDON_BOROUGH.gpkg').to_crs(epsg=27700)
+MSOA = gpd.read_file(f'{host}/{ddir}/MSOA_DEC_2021_BOUNDARIES.gpkg').to_crs(epsg=27700)
+
+# Clip MSOA Boundaries to those within London Broughs and only retain Polygons and MultiPolygons
+LONDON = gpd.GeoDataFrame(geometry=[BORO.dissolve().geometry.iloc[0]], crs= '27700')
+MSOA = gpd.clip(MSOA, LONDON)
+MSOA = MSOA[MSOA.geometry.type.isin(["Polygon", "MultiPolygon"])]
+
+# Undertake an inner spatial join to retain the MSOA that fall within Greater London Boundaries 
+MSOA = gpd.sjoin(MSOA, BORO[['name', 'ons_inner', 'sub_2011', 'geometry']], how='inner',predicate='intersects')
+
+# Retain columns of interest and rename for better readability 
+MSOA = MSOA[['MSOA21CD', 'MSOA21NM', 'geometry', 'name', 'ons_inner', 'sub_2011']].rename(
+    columns={
+        'MSOA21CD': 'ecode', 
+        'MSOA21NM': 'MSOA_name', 
+        'name' : 'BORO_name'}).dissolve(by='ecode' , as_index=False)
+```
+
+```{python}
+# First, we convert each dataframe in dfs into a gdfs with crs EPSG:27700
+for year, df in dfs.items():
+    gdfs[year] = gpd.GeoDataFrame(
+        df,
+        geometry=gpd.points_from_xy(df.longitude, df.latitude),
+        crs='EPSG:4326'
+    ).to_crs(epsg=27700)
+
+# Next, we count the number of listings in each borough for each year
+boro_counts = {}
+
+for year, gdf in gdfs.items():
+    print(f"Processing {year}...")
+
+    # Spatial join: attach borough name to each point
+    join = gpd.sjoin(
+        gdf,
+        BORO[['name', 'geometry']],
+        how='left',
+        predicate='within'
+    )
+
+    # Group by borough name from the join
+    counts = join.groupby('name_right').size()
+    counts = counts.rename('listings')        
+    counts.index.name = 'name'                
+
+    # Merge onto borough GeoDataFrame
+    bc = BORO.merge(
+        counts,
+        left_on='name',
+        right_index=True,
+        how='left'
+    )
+
+    # Replace missing boroughs with 0 listings
+    bc['listings'] = bc['listings'].fillna(0).astype(int)
+    boro_counts[year] = bc
+
+years = ["2021", "2022", "2023", "2024", "2025"]
+
+# Set out the plot for Airbnb listings from 2021-2025
+fig, axes = plt.subplots(1, 5, figsize=(12, 4), sharex=True, sharey=True)
+axes = axes.ravel()
+
+# Set a consistent color scale 
+vmin = min(boro_counts[y]['listings'].min() for y in years)
+vmax = max(boro_counts[y]['listings'].max() for y in years)
+
+#  Plot each map 
+for ax, year in zip(axes, years):
+
+    boro_counts[year].plot(
+        ax=ax,
+        column="listings",
+        cmap="viridis",
+        edgecolor="black",
+        linewidth=0.5,
+        vmin=vmin, vmax=vmax,
+        legend=False
+    )
+
+    ax.set_title(
+        f"{year}\n{int(boro_counts[year]['listings'].sum()):,} listings",
+        fontsize=15,
+        pad= 4
+    )
+    ax.axis("off")
+    ax.set_aspect("equal")
+
+# Add a Main Title 
+fig.suptitle("Figure 1: Airbnb Listings by London Borough (2021–2025)",
+             fontsize=20,
+             y=0.9)
+
+# Create a manually positioned colorbar
+# (left, bottom, width, height) in figure coordinates
+cbar_ax = fig.add_axes([0.30, 0.17, 0.40, 0.04])  
+
+sm = plt.cm.ScalarMappable(
+    cmap="viridis",
+    norm=plt.Normalize(vmin=vmin, vmax=vmax)
+)
+sm._A = []
+
+cbar = fig.colorbar(
+    sm,
+    cax=cbar_ax,
+    orientation="horizontal")
+
+cbar.set_label("Number of Listings", fontsize=14)
+cbar.ax.tick_params(labelsize=12)
+
+# Include Caption at bottom 
+fig.text(
+    0.5, -0.02,
+    "Source: Listings data from Insideairbnb.com, Borough boundaries from data.london.gov.uk",
+    ha="center",
+    fontsize=12
+)
+
+plt.subplots_adjust(top=0.82, bottom=0.10, wspace=0.15)
+plt.show()
+
+### Note: ChatGPT5.1 was used to refine the plot layout and the inclusion of the colourbar in the figure, and to size the positioning of the chart. 
+```
+
+Looking at the number of listings and growth rates for each boro 
+```{python} 
+# Combine all borough counts into one table
+df_boros = pd.DataFrame({
+    year: boro_counts[year].set_index("name")["listings"]
+    for year in ["2021", "2022", "2023", "2024", "2025"]
+})
+df_boros.head()
+
+# Compile data for number of listings in 2021 and 2025 and percentage change in listings 
+df_boros["x_2025"] = df_boros["2025"]
+df_boros["abs_change"] = df_boros["2025"] - df_boros["2021"]
+df_boros["pct_change"] = (df_boros["abs_change"] / df_boros["2021"].replace(0, pd.NA)) * 100
+
+# Select top 5 boroughs by absolute increase in listings
+top5 = df_boros.nlargest(5, "abs_change")
+
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import numpy as np
+
+fig, ax = plt.subplots(figsize=(12, 7))
+
+boros = top5.index
+x = np.arange(len(boros))
+width = 0.35 
+
+# Bars for 2021 and 2025
+ax.bar(x - width/2, top5["2021"], width, label="2021", color="lightgray", edgecolor="black")
+ax.bar(x + width/2, top5["2025"], width, label="2025", color="dodgerblue", edgecolor="black")
+
+# Add percentage labels above the 2025 bars
+for i, boro in enumerate(boros):
+    abs_inc = top5.loc[boro, "abs_change"]
+    pct = top5.loc[boro, "pct_change"]
+    
+    ax.text(
+        x[i] + width/2,
+        top5.loc[boro, "2025"] + 150,     # slightly above the bar
+        f"+{abs_inc:,}\n ({pct:.1f}%)",
+        ha="right",
+        va="bottom",
+        fontsize=16
+    )
+
+# Formatting
+ax.set_title("Figure 2: Top 5 Boroughs with largest increase in Listings (2021-2025)\n(% increase in parentheses)", fontsize=20, pad=15)
+ax.set_ylabel("Number of Listings", fontsize=16)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f"{int(x):,}"))
+ax.tick_params(axis='y', labelsize=14)
+ax.set_ylim(0, 12000)
+ax.grid(axis="y", linestyle="--", alpha=0.4)
+
+ax.set_xticks(x)
+ax.set_xticklabels(boros, fontsize=14)
+ax.legend(fontsize=16)
+
+plt.tight_layout()
+plt.show()
+```
+
+### Bonus: Review of the Housing Stock from 2020-2024 
+
+```{python}
+# Create a stock_table detailing the total number of properties in London each year 
+stock_table = (
+    df_stock_MSOA
+    .groupby("Year")["all_properties"]
+    .sum()
+    .sort_index()
+)
+
+pct_change = stock_table.pct_change() * 100
+
+summary = pd.DataFrame({
+    "total_stock": stock_table,
+    "pct_change_yoy": pct_change
+})
+
+# Plot a line chart to show the increase in housing stock in London 
+fig, ax = plt.subplots(figsize=(12, 6))
+
+ax.plot(
+    stock_table.index,
+    stock_table.values,
+    marker="o",
+    markersize=10,
+    linewidth=3,
+    color="dodgerblue"
+)
+
+# ---- Title + Axis labels ----
+ax.set_title("Figure 3: Total Housing Stock in London (2020–2024)", fontsize=20, pad=15)
+ax.set_xlabel("Year", fontsize=16)
+ax.set_ylabel("Total Number of Properties (Millions)", fontsize=16)
+
+# ---- Total stock labels ABOVE each point ----
+for year, value in stock_table.items():
+    ax.text(
+        year, value + 25000,
+        f"{value/1_000_000:.2f}M",
+        ha="center",
+        va="bottom",
+        fontsize=16
+    )
+
+# ---- Y-axis formatting ----
+ax.set_ylim(3500000, stock_table.max() * 1.06)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f"{x/1_000_000:.2f}M"))
+
+# ---- X-axis whole numbers only ----
+ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+
+# Tick label sizes
+ax.tick_params(axis="x", labelsize=16)
+ax.tick_params(axis="y", labelsize=16)
+
+fig.text(
+    0.01, -0.05,
+    "Source: UK Valuation Office Agency data on properties by Council Tax band as at end March each year.\n"
+    "Given that data for 2025 is not yet available, we refer to data over the last five years as a proxy for analysis.",
+    ha='left',
+    fontsize=12
+)
+
+plt.tight_layout()
+plt.show()
 ```
 
 {{< pagebreak >}}
