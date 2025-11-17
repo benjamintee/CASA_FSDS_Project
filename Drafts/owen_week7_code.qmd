@@ -39,7 +39,7 @@ py_install('matplotlib')
 ```
 
 ```{python}
-import pandas as pd
+#import pandas as pd
 ```
 
 ```{python}
@@ -367,4 +367,9 @@ plt.show()
 
 ```
 
-The primary conclusions to this analysis affirm many of the ideas brought up by Cox, Slee, and Todd. Entire homes and apartments make up 66% of all Airbnb rentals in which undoubtedly puts a strain on the local housing market. However, among the owners of these entire home listings, over half of the individual listings and income are owned and profitted by only 15% of the unique hosts. This directly displays that, whether purposeful or not, Airbnb has become a site in which immense amount of business is conducted by professional and commercial landlords. Additionally, sustaining oneself as profession landlord is evidently a legitimate and often very lucrative endeavor. As seen in the chart directly above, assuming that most professional landlords keep all of their properties frequently rented, 100% of all hosts that own 5 listings make more money than the London average, regardeless of whether mean or median income is used. The same is true for two property listing owners when using median income and frequent listing income. This drops to just over half as mean income is analyzed, and below a quarter when adjusting for all listing average income. Despite this, the chart certainly displays the ability for multi-property listing hosts to make very successful businesses out of Airbnb renting.
+The primary conclusions to this analysis affirm many of the ideas brought up by Cox, Slee, and Todd. Entire homes and apartments make up 66% of all Airbnb rentals in which undoubtedly puts a strain on the local housing market. However, among the owners of these entire home listings, over half of the individual listings and income are owned and profited by only 15% of the unique hosts. This directly displays that, whether purposeful or not, Airbnb has become a site in which immense amount of business is conducted by professional and commercial landlords. Additionally, sustaining oneself as profession landlord is evidently a legitimate and often very lucrative endeavor. As seen in the chart directly above, assuming that most professional landlords keep all of their properties frequently rented, 100% of all hosts that own 5 listings make more money than the London average, regardless of whether mean or median income is used. The same is true for two property listing owners when using median income and frequent listing income. This drops to just over half as mean income is analyzed, and below a quarter when adjusting for all listing average income. Despite this, the chart certainly displays the ability for multi-property listing hosts to make very successful businesses out of Airbnb renting.
+
+```{python}
+print(m_len)
+print(m_len5)
+```
