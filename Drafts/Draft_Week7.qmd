@@ -496,16 +496,35 @@ BORO['listing_prop2025'] = BORO['listing_prop2025'].replace([np.inf, -np.inf], n
 ```
 
 ```{python}
+import matplotlib.patches as mpatches
+
+#classify boroughs by inner and outer London boroughs
+inner_london = {
+    'Camden', 'Greenwich', 'Hackney', 'Hammersmith and Fulham', 'Islington',
+    'Kensington and Chelsea', 'Lambeth', 'Lewisham', 'Southwark',
+    'Tower Hamlets', 'Wandsworth', 'Westminster', 'City of London'
+}
+
+# Create color list
+colors = ['tab:blue' if borough in inner_london else 'tab:orange' 
+          for borough in sorted_categories]
+
+#plotting the bar chart of bnb % of stock by boro
 sorted_pairs = sorted(zip(BORO['listing_prop2025'], BORO['name']))  # sort by values
 sorted_values, sorted_categories = zip(*sorted_pairs)
 
 plt.figure(figsize=(8,6))
-plt.bar(sorted_categories, sorted_values)
+plt.bar(sorted_categories, sorted_values, color=colors)
 
 plt.xlabel('Boroughs')
 plt.ylabel('Listings as percentage of Housing Stock (%)')
 plt.title('Airbnb Listings as a Proportion of Housing Stock by Boroughs (2025)')
 plt.xticks(rotation=90)  # rotate x-axis labels vertically
+
+#legend plotting
+inner_patch = mpatches.Patch(color='tab:blue', label='Inner London')
+outer_patch = mpatches.Patch(color='tab:orange', label='Outer London')
+plt.legend(handles=[inner_patch, outer_patch])
 
 # Show plot
 plt.show()
@@ -639,7 +658,8 @@ print("Done!")
 ```
 
 ### Bonus: Cleaning Airbnb Listings from 2021-2025
-```{python} 
+
+```{python}
 for year, df in dfs.items():
 
     # Removing rows with NA in id
@@ -663,6 +683,7 @@ for year, df in dfs.items():
 ```
 
 ### Bonus: Visualising the Growth in Airbnb Listings from 2021-2025
+
 ```{python}
 # Load MSOA 2021 geopackage and BORO files from GitHub
 host = 'https://raw.githubusercontent.com/benjamintee/'
@@ -795,8 +816,9 @@ plt.show()
 ### Note: ChatGPT5.1 was used to refine the plot layout and the inclusion of the colourbar in the figure, and to size the positioning of the chart. 
 ```
 
-Looking at the number of listings and growth rates for each boro 
-```{python} 
+Looking at the number of listings and growth rates for each boro
+
+```{python}
 # Combine all borough counts into one table
 df_boros = pd.DataFrame({
     year: boro_counts[year].set_index("name")["listings"]
@@ -856,7 +878,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-### Bonus: Review of the Housing Stock from 2020-2024 
+### Bonus: Review of the Housing Stock from 2020-2024
 
 ```{python}
 # Create a stock_table detailing the total number of properties in London each year 
