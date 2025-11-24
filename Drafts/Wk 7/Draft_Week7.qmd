@@ -145,7 +145,7 @@ probs = df.isnull().sum(axis=1)
 print(type(probs))       
 probs.plot.hist(bins=30) 
 
-# Dropping rows missing more than 8 values which may be problematic 
+# Dropping rows missing more than 5 values which may be problematic 
 cutoff = 5 # Set cutoff for 5 
 problematic_rows = df.loc[probs > cutoff]
 df.drop(probs[probs > cutoff].index, inplace=True)
@@ -295,7 +295,7 @@ ddir = 'CASA_FSDS_Project/main/Data/'
 BORO = gpd.read_file(f'{host}/{ddir}/LONDON_BOROUGH.gpkg').to_crs(epsg=27700)
 MSOA = gpd.read_file(f'{host}/{ddir}/MSOA_DEC_2021_BOUNDARIES.gpkg').to_crs(epsg=27700)
 
-# Clip MSOA Boundaries to those within London Broughs and only retain Polygons and MultiPolygons
+# Clip MSOA Boundaries to those within London Boroughs and only retain Polygons and MultiPolygons
 LONDON = gpd.GeoDataFrame(geometry=[BORO.dissolve().geometry.iloc[0]], crs= '27700')
 MSOA = gpd.clip(MSOA, LONDON)
 MSOA = MSOA[MSOA.geometry.type.isin(["Polygon", "MultiPolygon"])]
@@ -382,7 +382,7 @@ plt.show()
 ```
 
 ```{python}
-#create a map of listings/stock using continous colour scheme
+#create a map of listings/stock using continuous colour scheme
 fig, ax = plt.subplots(1, 1, figsize=(10, 8))
 
 MSOA.plot(
@@ -430,7 +430,7 @@ for b in bin_edges:
     labels.append(f"{prev} – {b}")
     prev = b
 
-# Assign colors
+# Assign colours
 k = len(bin_edges)
 cmap = plt.cm.viridis
 colors = [cmap(i / (k-1)) for i in range(k)]
@@ -502,7 +502,7 @@ inner_london = {
     'Tower Hamlets', 'Wandsworth', 'Westminster', 'City of London'
 }
 
-# Create color list
+# Create colour list
 colors = ['tab:blue' if borough in inner_london else 'tab:orange' 
           for borough in sorted_categories]
 
@@ -796,7 +796,7 @@ years = ["2021", "2022", "2023", "2024", "2025"]
 fig, axes = plt.subplots(1, 5, figsize=(12, 4), sharex=True, sharey=True)
 axes = axes.ravel()
 
-# Set a consistent color scale 
+# Set a consistent colour scale 
 vmin = min(boro_counts[y]['listings'].min() for y in years)
 vmax = max(boro_counts[y]['listings'].max() for y in years)
 
@@ -826,7 +826,7 @@ fig.suptitle("Figure 1: Airbnb Listings by London Borough (2021–2025)",
              fontsize=20,
              y=0.9)
 
-# Create a manually positioned colorbar
+# Create a manually positioned colourbar
 # (left, bottom, width, height) in figure coordinates
 cbar_ax = fig.add_axes([0.30, 0.17, 0.40, 0.04])  
 
@@ -1201,7 +1201,7 @@ for b in bin_edges:
     labels.append(f"{prev} – {round(b, 1)}")
     prev = round(b, 1)
 
-# Assign colors
+# Assign colours
 k = len(bin_edges)
 cmap = plt.cm.viridis
 colors = [cmap(i / (k-1)) for i in range(k)]
