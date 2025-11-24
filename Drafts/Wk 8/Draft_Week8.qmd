@@ -229,7 +229,7 @@ listings_2025 = len(dfs["2025"])
 listings_pct_change = (listings_2025 - listings_2021) / listings_2021 * 100
 ```
 
--   From 2021-2025, Airbnb listings across London[^1] increased by **almost 25%** from **69,398 to 86,463 listings**. [Figure 1]{.underline} summarizes the spatial distribution and growth trends[^2].
+-   From 2021-2025, Airbnb listings across London[^1] increased by **25%** from **69,398 to 86,463 listings**. [Figure 1.1]{.underline} summarizes the spatial distribution and growth trends[^2].
 
 -   Overall growth was largely driven by a **sharp increase in listings from 2022-2023 (↑24%),** due to higher host registrations and marketing efforts. Growth rates over the last two years have moderated.
 
@@ -309,17 +309,24 @@ for year, gdf in gdfs.items():
 
 years = ["2021", "2022", "2023", "2024", "2025"]
 
-# Set out the plot for Airbnb listings from 2021-2025
-fig, axes = plt.subplots(1, 5, figsize=(12, 4), sharex=True, sharey=True)
-axes = axes.ravel()
-
 # Set a consistent color scale 
 vmin = min(boro_counts[y]['listings'].min() for y in years)
 vmax = max(boro_counts[y]['listings'].max() for y in years)
 
-#  Plot each map 
-for ax, year in zip(axes, years):
+# Define the scale for mapping
+sm = plt.cm.ScalarMappable(
+    cmap="viridis",
+    norm=plt.Normalize(vmin=vmin, vmax=vmax)
+)
+sm._A = []
 
+# Set out the plot for Airbnb listings from 2021–2025
+fig, axes = plt.subplots(2, 3, figsize=(8, 5), sharex=True, sharey=True)
+axes = axes.ravel()
+
+# Plot each map (5 years → fill first 5 axes)
+for ax, year in zip(axes[:5], years):
+    
     boro_counts[year].plot(
         ax=ax,
         column="listings",
@@ -329,47 +336,48 @@ for ax, year in zip(axes, years):
         vmin=vmin, vmax=vmax,
         legend=False
     )
-
+    
     ax.set_title(
         f"{year}\n{int(boro_counts[year]['listings'].sum()):,} listings",
-        fontsize=15,
-        pad= 4
+        fontsize=13,
+        pad=5
     )
     ax.axis("off")
     ax.set_aspect("equal")
 
-# Add a Main Title 
-fig.suptitle("Figure 1: Airbnb Listings by London Borough (2021–2025)",
-             fontsize=20,
-             y=0.9)
-
-# Create a manually positioned colorbar
-# (left, bottom, width, height) in figure coordinates
-cbar_ax = fig.add_axes([0.30, 0.17, 0.40, 0.04])  
-
-sm = plt.cm.ScalarMappable(
-    cmap="viridis",
-    norm=plt.Normalize(vmin=vmin, vmax=vmax)
-)
-sm._A = []
-
+# Set Colorbar 
+axes[5].axis("off")
+cax = axes[5].inset_axes([0.15, 0.25, 0.67, 0.10])
 cbar = fig.colorbar(
     sm,
-    cax=cbar_ax,
-    orientation="horizontal")
+    cax=cax,
+    orientation="horizontal"
+)
+cbar.set_label("Number of Listings", fontsize=12)
+cbar.ax.tick_params(labelsize=10)    
 
-cbar.set_label("Number of Listings", fontsize=14)
-cbar.ax.tick_params(labelsize=12)
+# Add main title
+fig.suptitle(
+    "Figure 1.1: Airbnb Listings by London Borough (2021–2025)",
+    fontsize=14,
+    y= 0.98
+)
 
-# Include Caption at bottom 
+# Caption
 fig.text(
     0.5, -0.02,
     "Source: Listings data from Insideairbnb.com, Borough boundaries from data.london.gov.uk",
     ha="center",
-    fontsize=13
+    fontsize=11
 )
 
-plt.subplots_adjust(top=0.82, bottom=0.10, wspace=0.15)
+# Reduce whitespace between rows 
+plt.subplots_adjust(
+    top= 0.88,
+    bottom= 0.01,
+    hspace=0.05,  
+    wspace=0.02
+)
 plt.show()
 
 ### ChatGPT5.1 was used to refine the plot layout and the inclusion of the colourbar in the figure, and to size the positioning of the chart. 
@@ -397,7 +405,7 @@ df_boros["pct_change"] = (df_boros["abs_change"] / df_boros["2021"].replace(0, p
 top5 = df_boros.nlargest(5, "abs_change")
 ```
 
--   From 2021-2025, central areas of London generally saw larger increases. The borough of Westminster saw the **largest increase (close to 40%)** to reach **10,588 listings in 2025** ([Figure 2]{.underline}).
+-   From 2021-2025, central areas of London generally saw larger increases. The borough of Westminster saw the **largest increase (close to 40%)** to reach **10,588 listings in 2025** ([Figure 1.2]{.underline}).
 
 ```{python}
 #| echo: false
@@ -432,7 +440,7 @@ for i, boro in enumerate(boros):
     )
 
 # Formatting
-ax.set_title("Figure 2: Top 5 Boroughs with largest increase in Listings (2021-2025)\n(% increase in parentheses)", fontsize=14, pad=15)
+ax.set_title("Figure 1.2: Top 5 Boroughs with largest increase in Listings (2021-2025)\n(% increase in parentheses)", fontsize=14, pad=15)
 ax.set_ylabel("Number of Listings", fontsize=12)
 ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f"{int(x):,}"))
 ax.tick_params(axis='y', labelsize=12)
@@ -513,7 +521,7 @@ summary = pd.DataFrame({
     "pct_change_yoy": pct_change})
 ```
 
--   From 2020-2024, total housing stock in London only increased from **3.68M** to **3.81M properties** ([Figure 3]{.underline}, data for 2025 unavailable), with a **much slower growth rate of around 3.7%, over the last five years**. Amidst robust demand and a tight housing market, the faster increase in properties for short-term rental relative to housing stock could have exacerbated pressures on housing prices and rents ([Todd, Musah & Cheshire (2022)](https://discovery.ucl.ac.uk/id/eprint/10124650/7/Musah_23998083211001836.pdf)).
+-   From 2020-2024, total housing stock in London only increased from **3.68M** to **3.81M properties** ([Figure 1.3]{.underline}, data for 2025 unavailable), with a **much slower growth rate of around 3.7%, over the last five years**. Amidst robust demand and a tight housing market, the faster increase in properties for short-term rental relative to housing stock could have exacerbated pressures on housing prices and rents ([Todd, Musah & Cheshire (2022)](https://discovery.ucl.ac.uk/id/eprint/10124650/7/Musah_23998083211001836.pdf)).
 
 ```{python}
 #| echo: false
@@ -531,7 +539,7 @@ ax.plot(
 )
 
 # Title + Axis labels 
-ax.set_title("Figure 3: Total Housing Stock in London (2020–2024)", fontsize=14, pad=15)
+ax.set_title("Figure 1.3: Total Housing Stock in London (2020–2024)", fontsize=14, pad=15)
 ax.set_xlabel("Year", fontsize=12)
 ax.set_ylabel("Total Number of Properties (Millions)", fontsize=12)
 
@@ -593,7 +601,7 @@ df_change_LA = df_change_LA[["name", "stock_change_2020_2024", "listings_change"
 df_change_LA["listings_stock_perc"] = df_change_LA["listings_change"] / df_change_LA["stock_change_2020_2024"] 
 ```
 
--   **Inner London boroughs (orange bars in [Figure 4]{.underline}) saw a higher ratio of increases in Airbnb listings compared to increases in housing stock**. Kensington and Chelsea experienced listing growth that was 5 times that of housing stock growth and faced the largest impact of listings growth.  
+-   **Inner London boroughs (orange bars in [Figure 1.4]{.underline}) saw a higher ratio of increases in Airbnb listings compared to increases in housing stock**. Kensington and Chelsea experienced listing growth that was 5 times that of housing stock growth and faced the largest impact of listings growth.  
 
 ```{python}
 #| echo: false
@@ -625,11 +633,11 @@ ax.bar(
     color=colors)
 
 # Axis labels & title 
-ax.set_xticklabels(df_bar["name"], rotation= 90, ha="right", fontsize=11)
+ax.set_xticklabels(df_bar["name"], rotation= 90, ha="right", fontsize=10)
 ax.set_ylabel("Ratio of increase in listings to housing stock", fontsize=11)
 ax.tick_params(axis="y", labelsize=12)
 ax.set_title(
-    "Figure 4: Ratio of Change in Airbnb Listings to Housing Stock by Boroughs (last five years)",
+    "Figure 1.4: Ratio of Change in Airbnb Listings to Change in Housing Stock \nby Boroughs (last five years)",
     fontsize=14,
     pad=15)
 
@@ -643,8 +651,8 @@ ax.legend(handles, ["Inner London Boroughs", "Outer London Boroughs"], fontsize=
 # Add caption
 plt.figtext(
     0.01, -0.05,
-    "Source: Listings data from Insideairbnb.com, Borough boundaries from data.london.gov.uk, Housing Stock from UK Valuation Office.\n"
-    "Note: As housing stock data for 2025 was unavailable, we compared the changes over the last five years\n"
+    "Source: Listings data from Insideairbnb.com, \nBorough boundaries from data.london.gov.uk, Housing Stock from UK Valuation Office.\n"
+    "Note: As housing stock in 2025 was unavailable, changes were compared over the last five years\n"
     "(i.e. Airbnb listings (2021–2025), housing stock (2020–2024)).",
     ha="left",
     fontsize=11)
@@ -678,7 +686,7 @@ BORO['listing_prop2025'] = (BORO['listings2025'] / BORO['allprop2024']) * 100
 BORO['listing_prop2025'] = BORO['listing_prop2025'].replace([np.inf, -np.inf], np.nan).fillna(0)
 ```
 
--   At the borough-level ([Figure 5]{.underline}), the **proportion of Airbnb listings compared to the overall housing stock ranged from 0.2% to 5.8%**, with Inner London boroughs having a higher share of listings relative to housing stock.  
+-   At the borough-level ([Figure 1.5]{.underline}), the **proportion of Airbnb listings compared to the overall housing stock ranged from 0.2% to 5.8%**, with Inner London boroughs having a higher share of listings relative to housing stock.  
 
 ```{python}
 #| echo: false
@@ -734,7 +742,7 @@ ax.set_xticklabels(df_bar["name"], rotation=90, ha="right", fontsize=12)
 ax.tick_params(axis="y", labelsize=12)
 ax.set_ylabel("Listings as percentage of Housing Stock (%)", fontsize=12)
 ax.set_title(
-    "Figure 5: Airbnb Listings as a Proportion of Housing Stock by Boroughs (2025)",
+    "Figure 1.5: Airbnb Listings as a Proportion of Housing Stock by Boroughs (2025)",
     fontsize=14,
     pad=15)
 
@@ -778,7 +786,7 @@ MSOA['listing_prop2025'] = (MSOA['listings2025'] / MSOA['allprop2024']) * 100
 MSOA['listing_prop2025'] = MSOA['listing_prop2025'].replace([np.inf, -np.inf], np.nan).fillna(0)
 ```
 
--   At the MSOA-level, it becomes clearer that there are pockets of concentration of listings relative to housing stock in these Boroughs, with **up to 1 in 8 homes (12.5%)** listed for Airbnb ([Figure 6]{.underline}). This high proportion could be driving negative sentiments in some parts of London that Airbnb could be out of control.
+-   At the MSOA-level, it becomes clearer that there are pockets of concentration of listings relative to housing stock in these Boroughs, with **up to 1 in 8 homes (12.5%)** listed for Airbnb ([Figure 1.6]{.underline}). This high proportion could be driving negative sentiments in some parts of London that Airbnb could be out of control.
 
 ```{python}
 #| echo: false
@@ -830,7 +838,7 @@ ax.legend(
     loc="upper right")
 
 # Titles and annotations
-ax.set_title("Figure 6: Airbnb Listings as a Proportion of Housing Stock (MSOA, 2025)", fontsize=14, pad=15)
+ax.set_title("Figure 1.6: Airbnb Listings as a Proportion of Housing Stock (MSOA, 2025)", fontsize=14, pad=15)
 ax.axis("off")
 fig.text(
     0.03, -0.02,
@@ -844,6 +852,18 @@ plt.show()
 ```
 
 #### 1.5 How many listings potentially breach the current 90-day limit for rentals?
+
+-   Since 2017, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short term letting for more than **90 nights per calendar year**, without planning permission obtained for change of use. This prevents permanent housing from being converted into de facto holiday accommodation.
+
+-   To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments". In 2025, this was XXXX (XX%). Using the“estimated_occupancy_l365d” field, which estimates how many nights the listing was booked in the last 365 days, provides a useful proxy for annual use where raw daily calendar data are unavailable. We treat an entire home as a **likely breach** if "estimated_occupancy_l365d" \> 90.
+
+-   Using this definition:
+
+    -   **12,082 entire home listings** are estimated to be used for more than 90 nights per year.
+
+    -   Close to **2 in 10 of all entire homes listings**, and **around 1 in 8 of all listings in London.**
+
+-   This estimate is likely a conservative one, as we are unable to fully detect multiple listings of the same property, which owners could use to circumvent the 90 day rule and would not be captured by the proxy.
 
 #### 1.6 Why might this be a problem and what is the impact on communities?
 
