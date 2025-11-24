@@ -138,7 +138,7 @@ cols = ['id', 'listing_url', 'last_scraped', 'name',
     'property_type', 'room_type', 'accommodates', 
     'bathrooms', 'bathrooms_text', 'bedrooms', 'beds', 
     'amenities', 'price', 'minimum_nights', 'maximum_nights', 
-    'availability_365', 'number_of_reviews', 
+    'availability_365', 'estimated_occupancy_l365d', 'number_of_reviews', 
     'first_review', 'last_review', 'review_scores_rating', 'reviews_per_month']
 
 # Set up empty dictionary dfs 
@@ -151,7 +151,14 @@ for year, info in config.items():
     url     = pattern.format(date=date)
 
     print("Loading:", year, url)
-    dfs[year] = pd.read_csv(url, compression='gzip', low_memory=False, usecols= cols)
+
+    # Read only the header (first row)
+    header_cols = pd.read_csv(url, nrows=0).columns.tolist()
+
+    # Keep only columns that actually exist in the file
+    valid_cols = [c for c in cols if c in header_cols]
+    
+    dfs[year] = pd.read_csv(url, compression='gzip', low_memory=False, usecols= valid_cols)
 
     # Print shape of the dataframe just loaded
     print(f" → df_{year}: {dfs[year].shape[0]:,} rows × {dfs[year].shape[1]} columns\n")
@@ -221,6 +228,65 @@ for year, df in dfs.items():
           f"(Dropped {dropped:,} rows due to missing data)")
 
     print("Done!")
+```
+
+```{python}
+#| echo: false
+#| warning: false
+#| output: false
+## We want to assign the correct variable types to each column for efficiency in processing 
+# Columns to convert
+bools = ['host_is_superhost']
+dates = ['last_scraped','host_since','first_review','last_review']
+cats  = ['property_type','room_type']
+money = ['price']
+ints  = ['id','host_id','host_listings_count','host_total_listings_count',
+         'accommodates','beds','minimum_nights','maximum_nights',
+         'availability_365', 'estimated_occupancy_l365d']
+
+# Loop through the dataframes in dfs for each year and convert columns to specific formats 
+for year, df in dfs.items():
+
+    # Boolean columns
+    for b in bools:
+        if b in df.columns:
+            print(f"  Converting {b} → bool")
+            df[b] = df[b].replace({'f': False, 't': True}).astype('bool')
+
+    # Date columns
+    for d in dates:
+        if d in df.columns:
+            print(f"  Converting {d} → datetime")
+            df[d] = pd.to_datetime(df[d], errors='coerce')
+
+    # Category columns
+    for c in cats:
+        if c in df.columns:
+            print(f"  Converting {c} → category")
+            df[c] = df[c].astype('category')
+
+    # Money columns ($ → float)
+    for m in money:
+        if m in df.columns and df[m].dtype == object:
+            print(f"  Cleaning {m} → float")
+            df[m] = (
+                df[m]
+                .str.replace("$", "", regex=False)
+                .str.replace(",", "", regex=False)
+                .astype("float")
+            )
+
+    # Integer-like columns
+    for i in ints:
+        if i in df.columns:
+            print(f"  Converting {i} → integer")
+            try:
+                df[i] = df[i].astype("float").astype("Int64")
+            except ValueError:
+                print(" Using UInt16 for compact storage")
+                df[i] = df[i].astype("float").astype(pd.UInt16Dtype())
+
+print("\nAll dataframes cleaned successfully!")
 ```
 
 ```{python}
@@ -345,7 +411,7 @@ for ax, year in zip(axes[:5], years):
     ax.axis("off")
     ax.set_aspect("equal")
 
-# Set Colorbar 
+# Set Colourbar 
 axes[5].axis("off")
 cax = axes[5].inset_axes([0.15, 0.25, 0.67, 0.10])
 cbar = fig.colorbar(
@@ -853,19 +919,125 @@ plt.show()
 
 #### 1.5 How many listings potentially breach the current 90-day limit for rentals?
 
--   Since 2017, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short term letting for more than **90 nights per calendar year**, without planning permission obtained for change of use. This prevents permanent housing from being converted into de facto holiday accommodation.
+-   Since 2017, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
 
--   To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments". In 2025, this was XXXX (XX%). Using the“estimated_occupancy_l365d” field, which estimates how many nights the listing was booked in the last 365 days, provides a useful proxy for annual use where raw daily calendar data are unavailable. We treat an entire home as a **likely breach** if "estimated_occupancy_l365d" \> 90.
+```{python}
+## Count the number of entire homes/apartments that were let out for more than 90 days in 2025
+# Number of Listings that were entire homes/apartments 
+df_2025 = dfs['2025'] 
+entire_homes_2025 = df_2025[df_2025["room_type"] == "Entire home/apt"]
+entire_homes_2025_n = len(entire_homes_2025)
+entire_homes_2025_per = round(entire_homes_2025_n / listings_2025 * 100, 2)
 
--   Using this definition:
+# Number of entire homes that had estimated occupancy > 90 days 
+entire_homes_2025_90 = entire_homes_2025[entire_homes_2025['estimated_occupancy_l365d'] > 90]
+entire_homes_2025_90_n = len(entire_homes_2025_90)
+entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 100, 2)
+```
 
-    -   **12,082 entire home listings** are estimated to be used for more than 90 nights per year.
+-   In 2025, **57,558 or 67% of all listings** were for "entire homes / apartments". Based on occupancy estimates[^3] , 12,081 entire homes / apartments were used for more than 90 nights per year. This represents **more than 2 in 10 of all entire homes listings**, and **around 1 in 8 of all listings in London** that were possibly in breach of this rule.
 
-    -   Close to **2 in 10 of all entire homes listings**, and **around 1 in 8 of all listings in London.**
+-   Notwithstanding, the lack of exact data on occupancy and sensitivities in assumptions, we expect this estimate to be a conservative one, given reported **likelihood of multiple listings of the same property**, which some owners have used to circumvent the 90 day rule[^4].
 
--   This estimate is likely a conservative one, as we are unable to fully detect multiple listings of the same property, which owners could use to circumvent the 90 day rule and would not be captured by the proxy.
+[^3]: Occupancy estimates are obtained from Inside Airbnb data. First, a review rate is used to compute reviews to estimated bookings. Thereafter, the average length of stay for London was multiplied by the estimated bookings for each listing giving the occupancy rate (out of 365 days). To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments", and the occupancy rate, which estimates how many nights the listing was booked in the last 365 days, providing a useful proxy for annual use, where raw daily calendar data are unavailable.
 
-#### 1.6 Why might this be a problem and what is the impact on communities?
+[^4]: BBC journalists found about 1,300 listings had reused identical images - such as the same furniture, rooms and decor - from other supposedly unique listing. <https://www.bbc.co.uk/news/articles/cvg96rz9061o>
+
+```{python}
+import matplotlib.pyplot as plt
+data = entire_homes_2025["estimated_occupancy_l365d"]
+
+# Define bins every 30 days up to 271
+bins = np.arange(0, 271, 30)
+thresholds = [90, 120, 150, 180]
+
+# Summary table data
+summary_rows = []
+for t in thresholds:
+    count_t = (data > t).sum()
+    pct_t   = round(count_t / entire_homes_2025_n * 100)
+    summary_rows.append([t, count_t, pct_t])
+
+summary_df = pd.DataFrame(summary_rows, columns=["Days", "Count", "% total"])
+
+# Plot histogram with summary table at top 
+fig, ax = plt.subplots(figsize=(8, 5))
+
+counts, edges, patches = ax.hist(
+    data,
+    bins=bins,
+    edgecolor="black",
+    color="skyblue",
+    alpha=0.8
+)
+
+# Color bins > 90 days
+for i, patch in enumerate(patches):
+    mid = (edges[i] + edges[i+1]) / 2
+    if mid > 90:
+        patch.set_facecolor("tomato")
+
+# Add vertical line at 90 days
+ax.axvline(90, color="black", linestyle="--", linewidth=1.2)
+
+# Titles and labels
+ax.set_title(
+    "Figure 1.7: Distribution of Estimated Occupancy (Entire Homes/Apt) in 2025",
+    fontsize=14,
+    pad=10
+)
+ax.set_xlabel("Estimated Occupancy (days per year)", fontsize=12)
+ax.tick_params(axis="y", labelsize=12)
+ax.set_ylabel("Number of Listings - Entire Homes / Apts", fontsize=12)
+
+fig.text(
+    0.03, -0.02,
+    "Source: Listings from Insideairbnb.com",
+    ha='left',
+    fontsize=11)
+
+# X-axis ticks
+ax.set_xticks([30, 60, 90, 120, 150, 180, 210, 240, 270])
+
+# Summary Table 
+table = plt.table(
+    cellText=summary_df.values,
+    colLabels=summary_df.columns,
+    loc='upper right',
+    cellLoc='center',
+    colColours=["lightgray"] * 3,
+    bbox=[0.68, 0.45, 0.31, 0.35] 
+)
+
+table.auto_set_font_size(False)
+table.set_fontsize(11)
+table.scale(1.0, 1.3)
+
+# Legend for colored bars 
+legend_handles = [
+    plt.Rectangle((0, 0), 1, 1, color="skyblue", label="Up to 90 days"),
+    plt.Rectangle((0, 0), 1, 1, color="tomato", label="More than 90 days")
+]
+ax.legend(handles=legend_handles, fontsize=12, loc="upper right")
+
+# Grid lines
+ax.grid(axis='y', linestyle='--', alpha=0.4)
+
+plt.tight_layout()
+plt.show()
+```
+
+There is a clear spatial pattern. Boroughs in inner London show the highest rates of intense use.
+
+-   **Westminster:** **25–26%** of entire home listings have occupancy exceeding 90 nights
+
+-   **Camden:** about **23%**
+
+-   **Kensington and Chelsea:** about **21%**
+
+-   **Hammersmith and Fulham, Islington, Southwark, Lambeth and the City of London** all have **18–21%** of entire homes above 90 nights
+
+#### 1.6 Taken together, do these trends suggest a problem and what is the impact on communities?
 
 ## **2. How many professional landlords are there?**
 
@@ -881,7 +1053,9 @@ plt.show()
 
 ## **3. How many properties would be affected by the opposition’s proposal?**
 
-Draft answer due Week 9.
+```{python}
+
+```
 
 ## **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
 
