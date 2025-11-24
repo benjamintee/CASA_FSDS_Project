@@ -493,16 +493,35 @@ BORO['listing_prop2025'] = BORO['listing_prop2025'].replace([np.inf, -np.inf], n
 ```
 
 ```{python}
+import matplotlib.patches as mpatches
+
+#classify boroughs by inner and outer London boroughs
+inner_london = {
+    'Camden', 'Greenwich', 'Hackney', 'Hammersmith and Fulham', 'Islington',
+    'Kensington and Chelsea', 'Lambeth', 'Lewisham', 'Southwark',
+    'Tower Hamlets', 'Wandsworth', 'Westminster', 'City of London'
+}
+
+# Create color list
+colors = ['tab:blue' if borough in inner_london else 'tab:orange' 
+          for borough in sorted_categories]
+
+#plotting the bar chart of bnb % of stock by boro
 sorted_pairs = sorted(zip(BORO['listing_prop2025'], BORO['name']))  # sort by values
 sorted_values, sorted_categories = zip(*sorted_pairs)
 
 plt.figure(figsize=(8,6))
-plt.bar(sorted_categories, sorted_values)
+plt.bar(sorted_categories, sorted_values, color=colors)
 
 plt.xlabel('Boroughs')
 plt.ylabel('Listings as percentage of Housing Stock (%)')
 plt.title('Airbnb Listings as a Proportion of Housing Stock by Boroughs (2025)')
 plt.xticks(rotation=90)  # rotate x-axis labels vertically
+
+#legend plotting
+inner_patch = mpatches.Patch(color='tab:blue', label='Inner London')
+outer_patch = mpatches.Patch(color='tab:orange', label='Outer London')
+plt.legend(handles=[inner_patch, outer_patch])
 
 # Show plot
 plt.show()
@@ -839,7 +858,7 @@ plt.show()
 ### Note: ChatGPT5.1 was used to refine the plot layout and the inclusion of the colourbar in the figure, and to size the positioning of the chart. 
 ```
 
-#### **Listings and growth rates for each borough**
+Looking at the number of listings and growth rates for each boro
 
 ```{python}
 # Combine all borough counts into one table
@@ -898,47 +917,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-### Review of the Housing Stock from 2020-2024
-
-#### **Load and clean data on Housing Stock by MSOA and Borough**
-
-```{python}
-# Set the parameters to retrieve the downloaded data from LSOA 
-host = 'https://raw.githubusercontent.com/benjamintee/'
-years = [2020, 2021, 2022, 2023, 2024]
-
-df_stock = pd.concat(
-    [pd.read_csv(f'{host}/CASA_FSDS_Project/main/Data/CTSOP1_1_{y}_03_31.csv').assign(Year=y)
-     for y in years],
-    ignore_index=True)
-
-df_stock.info()
-
-# Filter for LA data and ecodes that fall within Greater London 
-df_stock_LA = df_stock[
-    (df_stock['geography'] == 'LAUA') &
-    (df_stock['ecode'].str.startswith('E090'))
-]
-
-# Filter and select MSOAs within Greater London 
-"""
-This block first extracts names of london boroughs, then filters the df_stock to select only the MSOAs with name strings that contain any of the london borough names, hence forming a dataframe of property stock by MSOA in Greater London only
-"""
-
-#list of london boroughs
-london_boroughs = df_stock_LA.area_name.unique().tolist()
-
-# Build regex pattern — escape special chars and join with |
-pattern = "|".join([rf"\b{b.replace(' ', r'\s+')}\b" for b in london_boroughs])
-
-# Filter for MSOA data and ecodes that fall within Greater London 
-df_stock_MSOA = df_stock[
-    (df_stock['geography'] == 'MSOA') &
-    (df_stock['area_name'].str.contains(pattern, case=False, na=False, regex=True))
-]
-```
-
-#### **Calculating Change in Total Housing Stock**
+### Bonus: Review of the Housing Stock from 2020-2024
 
 ```{python}
 # Create a stock_table detailing the total number of properties in London each year 
