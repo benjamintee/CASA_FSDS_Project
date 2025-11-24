@@ -39,7 +39,7 @@ py_install('matplotlib')
 ```
 
 ```{python}
-import pandas as pd
+#import pandas as pd
 ```
 
 ```{python}
