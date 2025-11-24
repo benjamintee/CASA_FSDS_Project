@@ -1,8 +1,7 @@
 ---
 date: last-modified
-bibliography: bio.bib
-csl: harvard-cite-them-right.csl
 title: The Pythoneers' Group Project
+csl: harvard-cite-them-right.csl
 execute:
   echo: false
   freeze: true
@@ -55,10 +54,10 @@ Date: 16 December 2025 (Tuesday)
 
 | Names          | Student Numbers | Contact Email                |
 |----------------|-----------------|------------------------------|
-| Owen Hughes    | 25197128        | owen.hughes.25\@ucl.ac.uk    |
-| Benjamin Tee   | 25049107        | benjamin.tee.25\@ucl.ac.uk   |
 | Alice Southall | 25120600        | alice.southall.25\@ucl.ac.uk |
+| Benjamin Tee   | 25049107        | benjamin.tee.25\@ucl.ac.uk   |
 | Bosco Choi     | 22040212        | bosco.choi.22\@ucl.ac.uk     |
+| Owen Hughes    | 25197128        | owen.hughes.25\@ucl.ac.uk    |
 | Tong, C.Y      | 25244321        | c.tong.25\@ucl.ac.uk         |
 
 ## Priorities for Feedback
@@ -67,93 +66,78 @@ Are there any areas on which you would appreciate more detailed feedback if we'r
 
 {{< pagebreak >}}
 
-**Remove this page (up to the next `pagebreak`) prior to submission!**
+# Briefing on Airbnb Growth Trends & Policy Implications
 
-# Code Examples
+## **Executive Summary**
 
-This page has example code to show you can include outputs while hiding code in Quarto, as well as some tools for interpolating data in the text.
+This report provides an analysis of Airbnb activity in London in recent years (2021-2025), with a focus on 2025. Given time-sensitivity amidst the impending election, and a data-poor environment, we utilise appropriate data-driven approaches to provide insight into the following questions:
 
-See the raw file for examples of how to hide computational output as there is code hidden here.
+a.      Is Airbnb out of control in London?
 
-```{python}
-#| echo: True 
-# This code will be shown, 
-# but the next block will not
-import os
-import pandas as pd
-```
+b.      How many professional landlords are there?
 
-```{python}
-# This code is not shown because echo was
-# set to False in the header. You should
-# think carefully about whether you want
-# or need to show any code to the reader
-# in the PDf.
-host = 'https://orca.casa.ucl.ac.uk'
-path = '~jreades/data'
-file = '20250615-London-listings.parquet'
+c.      How many properties would be affected by the opposition’s proposal?
 
-if os.path.exists(file):
-  df = pd.read_parquet(file)
-else: 
-  df = pd.read_parquet(f'{host}/{path}/{file}')
-  df.to_parquet(file)
-```
+d.      What are the benefits and trade-offs with the opposition’s proposal?
 
-An inline citation example: As discussed on @insideairbnb, there are many...
+e.      What are options to reframe the narrative to one about social mobility and housing opportunity?
 
-A parenthetical citation example: There are many ways to research Airbnb [see, for example, @insideairbnb]...
+### Key Findings
 
-```{python}
-#| output: asis
-# This is one way to write dynamic text. 'As is' means
-# it will interpret the result as regular Quarto markdown 
-# so the below `print` statement becomes plain text with
-# the size of the dataframe interpolated into the string.
-# When Quarto is done running the Python code what's left
-# is plain-text and that is then treated as a paragraph
-# like it would be if you'd written it in Quarto.
-print(f"One of way to embed output in the text looks like this: after cleaning, we were left with {df.shape[0]:,} rows of data.")
-```
+*(Insert findings in 2 column table)*
 
-```{python}
-# The other way is to ensure that your variables are *simple* 
-# data types that Quarto can understand. So notice below that
-# we just have a single, inline `{python} with the value of
-# the row directly inserted into the sentence. his should also work, but is sometimes less predictably
-# reliable.
-row_count = f"{df.shape[0]:,}"
-```
+### Recommendations
 
-The other way is to interpolate it directly into the sentence like this (`{python} row_count`); however, I've found it less reliable and it really requires you to be careful about data types. So `{python} print(f"{df.shape[0]:,}")` probably won't work and you'll just see some Python code instead.
-
-And here's a nice little chart straight into the document!
-
-```{python}
-ax = df.host_listings_count.plot.hist(bins=50);
-ax.set_xlim([0,500]);
-```
+*(Insert recommendations here)*
 
 {{< pagebreak >}}
 
-# Briefing
+## **1. Is Airbnb ‘out of control’ in London?**
 
-### **1. Is Airbnb ‘out of control’ in London?**
+Opposition critics have suggested that the growth and spread of Airbnb’s in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. This chapter provides a systematic analysis of the situation. 
 
-Draft answer due Week 7.
+```{python}
+#| echo: false
+#| warning: false
+# Load common libraries and packages
+import pandas as pd
+import geopandas as gpd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+from matplotlib.lines import Line2D
+```
 
-### **2. How many professional landlords are there?**
+#### 1.1 What is the growth trend in Airbnb listings across London?
 
-Draft answer due Week 8.
+#### 1.2 Which areas saw the fastest growth in Airbnb listings?
 
-### **3. How many properties would be affected by the opposition’s proposal?**
+#### 1.3 How does this compare to changes in the overall housing stock?
+
+#### 1.4 What is the situation at the Borough- and MSOA-levels in 2025? Are issues widespread or localised?
+
+#### 1.5 How many listings potentially breach the current 90-day limit for rentals?
+
+#### 1.6 Why might this be a problem and what is the impact on communities?
+
+## **2. How many professional landlords are there?**
+
+#### 2.1 What is the distribution of Airbnb types in London?
+
+#### 2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?
+
+#### 2.3 How many hosts own 2 or more Airbnb properties, and what is the range of the number of listings per host?
+
+#### 2.4 What is the average income from these properties, and how does it compare with median / average incomes in London?
+
+#### 2.5 What is the profile of these hosts ?
+
+## **3. How many properties would be affected by the opposition’s proposal?**
 
 Draft answer due Week 9.
 
-### **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
+## **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
 
-### **5. Can the story be reframed as a positive one about social mobility or housing opportunity?**
-
-{{< include _questions.qmd >}}
+## **5. Can the story be reframed as a positive one about social mobility or housing opportunity?**
 
 ## References
