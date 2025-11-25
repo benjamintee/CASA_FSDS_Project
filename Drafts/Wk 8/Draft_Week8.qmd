@@ -819,7 +819,7 @@ handles = [
 ]
 ax.legend(handles, ["Inner London", "Outer London"], fontsize=14)
 
-# Caption
+# Caption Text
 plt.figtext(
     0.01, -0.05,
     "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office.\n"
@@ -937,11 +937,13 @@ entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 
 
 -   In 2025, **57,558 or 67% of all listings** were for "entire homes / apartments". Based on occupancy estimates[^3] , 12,081 entire homes / apartments were used for more than 90 nights per year. This represents **more than 2 in 10 of all entire homes listings**, and **around 1 in 8 of all listings in London** that were possibly in breach of this rule.
 
--   Notwithstanding, the lack of exact data on occupancy and sensitivities in assumptions, we expect this estimate to be a conservative one, given reported **likelihood of multiple listings of the same property**, which some owners have used to circumvent the 90 day rule[^4].
+-   Notwithstanding, the sensitivity of the assumptions in Inside Airbnb's methodology[^4], we expect this estimate to be a conservative one, given reported **likelihood of multiple listings of the same property**, which some owners have used to circumvent the 90 day rule[^5].
 
 [^3]: Occupancy estimates are obtained from Inside Airbnb data. First, a review rate is used to compute reviews to estimated bookings. Thereafter, the average length of stay for London was multiplied by the estimated bookings for each listing giving the occupancy rate (out of 365 days). To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments", and the occupancy rate, which estimates how many nights the listing was booked in the last 365 days, providing a useful proxy for annual use, where raw daily calendar data are unavailable.
 
-[^4]: BBC journalists found about 1,300 listings had reused identical images - such as the same furniture, rooms and decor - from other supposedly unique listing. <https://www.bbc.co.uk/news/articles/cvg96rz9061o>
+[^4]: The occupancy model assumed (a) a review rate of 50% and (b) average length of stay of 3.1 days for London. This is conservative given that Airbnb previously cited an average review rate of 78%, and, community forums have cited a range of 33% and 85% for various properties.
+
+[^5]: BBC journalists found about 1,300 listings had reused identical images - such as the same furniture, rooms and decor - from other supposedly unique listing. <https://www.bbc.co.uk/news/articles/cvg96rz9061o>
 
 ```{python}
 import matplotlib.pyplot as plt
@@ -1043,9 +1045,52 @@ There is a clear spatial pattern. Boroughs in inner London show the highest rate
 
 #### 2.1 What is the distribution of Airbnb types in London?
 
+```{python}
+# Compute the number of properties in each cateogry in 2025 
+type_summary_2025 = (
+    df_2025["room_type"]
+    .value_counts()
+    .to_frame("count")
+    .assign(percentage=lambda x: (x["count"] / x["count"].sum() * 100).round(1)))
+
+# Plot a simple bar chart to show the distribution
+# Function to add value labels on top of bars from Geeks for Geeks. 
+def add_labels(x, y, pct):
+    for i in range(len(x)):
+        label = f"{y[i]:,}\n({pct[i]}%)"
+        plt.text(
+            i, y[i],label, ha='center', va='bottom',fontsize=12,
+            bbox=dict(facecolor='#ABD7EB', alpha=0.8, edgecolor='none'))
+
+x = type_summary_2025.index.tolist()
+y = type_summary_2025["count"].tolist()
+pct = type_summary_2025["percentage"].tolist()
+
+plt.figure(figsize=(8, 5))
+plt.bar(x,y, color = "salmon")
+add_labels(x,y, pct)
+
+# Title and axis labels
+plt.title("Figure 2.1 Distribution of Airbnb Types in London (2025)", fontsize=14, pad=15)
+plt.xlabel("Room Types", fontsize=12)
+plt.ylabel("Count", fontsize=12)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.ylim(0, 70000)
+plt.gca().yaxis.set_major_formatter(
+    ticker.FuncFormatter(lambda x, pos: f"{int(x):,}"))
+
+plt.subplots_adjust(top=0.88)
+plt.show()
+```
+
 #### 2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?
 
-#### 2.3 How many hosts own 2 or more Airbnb properties, and what is the range of the number of listings per host?
+```{python}
+
+```
+
+#### 2.3 How many hosts own 2 or more Airbnb properties and the distribution of the number of listings per host?
 
 #### 2.4 What is the average income from these properties, and how does it compare with median / average incomes in London?
 
