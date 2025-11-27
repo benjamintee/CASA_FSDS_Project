@@ -290,6 +290,7 @@ print("\nAll dataframes cleaned successfully!")
 ```
 
 ```{python}
+#echo/warning/output?
 listings_2021 = len(dfs["2021"])
 listings_2025 = len(dfs["2025"])
 listings_pct_change = (listings_2025 - listings_2021) / listings_2021 * 100
@@ -317,7 +318,7 @@ ddir = 'CASA_FSDS_Project/main/Data/'
 BORO = gpd.read_file(f'{host}/{ddir}/LONDON_BOROUGH.gpkg').to_crs(epsg=27700)
 MSOA = gpd.read_file(f'{host}/{ddir}/MSOA_DEC_2021_BOUNDARIES.gpkg').to_crs(epsg=27700)
 
-# Clip MSOA Boundaries to those within London Broughs and only retain Polygons and MultiPolygons
+# Clip MSOA Boundaries to those within London Boroughs and only retain Polygons and MultiPolygons
 LONDON = gpd.GeoDataFrame(geometry=[BORO.dissolve().geometry.iloc[0]], crs= '27700')
 MSOA = gpd.clip(MSOA, LONDON)
 MSOA = MSOA[MSOA.geometry.type.isin(["Polygon", "MultiPolygon"])]
@@ -378,7 +379,7 @@ for year, gdf in gdfs.items():
 
 years = ["2021", "2022", "2023", "2024", "2025"]
 
-# Set a consistent color scale 
+# Set a consistent colour scale 
 vmin = min(boro_counts[y]['listings'].min() for y in years)
 vmax = max(boro_counts[y]['listings'].max() for y in years)
 
@@ -479,7 +480,7 @@ top5 = df_boros.nlargest(5, "abs_change")
 ```{python}
 #| echo: false
 #| warning: false
-# Plot figure to shwow top 5 boroughs with largest increase in listings. 
+# Plot figure to show top 5 boroughs with largest increase in listings. 
 fig, ax = plt.subplots(figsize=(8, 6))
 
 boros = top5.index
@@ -537,7 +538,7 @@ plt.show()
 #| echo: false
 #| warning: false
 #| output: false
-### Download data from Valuation Office on Housing Stock 
+### Download data from Valuation Office Agency on Housing Stock 
 # Set the parameters to retrieve the downloaded data from LSOA 
 host = 'https://raw.githubusercontent.com/benjamintee/'
 years = [2020, 2021, 2022, 2023, 2024]
@@ -640,7 +641,7 @@ ax.tick_params(axis="y", labelsize=12)
 fig.text(
     0.01, -0.05,
     "Source: UK Valuation Office Agency properties by Council Tax band as at end March.\n"
-    "As data for 2025 is not yet available, we used data over the last five years as a suitable proxy",
+    "As data for 2025 is not yet available, we used data over the last five years as a suitable proxy.",
     ha='left',
     fontsize=11)
 
@@ -724,7 +725,7 @@ ax.legend(handles, ["Inner London Boroughs", "Outer London Boroughs"], fontsize=
 # Add caption
 plt.figtext(
     0.01, -0.05,
-    "Source: Listings data from Insideairbnb.com, \nBorough boundaries from data.london.gov.uk, Housing Stock from UK Valuation Office.\n"
+    "Source: Listings data from Insideairbnb.com, \nBorough boundaries from data.london.gov.uk, Housing Stock from UK Valuation Office Agency.\n"
     "Note: As housing stock in 2025 was unavailable, changes were compared over the last five years\n"
     "(i.e. Airbnb listings (2021–2025), housing stock (2020–2024)).",
     ha="left",
@@ -829,8 +830,8 @@ ax.legend(handles, ["Inner London", "Outer London"], fontsize=14)
 # Caption Text
 plt.figtext(
     0.01, -0.05,
-    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office.\n"
-    "Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used",
+    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\n"
+    "Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used.",
     ha="left",
     fontsize=11)
 
@@ -881,7 +882,7 @@ for b in bin_edges:
     labels.append(f"{prev} – {round(b, 1)}")
     prev = round(b, 1)
 
-# Assign colors
+# Assign colours
 k = len(bin_edges)
 cmap = plt.cm.viridis
 colors = [cmap(i / (k-1)) for i in range(k)]
@@ -915,8 +916,8 @@ ax.set_title("Figure 1.6: Airbnb Listings as a Proportion of Housing Stock (MSOA
 ax.axis("off")
 fig.text(
     0.03, -0.02,
-    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office.\n"
-    "Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used",
+    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\n"
+    "Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used.",
     ha='left',
     fontsize=11)
 
@@ -929,6 +930,8 @@ plt.show()
 -   Since 2017, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
 
 ```{python}
+#| echo: false
+#| warning: false
 ## Count the number of entire homes/apartments that were let out for more than 90 days in 2025
 # Number of Listings that were entire homes/apartments 
 df_2025 = dfs['2025'] 
@@ -944,7 +947,7 @@ entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 
 
 -   In 2025, **`{python} f"{entire_homes_2025_n:,}"` or `{python} f"{entire_homes_2025_per}%"` of all listings** were for "entire homes / apartments". Based on occupancy estimates[^3] , **`{python} f"{entire_homes_2025_90_n:,}"`** entire homes / apartments were used for more than 90 nights per year. This represents **more than 2 in 10 of all entire homes listings**, and **around 1 in 8 of all listings in London** that were possibly in breach of this rule.
 
--   Notwithstanding, the sensitivity of the assumptions in Inside Airbnb's methodology[^4], we expect this estimate to be a conservative one, given reported **likelihood of multiple listings of the same property**, which some owners have used to circumvent the 90 day rule[^5].
+-   Notwithstanding the sensitivity of the assumptions in Inside Airbnb's methodology[^4], we expect this estimate to be a conservative one, given reported **likelihood of multiple listings of the same property**, which some owners have used to circumvent the 90 day rule[^5].
 
 [^3]: Occupancy estimates are obtained from Inside Airbnb data. First, a review rate is used to compute reviews to estimated bookings. Thereafter, the average length of stay for London was multiplied by the estimated bookings for each listing giving the occupancy rate (out of 365 days). To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments", and the occupancy rate, which estimates how many nights the listing was booked in the last 365 days, providing a useful proxy for annual use, where raw daily calendar data are unavailable.
 
@@ -982,7 +985,7 @@ counts, edges, patches = ax.hist(
     alpha=0.8
 )
 
-# Color bins > 90 days
+# Colour bins > 90 days
 for i, patch in enumerate(patches):
     mid = (edges[i] + edges[i+1]) / 2
     if mid > 90:
@@ -1022,7 +1025,7 @@ table = plt.table(
 table.set_fontsize(11)
 table.scale(1.0, 1.3)
 
-# Legend for colored bars 
+# Legend for coloured bars 
 legend_handles = [
     plt.Rectangle((0, 0), 1, 1, color="skyblue", label="Up to 90 days"),
     plt.Rectangle((0, 0), 1, 1, color="tomato", label="More than 90 days")
@@ -1086,7 +1089,7 @@ The spatial pattern is consistent with earlier trends. Boroughs in inner London 
 ```{python}
 #| echo: false
 #| warning: false
-# Compute the number of properties in each cateogry in 2025 
+# Compute the number of properties in each category in 2025 
 type_summary_2025 = (
     df_2025["room_type"]
     .value_counts()
@@ -1157,7 +1160,7 @@ df["host_size_group"] = pd.cut(
 df["occupancy_group"] = df["estimated_occupancy_l365d"].apply(
     lambda x: "<90 days" if x < 90 else "≥90 days"
 )
-
+#AS note: Steps 1 - 3 now aren't named; remove "Step 4"?
 # Step 4: Compute % of listings in each bracket
 table = df.groupby(["host_size_group", "occupancy_group"]).size().unstack(fill_value=0)
 dist = table / table.sum().sum() * 100
@@ -1183,7 +1186,7 @@ for i, (low, high) in enumerate(zip(dist["<90 days"], dist["≥90 days"])):
 plt.xlabel("Percentage of Listings (%)")
 plt.ylabel("Host Portfolio Size")
 plt.title("Distribution of Listings by Host Portfolio Size\nand Estimated Occupancy (2025)")
-
+#AS note: this plot ultimately needs to be numbered using the same formatting (fig x.y as in section 1)
 plt.xlim(0, 50.5)
 plt.legend(title="Occupancy Category", loc="upper right")
 
@@ -1192,6 +1195,8 @@ plt.show()
 ```
 
 ```{python}
+#| echo: false
+#| warning: false
 df_100plus = df[df["host_size_group"] == "100+"].copy()
 
 same_location_same_host = (
