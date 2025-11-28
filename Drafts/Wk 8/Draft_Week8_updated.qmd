@@ -96,7 +96,7 @@ e.      What are options to reframe the narrative to one about social mobil
 
 ## **1. Is Airbnb ‘out of control’ in London?**
 
-Opposition critics have suggested that the growth and spread of Airbnb’s in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. This chapter provides a systematic analysis of the situation. 
+Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. This chapter provides a systematic analysis of the situation. 
 
 ```{python}
 #| echo: false
@@ -290,7 +290,7 @@ print("\nAll dataframes cleaned successfully!")
 ```
 
 ```{python}
-#echo/warning/output?
+#AS note: add echo/warning/output?
 listings_2021 = len(dfs["2021"])
 listings_2025 = len(dfs["2025"])
 listings_pct_change = (listings_2025 - listings_2021) / listings_2021 * 100
@@ -347,12 +347,12 @@ for year, df in dfs.items():
         crs='EPSG:4326'
     ).to_crs(epsg=27700)
 
-# Next, we count the number of listings in each borough for each year
+# Next, we count the number of listings in each Borough for each year
 boro_counts = {}
 
 for year, gdf in gdfs.items():
 
-    # Spatial join: attach borough name to each point
+    # Spatial join: attach Borough name to each point
     join = gpd.sjoin(
         gdf,
         BORO[['name', 'geometry']],
@@ -360,12 +360,12 @@ for year, gdf in gdfs.items():
         predicate='within'
     )
 
-    # Group by borough name from the join
+    # Group by Borough name from the join
     counts = join.groupby('name_right').size()
     counts = counts.rename('listings')        
     counts.index.name = 'name'                
 
-    # Merge onto borough GeoDataFrame
+    # Merge onto Borough GeoDataFrame
     bc = BORO.merge(
         counts,
         left_on='name',
@@ -373,7 +373,7 @@ for year, gdf in gdfs.items():
         how='left'
     )
 
-    # Replace missing boroughs with 0 listings
+    # Replace missing Boroughs with 0 listings
     bc['listings'] = bc['listings'].fillna(0).astype(int)
     boro_counts[year] = bc
 
@@ -459,7 +459,7 @@ plt.show()
 #| echo: false
 #| warning: false
 ### Increase in Airbnb listings by Borough 
-# Combine all borough counts into one table
+# Combine all Borough counts into one table
 df_boros = pd.DataFrame({
     year: boro_counts[year].set_index("name")["listings"]
     for year in ["2021", "2022", "2023", "2024", "2025"]
@@ -471,16 +471,16 @@ df_boros["x_2025"] = df_boros["2025"]
 df_boros["abs_change"] = df_boros["2025"] - df_boros["2021"]
 df_boros["pct_change"] = (df_boros["abs_change"] / df_boros["2021"].replace(0, pd.NA)) * 100
 
-# Select top 5 boroughs by absolute increase in listings
+# Select top 5 Boroughs by absolute increase in listings
 top5 = df_boros.nlargest(5, "abs_change")
 ```
 
--   From 2021-2025, central areas of London generally saw larger increases. The borough of Westminster saw the **largest increase (close to 40%)** to reach **10,588 listings in 2025** ([Figure 1.2]{.underline}).
+-   From 2021-2025, central areas of London generally saw larger increases. The Borough of Westminster saw the **largest increase (close to 40%)** to reach **10,588 listings in 2025** ([Figure 1.2]{.underline}).
 
 ```{python}
 #| echo: false
 #| warning: false
-# Plot figure to show top 5 boroughs with largest increase in listings. 
+# Plot figure to show top 5 Boroughs with largest increase in listings. 
 fig, ax = plt.subplots(figsize=(8, 6))
 
 boros = top5.index
@@ -558,10 +558,10 @@ df_stock_LA = df_stock[
 
 # Filter and select MSOAs within Greater London 
 """
-This block first extracts names of london boroughs, then filters the df_stock to select only the MSOAs with name strings that contain any of the london borough names, hence forming a dataframe of property stock by MSOA in Greater London only
+This block first extracts names of London Boroughs, then filters the df_stock to select only the MSOAs with name strings that contain any of the London Borough names, hence forming a dataframe of property stock by MSOA in Greater London only
 """
 
-#list of london boroughs
+#list of london Boroughs
 london_boroughs = df_stock_LA.area_name.unique().tolist()
 
 # Build regex pattern — escape special chars and join with |
@@ -675,7 +675,7 @@ df_change_LA = df_change_LA[["name", "stock_change_2020_2024", "listings_change"
 df_change_LA["listings_stock_perc"] = df_change_LA["listings_change"] / df_change_LA["stock_change_2020_2024"] 
 ```
 
--   **Inner London boroughs (orange bars in [Figure 1.4]{.underline}) saw a higher ratio of increases in Airbnb listings compared to increases in housing stock**. Kensington and Chelsea experienced listing growth that was 5 times that of housing stock growth and faced the largest impact of listings growth.  
+-   **Inner London Boroughs (orange bars in [Figure 1.4]{.underline}) saw a higher ratio of increases in Airbnb listings compared to increases in housing stock**. Kensington and Chelsea experienced listing growth that was 5 times that of housing stock growth and faced the largest impact of listings growth.  
 
 ```{python}
 #| echo: false
@@ -740,7 +740,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| warning: false
-### Aggregation of listings to boroughs by count
+### Aggregation of listings to Boroughs by count
 gdf_BORO = gpd.sjoin(gdf, BORO[['gss_code', 'geometry']], how='left', predicate='within')
 BORO = BORO.merge(gdf_BORO.groupby('gss_code').size().rename('listings2025'), on='gss_code', how='left')
 BORO['listings2025'] = BORO['listings2025'].fillna(0).astype(int)
@@ -751,7 +751,7 @@ df_stock_BORO2025 = df_stock_LA[df_stock_LA['Year'] == 2024]
 # Rename BORO columns
 BORO = BORO.rename(columns={'gss_code': 'ecode'}).dissolve(by='ecode', as_index=False)
 
-# Merge in the data on the count of all_properties to borough by gss_code
+# Merge in the data on the count of all_properties to Borough by gss_code
 BORO = BORO.merge(df_stock_BORO2025[['ecode','all_properties']], on='ecode', how='left')
 BORO = BORO.rename(columns={'all_properties': 'allprop2024'})
 
@@ -760,7 +760,7 @@ BORO['listing_prop2025'] = (BORO['listings2025'] / BORO['allprop2024']) * 100
 BORO['listing_prop2025'] = BORO['listing_prop2025'].replace([np.inf, -np.inf], np.nan).fillna(0)
 ```
 
--   At the borough-level ([Figure 1.5]{.underline}), the **proportion of Airbnb listings compared to the overall housing stock ranged from 0.2% to 5.8%**, with Inner London boroughs having a higher share of listings relative to housing stock.  
+-   At the Borough-level ([Figure 1.5]{.underline}), the **proportion of Airbnb listings compared to the overall housing stock ranged from 0.2% to 5.8%**, with Inner London Boroughs having a higher share of listings relative to housing stock.  
 
 ```{python}
 #| echo: false
@@ -898,7 +898,7 @@ for i, color in enumerate(colors):
         edgecolor="gray",
         linewidth=0.35)
 
-# Plot borough boundaries on top
+# Plot Borough boundaries on top
 BORO.boundary.plot(ax=ax, edgecolor='black', linewidth=1.0)
 
 # Create custom legend with class boundaries
@@ -958,7 +958,7 @@ entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 
 ```{python}
 #| echo: false
 #| warning: false
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt #AS note: imported above? can remove if so.
 data = entire_homes_2025["estimated_occupancy_l365d"]
 
 # Define bins every 30 days up to 271
@@ -1042,7 +1042,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| warning: false
-## Map out the average percentages of entire homes / apartments being let out for more than 90 days by borough 
+## Map out the average percentages of entire homes / apartments being let out for more than 90 days by Borough 
 # Convert `entire_homes_2025` to GeoDataFrame
 entire_homes_2025_gdf = gpd.GeoDataFrame(
     entire_homes_2025,
@@ -1050,7 +1050,7 @@ entire_homes_2025_gdf = gpd.GeoDataFrame(
     crs='EPSG:4326'
     ).to_crs(epsg=27700) 
 
-# Spatially join and include the borough name 
+# Spatially join and include the Borough name 
 entire_homes_2025_mapped = gpd.sjoin(entire_homes_2025_gdf, bc[['name', 'geometry']], how='left', predicate='within')
 
 # Summarise spatial findings 
@@ -1129,8 +1129,18 @@ plt.show()
 
 #### 2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?
 
-```{python}
+*\[I wrote the below before I realised that Owen had dont an analysis of this point in his separate doc. I'm leaving it in as a suggested alternative text. I think the below has the possible benefit that it makes the point re business rates, which we may want to come back to as part of our recommendations, and also refers to the details of the question.\]*
 
+The opposition proposes that "professional" landlords' properties should be subject to increased council tax. Leaving aside for the moment the question of how that proposal might be implemented and administered *\[see below...- could refer to recent Budget's proposals on Council Tax for "mansions"\]*, a separate issue is how the opposition would determine which Airbnb landlords would be classed as "professional".
+
+Pending receiving clarity from the opposition on that point, in this report a "professional" landlord is defined as one:
+
+-   whose income from their Airbnb properties is *\[greater than the median UK/London? income\]*. This is on the basis that the plain English meaning of the word "professional" is as a counterpart to "amateur". In this context, "professional" suggests that the landlord could be relying on Airbnb for their living; that is, to provide the income that they would otherwise be earning through employment.
+
+-   whose properties are residential, rather than commercial. This is based on, first, the opposition's reference to Council Tax (which is not paid by commercial landlords; instead they pay business rates) and, second, the context for the opposition's proposal: the letting of three "homes" (including one council-owned property) on Airbnb - the likely argument on the opposition's part being that letting these homes on Airbnb means that they are not available either for private rental (or council tenants) or sale to buyers on the property market.
+
+```{python}
+#AS note: leaving code block here for now
 
 ```
 
@@ -1186,7 +1196,7 @@ for i, (low, high) in enumerate(zip(dist["<90 days"], dist["≥90 days"])):
 plt.xlabel("Percentage of Listings (%)")
 plt.ylabel("Host Portfolio Size")
 plt.title("Distribution of Listings by Host Portfolio Size\nand Estimated Occupancy (2025)")
-#AS note: this plot ultimately needs to be numbered using the same formatting (fig x.y as in section 1)
+#AS note: this plot ultimately needs to be numbered using the same formatting (fig x.y as in section 1. Fig 2.2?)
 plt.xlim(0, 50.5)
 plt.legend(title="Occupancy Category", loc="upper right")
 
@@ -1199,24 +1209,78 @@ plt.show()
 #| warning: false
 df_100plus = df[df["host_size_group"] == "100+"].copy()
 
+#AS note: I haven't really followed up on the same_location_same_host object, but I've looked at the IDs of the hosts owning  > 100 properties a bit lower down.
 same_location_same_host = (
-    df_100plus.groupby(["host_id", "latitude", "longitude"])
+    df_100plus.groupby(["host_id","latitude", "longitude"])
       .size()
       .reset_index(name="count")
       .query("count > 1")
       .sort_values("count", ascending=False)
 )
+#calculate numbers for hosts with 1, more than 1 and 100 or more entire homes on Airbnb
+df_only1 = df[df["host_size_group"] == "1"].copy()
+df_morethan1 = df[df["host_size_group"] != "1"].copy()
+df_5ormore = df[df["listing_count"] >= 5].copy() #for calculations based on a 5+ property threshold
+
+
+propmorethan1 = len(df_morethan1)/len(df) * 100
+print(propmorethan1)
+prop100plus = len(df_100plus)/len(df) * 100
+print(prop100plus)
 ```
+
+-   `{python}len(df_only1)` hosts own only 1 entire property. The remaining `{python}len(df_morethan1)` own two or more properties.
+
+-   `{python}len(df_100plus)` hosts own over 100 properties. This represents `{python}prop100plus` of the total number of entire homes available.
+
+*AS note: I double checked the format for embedded values in the commentary using CoPilot*
 
 #### 2.4 What is the average income from these properties, and how does it compare with median / average incomes in London?
 
+*\[From Owen's week7 doc:\]* The London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. *\[expand source?\]*
+
+```{python}
+#[Expand to include relevant code/calculations]
+```
+
 #### 2.5 What is the profile of these hosts ?
+
+```{python}
+#use 'host_location' column in the dfs to try to compare whether hosts who own > 1 property are more likely to be based outside the UK. Note that there are NA values in some host_location rows; these have been excluded (but the numbers of these are noted below).
+
+only1propUK = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = False)] #20,538 hosts
+only1propUKNAs = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = True)] #25,798 hosts
+only1propUKNAcount = len(only1propUKNAs) - len(only1propUK) #5,260 hosts not giving locations
+only1propUK_per = (len(only1propUK)/len(df_only1))*100 #75.6% of hosts with only 1 property are UK-based (not counting NAs)
+
+propmorethan1UK = df_morethan1[df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na = False)] #20,457 hosts
+propmorethan1UKNAs = df_morethan1[df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na = True)] #29,333 hosts
+morethan1propUKNAcount = len(propmorethan1UKNAs) - len(propmorethan1UK) #8,876 hosts not giving locations
+propmorethan1UK_per = (len(propmorethan1UK)/len(df_morethan1))*100 #67.2% of hosts with more than 1 property are UK-based (not counting NAs)
+
+prop100plusUK = df_100plus[df_100plus.host_location.str.contains(r'United Kingdom', regex= False, na = False)] #2,003 hosts
+prop100plusUKNA = df_100plus[df_100plus.host_location.str.contains(r'United Kingdom', regex= False, na = True)] #2,282 hosts
+prop100plusUKNAcount = len(prop100plusUKNA) - len(prop100plusUK)#279 hosts not giving location
+prop100plusUK_per = (len(prop100plusUK)/len(df_100plus))*100 #72.8% of hosts with more than 100 properties are UK-based (not including NAs)
+
+#investigate the hosts that own more than 100 properties to establish where they are based, how many properties each of them own and whether it can be established that they are individuals or companies
+df_100plus_grouped = df_100plus.groupby(['host_id', 'host_name', 'host_location']).size().reset_index(name = "number_of_properties").sort_values("number_of_properties", ascending=False) 
+
+df_100plus_grouped_len = len(df_100plus_grouped) #13 hosts
+df_100plus_grouped['number_of_properties'].sum() #total of 2,472 properties
+```
+
+A large majority of hosts renting out entire rooms/apts in London, whether they rent out one or more than 100, are based in the UK.
+
+However, `{python}df_100plus_grouped_len` owners between them own `{python}df_100plus_grouped['number_of_properties'].sum()` entire homes/apartments that they let on Airbnb. The host with the most properties is a company based in Dubai; three other host names suggest that they are companies rather than individuals. *\[AS note: possible link to pros/cons of Council Tax approach vs business rates approach: these hosts may be paying a huge amount of tax already if they are properly registered for business rates already - this could be entirely lawful and be compliant with planning permission too.\]*
 
 ## **3. How many properties would be affected by the opposition’s proposal?**
 
-```{python}
+The opposition is proposing that "professional" landlords be required to register their properties and pay higher Council Tax rates.
 
-```
+On the basis that any individual owning two or more properties is a "professional" landlord, this would mean that `{python}len(propmorethan1UK)` properties would need to be registered.
+
+If, instead, the threshold is set at \\5 properties, then `{python}len(df_5ormore)` would require registration.
 
 ## **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
 
