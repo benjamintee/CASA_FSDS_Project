@@ -96,7 +96,7 @@ e.      What are options to reframe the narrative to one about social mobil
 
 ## **1. Is Airbnb ‘out of control’ in London?**
 
-Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. This chapter provides a systematic analysis of the situation. 
+Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. The increase of short-term lets and its potential to damage the housing supply in London is a concern that the Mayor's office raised some time ago: www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply (19 July 2023) and is one of the reasons that London's 90-day limit was introduced. Indeed, the Mayor called for a registration system to be put in place in 2019 (www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law). This chapter provides a systematic analysis of the situation. 
 
 ```{python}
 #| echo: false
@@ -927,7 +927,7 @@ plt.show()
 
 #### 1.5 How many listings potentially breach the current 90-day limit for rentals?
 
--   Since 2017, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
+-   Since 2017 *(AS note: I think 2015: www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law)*, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
 
 ```{python}
 #| echo: false
@@ -1082,6 +1082,10 @@ The spatial pattern is consistent with earlier trends. Boroughs in inner London 
 
 #### 1.6 Taken together, do these trends suggest a problem and what is the impact on communities?
 
+*[AS note: just to flag that previous Mayoral press releases may be a good source of high level commentary about the impact, and be quite helpful in the context of 'advising' the Mayor now. e.g. https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply]*
+
+*[AS note 2: we could perhaps refer to measures taken in other jurisdictions here and the reasons (basically competition for housing) but we should also talk about the positives i.e. money in Londoners' pockets for renting out their spare rooms/tourist income etc. https://www.bbc.co.uk/travel/article/20240701-what-does-a-world-without-airbnb-look-like; https://hbr.org/2024/02/what-does-banning-short-term-rentals-really-accomplish ]*
+
 ## **2. How many professional landlords are there?**
 
 #### 2.1 What is the distribution of Airbnb types in London?
@@ -1129,7 +1133,7 @@ plt.show()
 
 #### 2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?
 
-*\[I wrote the below before I realised that Owen had dont an analysis of this point in his separate doc. I'm leaving it in as a suggested alternative text. I think the below has the possible benefit that it makes the point re business rates, which we may want to come back to as part of our recommendations, and also refers to the details of the question.\]*
+*\[I wrote the below before I realised that Owen had dont an analysis of this point in his separate doc. I'm leaving it in as some of it may be helpful. I think the below has the possible benefit that it makes the point re business rates, which we may want to come back to as part of our recommendations, and also refers to the details of the question.\]*
 
 The opposition proposes that "professional" landlords' properties should be subject to increased council tax. Leaving aside for the moment the question of how that proposal might be implemented and administered *\[see below...- could refer to recent Budget's proposals on Council Tax for "mansions"\]*, a separate issue is how the opposition would determine which Airbnb landlords would be classed as "professional".
 
@@ -1209,7 +1213,7 @@ plt.show()
 #| warning: false
 df_100plus = df[df["host_size_group"] == "100+"].copy()
 
-#AS note: I haven't really followed up on the same_location_same_host object, but I've looked at the IDs of the hosts owning  > 100 properties a bit lower down.
+#AS note: I haven't really followed up on the same_location_same_host object that was created below, but I've looked at the IDs of the hosts owning  > 100 properties a bit lower down.
 same_location_same_host = (
     df_100plus.groupby(["host_id","latitude", "longitude"])
       .size()
@@ -1237,7 +1241,7 @@ print(prop100plus)
 
 #### 2.4 What is the average income from these properties, and how does it compare with median / average incomes in London?
 
-*\[From Owen's week7 doc:\]* The London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. *\[expand source?\]*
+*\[From Owen's week7 doc; incorporate and expand further to include his results:\]* The London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. *\[expand source?\]*
 
 ```{python}
 #[Expand to include relevant code/calculations]
@@ -1246,7 +1250,7 @@ print(prop100plus)
 #### 2.5 What is the profile of these hosts ?
 
 ```{python}
-#use 'host_location' column in the dfs to try to compare whether hosts who own > 1 property are more likely to be based outside the UK. Note that there are NA values in some host_location rows; these have been excluded (but the numbers of these are noted below).
+#use 'host_location' column in the dfs to try to compare whether hosts who own > 1 property are more likely to be based outside the UK. Note that there are NA values in some host_location rows; these have been excluded (method for doing so queried with CoPilot) (but the numbers of these are noted below).
 
 only1propUK = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = False)] #20,538 hosts
 only1propUKNAs = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = True)] #25,798 hosts
@@ -1272,13 +1276,13 @@ df_100plus_grouped['number_of_properties'].sum() #total of 2,472 properties
 
 A large majority of hosts renting out entire rooms/apts in London, whether they rent out one or more than 100, are based in the UK.
 
-However, `{python}df_100plus_grouped_len` owners between them own `{python}df_100plus_grouped['number_of_properties'].sum()` entire homes/apartments that they let on Airbnb. The host with the most properties is a company based in Dubai; three other host names suggest that they are companies rather than individuals. *\[AS note: possible link to pros/cons of Council Tax approach vs business rates approach: these hosts may be paying a huge amount of tax already if they are properly registered for business rates already - this could be entirely lawful and be compliant with planning permission too.\]*
+However, `{python}df_100plus_grouped_len` owners between them own `{python}df_100plus_grouped['number_of_properties'].sum()` entire homes/apartments that they let on Airbnb. The host with the most properties is a company based in Dubai; three other host names suggest that they are companies rather than individuals. *\[AS note: possible link to pros/cons of Council Tax approach vs business rates approach: these hosts may be paying a huge amount of tax already if they are properly registered for business rates already - this could be entirely lawful (and be compliant with planning permission too).\]*
 
 ## **3. How many properties would be affected by the opposition’s proposal?**
 
 The opposition is proposing that "professional" landlords be required to register their properties and pay higher Council Tax rates.
 
-On the basis that any individual owning two or more properties is a "professional" landlord, this would mean that `{python}len(propmorethan1UK)` properties would need to be registered.
+On the basis set out above that any individual owning two or more properties is a "professional" landlord, this would mean that `{python}len(propmorethan1UK)` properties would need to be registered.
 
 If, instead, the threshold is set at \\5 properties, then `{python}len(df_5ormore)` would require registration.
 
