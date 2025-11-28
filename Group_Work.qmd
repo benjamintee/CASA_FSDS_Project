@@ -19,9 +19,9 @@ format:
     include-in-header:
       text: |
         \addtokomafont{disposition}{\rmfamily}
-    mainfont: Arial
-    sansfont: "Arial"
-    monofont: "Arial"
+    mainfont: Spectral
+    sansfont: "Roboto Flex"
+    monofont: "Liberation Mono"
     papersize: a4
     geometry:
       - top=25mm
