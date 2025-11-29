@@ -96,7 +96,7 @@ e.      What are options to reframe the narrative to one about social mobil
 
 ## **1. Is Airbnb ‘out of control’ in London?**
 
-Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. The increase of short-term lets and its potential to damage the housing supply in London is a concern that the Mayor's office raised some time ago: www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply (19 July 2023) and is one of the reasons that London's 90-day limit was introduced. Indeed, the Mayor called for a registration system to be put in place in 2019 (www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law). This chapter provides a systematic analysis of the situation. 
+Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. The increase of short-term lets and its potential to damage the housing supply in London is a concern that the Mayor's office had raised [previously](https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply), and is one of the reasons that London's 90-day limit was introduced. Indeed, the Mayor called for a registration system to be put in place in [2019](www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law). This chapter provides a systematic analysis of the situation. 
 
 ```{python}
 #| echo: false
@@ -155,7 +155,7 @@ for year, info in config.items():
     # Read only the header (first row)
     header_cols = pd.read_csv(url, nrows=0).columns.tolist()
 
-    # Keep only columns that actually exist in the file
+    # Keep only columns that actually exist in the file (Fix for 'estimated_occupancy_l365d' only in 2025)
     valid_cols = [c for c in cols if c in header_cols]
     
     dfs[year] = pd.read_csv(url, compression='gzip', low_memory=False, usecols= valid_cols)
@@ -200,7 +200,7 @@ for year, df in dfs.items():
 na_summary = pd.DataFrame(row_na_summary).T
 na_summary
 
-# The summary shows that rows with 7 or more NAs comprise about 10,000 entries in 2024 and 2025. These are typically rows that do not have any reviews or do not have a price and data on bathrooms and bedrooms.  
+# The na_summary shows that rows with 7 or more NAs comprise about 10,000 entries in 2024 and 2025. These are typically rows that do not have any reviews or do not have a price and data on bathrooms and bedrooms.  
 ```
 
 ```{python}
@@ -251,7 +251,7 @@ for year, df in dfs.items():
     for b in bools:
         if b in df.columns:
             print(f"  Converting {b} → bool")
-            df[b] = df[b].replace({'f': False, 't': True}).astype('bool')
+            df[b] = df[b].replace({'f': False, 't': True}).infer_objects(copy=False).astype('bool')
 
     # Date columns
     for d in dates:
@@ -290,7 +290,9 @@ print("\nAll dataframes cleaned successfully!")
 ```
 
 ```{python}
-#AS note: add echo/warning/output?
+#| echo: false
+#| warning: false
+#| output: false
 listings_2021 = len(dfs["2021"])
 listings_2025 = len(dfs["2025"])
 listings_pct_change = (listings_2025 - listings_2021) / listings_2021 * 100
@@ -303,7 +305,7 @@ listings_pct_change2223 = (listings_2023 - listings_2022) / listings_2022 * 100
 
 -   Overall growth was largely driven by a **sharp increase in listings from 2022-2023 (↑`{python} f"{listings_pct_change2223:.0f}%"`**), due to higher host registrations and marketing efforts. Growth rates over the last two years have moderated.
 
-[^1]: host_comparison = host_listing_counts.merge( host_reported_counts, on="host_id", how="left" )Data compiled from Inside Airbnb ([http://insideairbnb.com](http://insideairbnb.com/)) which uses public information on the rental outlets available for booking at specific months in each year.  While owners have exercised care with the processing cleaning and analysis, this dataset is the best publicly available estimate of Airbnb listings. We further process the data to remove listings with duplicate IDs, or more than six null fields, which typically reflects the fact that these entries have no reviews or incomplete information.  
+[^1]: Data compiled from Inside Airbnb ([http://insideairbnb.com](http://insideairbnb.com/)) which uses public information on the rental outlets available for booking at specific months in each year.  While data owners have exercised care with the processing cleaning and analysis, this dataset is the best publicly available estimate of Airbnb listings. We further process the data to remove listings with duplicate IDs, or more than six null fields, which typically reflects the fact that these entries have no reviews or incomplete information.  
 
 [^2]: Given longitudinal analysis limitations, data does not include listings which dropped off from year to year.
 
@@ -473,9 +475,14 @@ df_boros["pct_change"] = (df_boros["abs_change"] / df_boros["2021"].replace(0, p
 
 # Select top 5 Boroughs by absolute increase in listings
 top5 = df_boros.nlargest(5, "abs_change")
+
+# Parse out references for key findings 
+top_boro = top5["abs_change"].idxmax()
+top_boro_pct_change = top5.loc[top_boro, "pct_change"].round(0)
+top_boro_2025 = top5.loc[top_boro, "2025"]
 ```
 
--   From 2021-2025, central areas of London generally saw larger increases. The Borough of Westminster saw the **largest increase (close to 40%)** to reach **10,588 listings in 2025** ([Figure 1.2]{.underline}).
+-   From 2021-2025, central areas of London generally saw larger increases. The **`{python} f"Borough of {top_boro}"`** saw the **largest increase in listings `{python} f"Borough of {top_boro_pct_change}%"`** (to reach **`{python} f"Borough of {top_boro_2025:,.}%"`** **listings in 2025** ([Figure 1.2]{.underline}).
 
 ```{python}
 #| echo: false
@@ -601,7 +608,7 @@ stock_growth = (summary_stock.loc[2024, "total_stock"] - summary_stock.loc[2020,
 #| echo: false
 #| warning: false
 ### Plot a line chart to show the increase in housing stock in London 
-fig, ax = plt.subplots(figsize=(8,6))
+fig, ax = plt.subplots(figsize=(8,4))
 
 ax.plot(
     stock_table.index,
@@ -707,6 +714,7 @@ ax.bar(
     color=colors)
 
 # Axis labels & title 
+ax.set_xticks(range(len(df_bar)))
 ax.set_xticklabels(df_bar["name"], rotation= 90, ha="right", fontsize=10)
 ax.set_ylabel("Ratio of increase in listings to housing stock", fontsize=11)
 ax.tick_params(axis="y", labelsize=12)
@@ -724,7 +732,7 @@ ax.legend(handles, ["Inner London Boroughs", "Outer London Boroughs"], fontsize=
 
 # Add caption
 plt.figtext(
-    0.01, -0.05,
+    0.01, -0.08,
     "Source: Listings data from Insideairbnb.com, \nBorough boundaries from data.london.gov.uk, Housing Stock from UK Valuation Office Agency.\n"
     "Note: As housing stock in 2025 was unavailable, changes were compared over the last five years\n"
     "(i.e. Airbnb listings (2021–2025), housing stock (2020–2024)).",
@@ -811,7 +819,8 @@ ax.text(
     ha="left",
     va="bottom")
 
-# Axis labels and title 
+# Axis labels and title
+ax.set_xticks(range(len(df_bar)))
 ax.set_xticklabels(df_bar["name"], rotation=90, ha="right", fontsize=12)
 ax.tick_params(axis="y", labelsize=12)
 ax.set_ylabel("Listings as percentage of Housing Stock (%)", fontsize=12)
@@ -888,7 +897,7 @@ cmap = plt.cm.viridis
 colors = [cmap(i / (k-1)) for i in range(k)]
 
 # Create figure
-fig, ax = plt.subplots(1, 1, figsize=(8, 7))
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
 # Plot each class separately for categorical legend
 for i, color in enumerate(colors):
@@ -927,7 +936,7 @@ plt.show()
 
 #### 1.5 How many listings potentially breach the current 90-day limit for rentals?
 
--   Since 2017 *(AS note: I think 2015: www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law)*, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
+-   Since 2015 *(AS note: I think 2015: www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law)*, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
 
 ```{python}
 #| echo: false
@@ -937,7 +946,7 @@ plt.show()
 df_2025 = dfs['2025'] 
 entire_homes_2025 = df_2025[df_2025["room_type"] == "Entire home/apt"]
 entire_homes_2025_n = len(entire_homes_2025)
-entire_homes_2025_per = round(entire_homes_2025_n / listings_2025 * 100, 0)
+entire_homes_2025_per = round(entire_homes_2025_n / len(df_2025) * 100, 0)
 
 # Number of entire homes that had estimated occupancy > 90 days 
 entire_homes_2025_90 = entire_homes_2025[entire_homes_2025['estimated_occupancy_l365d'] > 90]
@@ -958,7 +967,6 @@ entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 
 ```{python}
 #| echo: false
 #| warning: false
-import matplotlib.pyplot as plt #AS note: imported above? can remove if so.
 data = entire_homes_2025["estimated_occupancy_l365d"]
 
 # Define bins every 30 days up to 271
@@ -975,6 +983,7 @@ for t in thresholds:
 summary_df = pd.DataFrame(summary_rows, columns=["Days", "Count", "% total"])
 
 # Plot histogram with summary table at top 
+from matplotlib.ticker import FuncFormatter
 fig, ax = plt.subplots(figsize=(8, 5))
 
 counts, edges, patches = ax.hist(
@@ -1003,6 +1012,7 @@ ax.set_title(
 ax.set_xlabel("Estimated Occupancy (days per year)", fontsize=12)
 ax.tick_params(axis="y", labelsize=12)
 ax.set_ylabel("Number of Listings - Entire Homes / Apts", fontsize=12)
+ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: f"{int(x):,}"))
 
 fig.text(
     0.03, -0.02,
@@ -1082,9 +1092,9 @@ The spatial pattern is consistent with earlier trends. Boroughs in inner London 
 
 #### 1.6 Taken together, do these trends suggest a problem and what is the impact on communities?
 
-*[AS note: just to flag that previous Mayoral press releases may be a good source of high level commentary about the impact, and be quite helpful in the context of 'advising' the Mayor now. e.g. https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply]*
+*\[AS note: just to flag that previous Mayoral press releases may be a good source of high level commentary about the impact, and be quite helpful in the context of 'advising' the Mayor now. e.g. https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply\]*
 
-*[AS note 2: we could perhaps refer to measures taken in other jurisdictions here and the reasons (basically competition for housing) but we should also talk about the positives i.e. money in Londoners' pockets for renting out their spare rooms/tourist income etc. https://www.bbc.co.uk/travel/article/20240701-what-does-a-world-without-airbnb-look-like; https://hbr.org/2024/02/what-does-banning-short-term-rentals-really-accomplish ]*
+*\[AS note 2: we could perhaps refer to measures taken in other jurisdictions here and the reasons (basically competition for housing) but we should also talk about the positives i.e. money in Londoners' pockets for renting out their spare rooms/tourist income etc. https://www.bbc.co.uk/travel/article/20240701-what-does-a-world-without-airbnb-look-like; https://hbr.org/2024/02/what-does-banning-short-term-rentals-really-accomplish \]*
 
 ## **2. How many professional landlords are there?**
 
@@ -1148,19 +1158,23 @@ Pending receiving clarity from the opposition on that point, in this report a "p
 
 ```
 
-#### 2.3 How many hosts have listings for two or more entire properties (homes / apartments)? What is the distribution of listings for such hosts?
+#### 2.3 How many hosts have listings for two or more entire properties (homes / apartments)? 
 
 ```{python}
 #| echo: false
 #| warning: false
+# Counting the number of entire homes / apartments for each host id 
 host_sizes = (
     entire_homes_2025
     .groupby("host_id")["id"]
     .count()
     .reset_index(name="listing_count"))
 
+# Merging the total number of entire homes back to the listings dataframe
 df = entire_homes_2025.merge(host_sizes, on="host_id", how="left")
 
+# Given the wide and long-tailed distribution, we visualise them in discrete buckets instead
+# Using 1, 2, 10, 100, 100+ as discrete categories for a sense of scale 
 bins = [0, 1, 2, 10, 100, float("inf")]
 labels = ["1", "2", "3-10", "11-100", "100+"]
 
@@ -1170,39 +1184,87 @@ df["host_size_group"] = pd.cut(
     labels=labels,
     include_lowest=True
 )
-
+# Further check for each bucket of listings, how many were let out for 90 or more days
 df["occupancy_group"] = df["estimated_occupancy_l365d"].apply(
-    lambda x: "<90 days" if x < 90 else "≥90 days"
-)
-#AS note: Steps 1 - 3 now aren't named; remove "Step 4"?
-# Step 4: Compute % of listings in each bracket
+    lambda x: "<90 days" if x < 90 else "≥90 days")
+
+# Compute % of listings in each bucket
 table = df.groupby(["host_size_group", "occupancy_group"]).size().unstack(fill_value=0)
 dist = table / table.sum().sum() * 100
 labels = ["1", "2", "3-10", "11-100", "100+"]
 dist = dist.reindex(labels)
 print(dist)
 
-import matplotlib.pyplot as plt
+# Computing number of hosts for each category 
+host_count = (
+    host_sizes
+    .assign(host_size_group=pd.cut(
+        host_sizes["listing_count"],
+        bins=bins,
+        labels=labels,
+        include_lowest=True))
+    .groupby("host_size_group")["host_id"]
+    .nunique()
+    .reindex(labels))
 
-plt.figure(figsize=(10, 6))
-colors = ["tomato", "skyblue"]  
+# Plot two panel figure with bar chart and bubble plot for hosts
+fig, (ax1, ax2) = plt.subplots(
+    ncols=2,
+    figsize=(10, 5),
+    gridspec_kw={'width_ratios': [4, 1]})
 
-# Plot stacked horizontal bars
-plt.barh(dist.index, dist["<90 days"], color=colors[0], label="< 90 days")
-plt.barh(dist.index, dist["≥90 days"],
+colors = ["tomato", "skyblue"]
+
+# Horizontal bar chart (Left)
+ax1.barh(dist.index, dist["<90 days"], color=colors[0], label="< 90 days")
+ax1.barh(dist.index, dist["≥90 days"],
          left=dist["<90 days"], color=colors[1], label="≥ 90 days")
 
-# Add % labels on the stacks
+# Add % labels
 for i, (low, high) in enumerate(zip(dist["<90 days"], dist["≥90 days"])):
-    plt.text(low / 2, i, f"{low:.1f}%", va="center", ha="center", fontsize=11)
-    plt.text(low + high / 2, i, f"{high:.1f}%", va="center", ha="center", fontsize=11)
+    ax1.text(low / 2, i, f"{low:.0f}%", va="center", ha="center", fontsize=12)
+    ax1.text(low + high / 2, i, f"{high:.0f}%", va="center", ha="center", fontsize=12)
 
-plt.xlabel("Percentage of Listings (%)")
-plt.ylabel("Host Portfolio Size")
-plt.title("Distribution of Listings by Host Portfolio Size\nand Estimated Occupancy (2025)")
-#AS note: this plot ultimately needs to be numbered using the same formatting (fig x.y as in section 1. Fig 2.2?)
-plt.xlim(0, 50.5)
-plt.legend(title="Occupancy Category", loc="upper right")
+# Titles and labels  
+fig.suptitle("Figure 2.2 Distribution of Listings by Host Portfolio Size and Estimated Occupancy (2025)",
+              fontsize=14)
+ax1.set_xlabel("Percentage of Entire Home / Apartment Listings (%)", fontsize=12)
+ax1.set_ylabel("Number of listings by unique host", fontsize=12)
+ax1.set_xlim(0, 50.5)
+ax1.legend(title="Occupancy Category", loc="upper right", fontsize=12)
+ax1.tick_params(labelsize=12)
+
+# Bubble chart (Right)
+y_pos = np.arange(len(dist.index))
+bubble_sizes = host_count.values
+scaled_sizes = bubble_sizes / bubble_sizes.max() * 2000  
+
+ax2.scatter(
+    [0] * len(host_count),   
+    y_pos,
+    s=scaled_sizes,
+    alpha=0.6,
+    color="gray",
+    edgecolor="black")
+
+# Format bubble axis to match primary y-axis
+ax2.set_yticks(y_pos)
+ax2.set_yticklabels([])     # hide labels on bubble axis
+ax2.set_xticks([])
+ax2.set_xlim(-0.2, 0.6)
+ax2.set_ylim(ax1.get_ylim())   # ensures identical vertical span
+ax2.set_title("Number of Hosts", fontsize=12, pad=10)
+
+# Add numeric labels beside bubbles
+for y, val in zip(y_pos, bubble_sizes):
+    ax2.text(0.2, y, f"{val:,}", va="center", fontsize=11)
+
+# Figure Caption
+fig.text(
+    0.03, -0.02,
+    "Source: Listings from Insideairbnb.com",
+    ha='left',
+    fontsize=11)
 
 plt.tight_layout()
 plt.show()
@@ -1211,9 +1273,10 @@ plt.show()
 ```{python}
 #| echo: false
 #| warning: false
+# Are there really hosts with more than 100+ listings? Who are they? 
 df_100plus = df[df["host_size_group"] == "100+"].copy()
 
-#AS note: I haven't really followed up on the same_location_same_host object that was created below, but I've looked at the IDs of the hosts owning  > 100 properties a bit lower down.
+# Investigating if these are hosts with multiple listings to evade the 90 day rule
 same_location_same_host = (
     df_100plus.groupby(["host_id","latitude", "longitude"])
       .size()
@@ -1221,6 +1284,7 @@ same_location_same_host = (
       .query("count > 1")
       .sort_values("count", ascending=False)
 )
+
 #calculate numbers for hosts with 1, more than 1 and 100 or more entire homes on Airbnb
 df_only1 = df[df["host_size_group"] == "1"].copy()
 df_morethan1 = df[df["host_size_group"] != "1"].copy()
@@ -1233,11 +1297,15 @@ prop100plus = len(df_100plus)/len(df) * 100
 print(prop100plus)
 ```
 
--   `{python}len(df_only1)` hosts own only 1 entire property. The remaining `{python}len(df_morethan1)` own two or more properties.
+An analysis of the number of entire homes / apartments listed by each host[^6] shows that a **small number of hosts are responsible for a disproportionately large number of listings (Figure 2.2)**. Previous studies have found that such "multi-listing hosts" are significant drivers of increase in rent and Airbnb's profit in London[^7].
 
--   `{python}len(df_100plus)` hosts own over 100 properties. This represents `{python}prop100plus` of the total number of entire homes available.
+[^6]: We assume that hosts either [own]{.underline} the entire home / apartment that they list, or have [written permission]{.underline} from owners to list on Airbnb.
 
-*AS note: I double checked the format for embedded values in the commentary using CoPilot*
+[^7]: Todd et al. and Cox and Slee BT: Need to cite this properly and reference the key finding.
+
+-   **`{python} len(df_only1)`** hosts own only 1 entire property. **`{python} len(df_morethan1)`** hosts own two or more properties.
+
+-   **`{python} len(df_100plus)`** hosts own over 100 properties. This represents **`{python} prop100plus`** of the total number of entire homes available.
 
 #### 2.4 What is the average income from these properties, and how does it compare with median / average incomes in London?
 
