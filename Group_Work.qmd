@@ -71,7 +71,7 @@ Are there any areas on which you would appreciate more detailed feedback if we'r
 
 ### **1. Is Airbnb ‘out of control’ in London?**
 
-Opposition critics have suggested that the growth and spread of Airbnb’s in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. This chapter provides a systematic analysis of the situation.
+Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties and flouting rental restrictions to make a profit. The increase of short-term lets and its potential to damage the housing supply in London is a concern that the Mayor's office had raised [previously](https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply), and is one of the reasons that London's 90-day limit was introduced. Indeed, the Mayor called for a registration system to be put in place in [2019](www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law). This chapter provides a systematic analysis of the situation. 
 
 #### What is the growth trend in Airbnb listings across London?
 
@@ -79,7 +79,7 @@ Since 2021 London has seen a dramatic increase in the amount of Airbnb listings 
 
 #### How does this compare to changes in the overall housing stock?
 
-In comparison to the **25% increase** of Airbnb listings, London housing stock increases lag significantly behind. Between 2020 and 2024, London grew from **3.68M to 3.81M** properties constituting a relatively mere **3.7% increase** in housing stock. Unsurprisingly, when comparing the ratio of listings increases and housing stock increases at the borough level, central London boroughs display more accelerated rates of listings increases when compared to housing stock increases than peripheral boroughs. In particular Kensington and Chelsea saw **5 times** more new Airbnb listings than new housing stock between 2020 and 2024.
+In comparison to the **25% increase** of Airbnb listings, London housing stock increases lag significantly behind. Between 2020 and 2024, London grew from **3.68M to 3.81M** properties constituting a relatively mere **3.7% increase** in housing stock. Unsurprisingly, when comparing the ratio of listings increases and housing stock increases at the borough level, central London boroughs display more accelerated rates of listings increases compared to housing stock increases than peripheral boroughs. In particular Kensington and Chelsea saw **5 times** more new Airbnb listings than new housing stock between 2020 and 2024.
 
 Across all London boroughs in 2025, the average amount of listings as a percent total housing stock is **1.86%**, though eleven boroughs exceed this average. All eleven boroughs are located in central London with Westminster and Kensington and Chelsea having close to **6%** of their total housing stock listed as an Airbnb. The combination of this accelerated and geographically concentrated growth in listings and a tightening housing market suggests that Airbnb can be considered out of control, particularly within central London boroughs.
 
@@ -91,13 +91,21 @@ Considering just *Entire Home/Apt* listings (67% of all listings), **12,081 or 2
 
 ### **2. How many professional landlords are there?**
 
-Relevent literature investigating how Airbnb listings affect local rent and property value (Todd et al., Cox and Slee) suggest that a commercial or professional landlord can be a company or individual that owns and operates 2 or more *Entire Home/Apt* listings.
+Relevent literature investigating how Airbnb listings affect local rent and property value (Todd et al., Cox and Slee) suggest that a commercial or professional landlord can be a company or individual that owns and operates 2 or more *Entire Home/Apt* listings. With this, chapters two and three undertake analysis of just *Entire Homes/Apt* listings with additional emphases on properties that violate the previously mentioned 90 day maximum let limit and the viability of Airbnb as a primary source of income.
 
-**NOTE TO SELF: ADMIN DOCUMENT AND DISCUSSIONS USED FOR THE NEXT PARTS!! THEN SEND PULL REQUEST BEN**n
+#### Professional landlords and economic viability
+
+As of 2025, London is home to **32,704 unique hosts** of *Entire Home/Apt* listings, of which **27,108 (85%)** are landlords to a single a property. This means, assuming professional landlords are hosts with two or more properties, that there are **4,966 (15%) professional hosts** in London. After calculating a median yearly income range among multi-listing hosts for standard lets (any listings let for fewer than 90 days) and frequent lets (any listing let for more than 90 days) of **£5,600 - £30,300** and combing this with the median income of London (provided by *London Data Store*) of **£34,100**, an analysis of financial viability of becoming a professional host is possible. Using the more conservative yearly income of £5,600, **owning seven properties** becomes the threshold to make more than the London median income. In contrast, **owning just two properties** is sufficient to make close to double the median income of London when letting for more than 90 days. Given the range of income, one can definitively suggest that owning between just **2 and 7** listings is sufficient to make Airbnb a source of primary income.
+
+Despite the clear results of the above analysis, significant assumptions were made in it's calculation. The estimated revenue of each listing was taken from *Inside Airbnb* though a significant amount of listings contained a null value for its yearly estimated revenue. Thus, the yearly revenue range above (£5,600 - £30,300) was calculated using the mean revenue of Airbnbs owned by multi-listing hosts with a valid 365 day revenue estimate. Additionally, a similar revenue range was calculated for single-listing properties of **£4,858 - £24,000**. These lower values are to be expected, though even with only a single property let for over 90 days, one, on average, makes **70%** of the London median income, further displaying the economic benefit of circumventing London's 90 day let limit.
 
 ### **3. How many properties would be affected by the opposition’s proposal?**
 
-Draft answer due Week 9.
+#### Opposition proposal and effects if enacted
+
+The opposition has suggested that all professional landlords must register their properties with their council and subsequently face increased council tax. However, this raises concerns as council tax is currently based on the market price of a property in 1991; which suggests that raising council tax for some would result in increased council tax for all.
+
+Despite uncertainty about the ability to target specific properties with increased council tax, assuming the opposition's proposal is enacted a number of conclusions can be made. First, assuming that all properties are only listed once, **30,154** properties owned by professional landlords would be subject to increased council tax. Second, This makes up **53% of all *Entire Home/Apt listings***, meaning that over half of these listings are owned by only 15% of hosts. Lastly, inspecting the amount of properties that breach the 90 day let limit again displays popularity of this loophole. Of all *Entire Home/Apt* listings, **7%** are owned by single-list hosts and let for more than 90 days while **14%** are owned by professional hosts and let for more than 90 days. Considering that professional host take advantage of over-letting **twice as often** as single-list hosts and own a disproportionate amount of Airbnb listings, the next two chapters will discuss how to apply the opposition's desire to target professional hosts in a way that does not raise tax for all.
 
 ### **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
 
