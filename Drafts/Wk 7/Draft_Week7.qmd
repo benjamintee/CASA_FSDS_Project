@@ -1245,6 +1245,108 @@ plt.tight_layout()
 plt.show()
 ```
 
+```{Python} 
+{python}
+# Define masks
+single = df["host_size_group"] == "1"
+multi  = df["host_size_group"] != "1"
+
+standard = df["occupancy_group"] == "<90 days"
+frequent = df["occupancy_group"] == "≥90 days"
+
+# Define origin categories
+def origin_category(x):
+    if pd.isna(x):
+        return "Unknown"
+    elif "United Kingdom" in x:
+        return "UK"
+    else:
+        return "Non-UK"
+
+df["origin_group"] = df["host_location"].apply(origin_category)
+
+# Build a tidy dataset with 4 groups × 3 origin categories
+group_labels = [
+    ("Single (Standard)" , single & standard),
+    ("Single (Frequent)" , single & frequent),
+    ("Multi (Standard)"  , multi  & standard),
+    ("Multi (Frequent)"  , multi  & frequent),
+]
+
+rows = []
+for name, mask in group_labels:
+    subset = df.loc[mask]
+    total_hosts = subset["host_id"].nunique()
+
+    for cat in ["UK", "Non-UK", "Unknown"]:
+        count = subset.loc[subset["origin_group"] == cat, "host_id"].nunique()
+        pct = (count / total_hosts * 100) if total_hosts > 0 else 0
+        rows.append([name, cat, count, pct])
+
+df_plot = pd.DataFrame(rows, columns=["Group", "Country", "Count", "Percent"])
+
+df_pct  = df_plot.pivot(index="Group", columns="Country", values="Percent")
+df_cnt  = df_plot.pivot(index="Group", columns="Country", values="Count")
+
+groups_order = ["Single (Standard)", "Single (Frequent)",
+                "Multi (Standard)", "Multi (Frequent)"]
+
+df_pct = df_pct.loc[groups_order]
+df_cnt = df_cnt.loc[groups_order]
+
+# Colors
+colors = {"UK": "#6BAED6", "Non-UK": "#FD8D3C", "Unknown": "#D3D3D3"}
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+x = np.arange(len(groups_order)) * 0.7
+bar_width = 0.5
+bottom = np.zeros(len(groups_order))
+
+for country in ["UK", "Non-UK", "Unknown"]:
+    pct_vals = df_pct[country].values
+    count_vals = df_cnt[country].values
+
+    ax.bar(
+        x, pct_vals, width=bar_width, bottom=bottom,
+        color=colors[country], edgecolor="black", label=country
+    )
+
+    # Labels: “XX% (X,XXX)”
+    for i, (pct, count) in enumerate(zip(pct_vals, count_vals)):
+        if pct > 0:
+            ax.text(
+                x[i],
+                bottom[i] + pct_vals[i]/2,
+                f"{pct:.0f}% ({count:,})",
+                ha="center", va="center", fontsize=11
+            )
+
+    bottom += pct_vals
+
+# Axis labels and formatting
+ax.set_xticks(x)
+ax.set_xticklabels(groups_order, fontsize=12)
+ax.set_ylabel("Percentage of Hosts (%)", fontsize=12)
+ax.set_ylim(0, 105)
+
+fig.suptitle(
+    "Distribution of Host Origins by Listing Size and Occupancy Category (2025)",
+    fontsize=15, y=0.97
+)
+
+# Legend on the right
+ax.legend(
+    title="Host Origin",
+    fontsize=12, title_fontsize=12,
+    bbox_to_anchor=(1.04, 0.5), loc="center left"
+)
+
+plt.subplots_adjust(right=0.82, bottom=0.18)
+plt.tight_layout()
+plt.show()
+
+```
 {{< pagebreak >}}
 
 # Briefing

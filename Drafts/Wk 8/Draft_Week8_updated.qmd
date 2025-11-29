@@ -138,7 +138,7 @@ cols = ['id', 'listing_url', 'last_scraped', 'name',
     'property_type', 'room_type', 'accommodates', 
     'bathrooms', 'bathrooms_text', 'bedrooms', 'beds', 
     'amenities', 'price', 'minimum_nights', 'maximum_nights', 
-    'availability_365', 'estimated_occupancy_l365d', 'number_of_reviews', 
+    'availability_365', 'estimated_occupancy_l365d', 'estimated_revenue_l365d', 'number_of_reviews', 
     'first_review', 'last_review', 'review_scores_rating', 'reviews_per_month']
 
 # Set up empty dictionary dfs 
@@ -155,7 +155,7 @@ for year, info in config.items():
     # Read only the header (first row)
     header_cols = pd.read_csv(url, nrows=0).columns.tolist()
 
-    # Keep only columns that actually exist in the file (Fix for 'estimated_occupancy_l365d' only in 2025)
+    # Keep only columns that actually exist in the file (Fix for 'estimated_occupancy_l365d' and 'estimated_revenue_l365d' which are only available for 2025)
     valid_cols = [c for c in cols if c in header_cols]
     
     dfs[year] = pd.read_csv(url, compression='gzip', low_memory=False, usecols= valid_cols)
@@ -239,7 +239,7 @@ for year, df in dfs.items():
 bools = ['host_is_superhost']
 dates = ['last_scraped','host_since','first_review','last_review']
 cats  = ['property_type','room_type']
-money = ['price']
+money = ['price', 'estimated_revenue_l365d']
 ints  = ['id','host_id','host_listings_count','host_total_listings_count',
          'accommodates','beds','minimum_nights','maximum_nights',
          'availability_365', 'estimated_occupancy_l365d']
@@ -482,13 +482,13 @@ top_boro_pct_change = top5.loc[top_boro, "pct_change"].round(0)
 top_boro_2025 = top5.loc[top_boro, "2025"]
 ```
 
--   From 2021-2025, central areas of London generally saw larger increases. The **`{python} f"Borough of {top_boro}"`** saw the **largest increase in listings `{python} f"Borough of {top_boro_pct_change}%"`** (to reach **`{python} f"Borough of {top_boro_2025:,.}%"`** **listings in 2025** ([Figure 1.2]{.underline}).
+-   From 2021-2025, central areas of London generally saw larger increases. The **`{python} f"Borough of {top_boro}"`** saw the **largest increase in listings `{python} f"Borough of {top_boro_pct_change}%"`** (to reach **`{python} f"{top_boro_2025:,.0f}"`** **listings in 2025** ([Figure 1.2]{.underline}).
 
 ```{python}
 #| echo: false
 #| warning: false
 # Plot figure to show top 5 Boroughs with largest increase in listings. 
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(8, 5))
 
 boros = top5.index
 boros_display = [
@@ -521,7 +521,7 @@ ax.set_title("Figure 1.2: Top 5 Boroughs with largest increase in Listings (2021
 ax.set_ylabel("Number of Listings", fontsize=12)
 ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f"{int(x):,}"))
 ax.tick_params(axis='y', labelsize=12)
-ax.set_ylim(0, 12000)
+ax.set_ylim(0, 13000)
 ax.grid(axis="y", linestyle="--", alpha=0.4)
 
 ax.set_xticks(x)
@@ -1110,6 +1110,15 @@ type_summary_2025 = (
     .to_frame("count")
     .assign(percentage=lambda x: (x["count"] / x["count"].sum() * 100).round(1)))
 
+Entire_homes, Entire_homes_pct = type_summary_2025.loc["Entire home/apt", "count"], type_summary_2025.loc["Entire home/apt", "percentage"]
+Private_rooms, Private_rooms_pct = type_summary_2025.loc["Private room", "count"], type_summary_2025.loc["Private room", "percentage"]
+Shared_rooms, Private_rooms_pct = type_summary_2025.loc["Shared room", "count"], type_summary_2025.loc["Shared room", "percentage"]
+Hotel_rooms, Private_rooms_pct = type_summary_2025.loc["Hotel room", "count"], type_summary_2025.loc["Hotel room", "percentage"]
+```
+
+```{python}
+#| echo: false
+#| warning: false
 # Plot a simple bar chart to show the distribution
 # Function to add value labels on top of bars from Geeks for Geeks. 
 def add_labels(x, y, pct):
@@ -1158,7 +1167,7 @@ Pending receiving clarity from the opposition on that point, in this report a "p
 
 ```
 
-#### 2.3 How many hosts have listings for two or more entire properties (homes / apartments)? 
+#### 2.3 How many hosts have listings for two or more entire properties (homes / apartments)?
 
 ```{python}
 #| echo: false
@@ -1207,15 +1216,18 @@ host_count = (
     .nunique()
     .reindex(labels))
 
+# Compute the % of hosts in each category 
+host_pct = host_count / host_count.sum() * 100
+
 # Plot two panel figure with bar chart and bubble plot for hosts
 fig, (ax1, ax2) = plt.subplots(
     ncols=2,
-    figsize=(10, 5),
+    figsize=(8, 5),
     gridspec_kw={'width_ratios': [4, 1]})
 
-colors = ["tomato", "skyblue"]
+colors = ["skyblue", "tomato"]
 
-# Horizontal bar chart (Left)
+# Horizontal bar chart (Left) on axis 1
 ax1.barh(dist.index, dist["<90 days"], color=colors[0], label="< 90 days")
 ax1.barh(dist.index, dist["≥90 days"],
          left=dist["<90 days"], color=colors[1], label="≥ 90 days")
@@ -1226,18 +1238,18 @@ for i, (low, high) in enumerate(zip(dist["<90 days"], dist["≥90 days"])):
     ax1.text(low + high / 2, i, f"{high:.0f}%", va="center", ha="center", fontsize=12)
 
 # Titles and labels  
-fig.suptitle("Figure 2.2 Distribution of Listings by Host Portfolio Size and Estimated Occupancy (2025)",
-              fontsize=14)
+fig.suptitle("Figure 2.2 Distribution of Listings by Host Portfolio Size \nand Estimated Occupancy (2025)",
+              fontsize=14, y=0.94)
 ax1.set_xlabel("Percentage of Entire Home / Apartment Listings (%)", fontsize=12)
-ax1.set_ylabel("Number of listings by unique host", fontsize=12)
+ax1.set_ylabel("Number of listings per unique host", fontsize=12)
 ax1.set_xlim(0, 50.5)
 ax1.legend(title="Occupancy Category", loc="upper right", fontsize=12)
 ax1.tick_params(labelsize=12)
 
-# Bubble chart (Right)
+# Bubble chart (Right) on axis 2
 y_pos = np.arange(len(dist.index))
 bubble_sizes = host_count.values
-scaled_sizes = bubble_sizes / bubble_sizes.max() * 2000  
+scaled_sizes = bubble_sizes / bubble_sizes.max() * 1500  
 
 ax2.scatter(
     [0] * len(host_count),   
@@ -1255,9 +1267,24 @@ ax2.set_xlim(-0.2, 0.6)
 ax2.set_ylim(ax1.get_ylim())   # ensures identical vertical span
 ax2.set_title("Number of Hosts", fontsize=12, pad=10)
 
+
 # Add numeric labels beside bubbles
-for y, val in zip(y_pos, bubble_sizes):
-    ax2.text(0.2, y, f"{val:,}", va="center", fontsize=11)
+for y, (count, pct) in zip(y_pos, zip(host_count.values, host_pct.values)):
+    ax2.text(
+        0.22,               # x-position (adjust for spacing)
+        y,
+        f"{count:,}\n({pct:.0f}%)",   
+        va="center",
+        ha="left",
+        fontsize=11
+    )
+
+# Include a horizontal separator between "1" and "2" (single vs multi hosts) 
+separator_y = 0.5
+
+# Draw the separator on both panels
+ax1.axhline(separator_y, color="black", linewidth=1, linestyle="--", alpha=0.8)
+ax2.axhline(separator_y, color="black", linewidth=1, linestyle="--", alpha=0.8)
 
 # Figure Caption
 fig.text(
@@ -1267,6 +1294,7 @@ fig.text(
     fontsize=11)
 
 plt.tight_layout()
+plt.subplots_adjust(wspace=0.03)
 plt.show()
 ```
 
@@ -1282,43 +1310,128 @@ same_location_same_host = (
       .size()
       .reset_index(name="count")
       .query("count > 1")
-      .sort_values("count", ascending=False)
-)
+      .sort_values("count", ascending=False))
+# Ok, so it seems that there were 86 locations with multiple listings from the same host, there were up to 10 listings in each location, which could be plausible if they owned 10 homes at each location. Given the data limitations, we shall not puruse this line of enquiry further. 
 
-#calculate numbers for hosts with 1, more than 1 and 100 or more entire homes on Airbnb
+# Calculate statistics for hosts with 1, more than 1, and 100 or more entire homes on Airbnb
 df_only1 = df[df["host_size_group"] == "1"].copy()
+df_only1_perc = round(len(df_only1) / len(df) *100, 0)
+df_only1_hosts = df_only1["host_id"].nunique()
+df_only1_hosts_perc = round(df_only1_hosts / df["host_id"].nunique() * 100, 0)
+
 df_morethan1 = df[df["host_size_group"] != "1"].copy()
+df_morethan1_perc = round(len(df_morethan1) / len(df) *100, 0)
+df_morethan1_hosts = df_morethan1["host_id"].nunique()
+df_morethan1_hosts_perc = round(df_morethan1_hosts / df["host_id"].nunique() * 100, 0)
+
 df_5ormore = df[df["listing_count"] >= 5].copy() #for calculations based on a 5+ property threshold
+df_5ormore_perc = round(len(df_5ormore) / len(df) *100)
+df_5ormore_hosts = df_morethan1["host_id"].nunique()
+df_5ormore_hosts_perc = round(df_5ormore_hosts / df["host_id"].nunique() * 100, 0)
 
-
-propmorethan1 = len(df_morethan1)/len(df) * 100
-print(propmorethan1)
-prop100plus = len(df_100plus)/len(df) * 100
-print(prop100plus)
+df_morethan100 = df[df["host_size_group"] == "100+"].copy()
+df_morethan100_perc = round(len(df_morethan100) / len(df) *100, 0)
+df_morethan100_hosts = df_morethan100["host_id"].nunique()
+df_morethan100_hosts_perc = round(df_morethan100_hosts / df["host_id"].nunique() * 100, 2)
 ```
 
-An analysis of the number of entire homes / apartments listed by each host[^6] shows that a **small number of hosts are responsible for a disproportionately large number of listings (Figure 2.2)**. Previous studies have found that such "multi-listing hosts" are significant drivers of increase in rent and Airbnb's profit in London[^7].
+An analysis of host listings[^6] shows that a **small number of hosts are responsible for a disproportionately large number of listings ([Figure 2.2]{.underline})**. Previous studies have found that such "multi-listing hosts" are significant drivers of increase in rent and Airbnb's profit in London[^7].
 
 [^6]: We assume that hosts either [own]{.underline} the entire home / apartment that they list, or have [written permission]{.underline} from owners to list on Airbnb.
 
 [^7]: Todd et al. and Cox and Slee BT: Need to cite this properly and reference the key finding.
 
--   **`{python} len(df_only1)`** hosts own only 1 entire property. **`{python} len(df_morethan1)`** hosts own two or more properties.
+-   **`{python} f"{df_only1_hosts:,} ({df_only1_hosts_perc:.0f}%)"`** hosts own [only 1 entire property (i.e. single-listing hosts)]{.underline}, and they are responsible for **`{python} f"{df_only1_perc:.0f}%"`** of listings.
 
--   **`{python} len(df_100plus)`** hosts own over 100 properties. This represents **`{python} prop100plus`** of the total number of entire homes available.
+-   **`{python} f"{df_morethan1_hosts:,} ({df_morethan1_hosts_perc:.0f}%)"`** hosts own [two or more properties (i.e. multi-listing hosts)]{.underline}, and they disproportionately make up **`{python} f"{df_morethan1_perc:.0f}%"`** of listings.
 
-#### 2.4 What is the average income from these properties, and how does it compare with median / average incomes in London?
+-   A small number, **`{python} f"{df_morethan100_hosts:,} ({df_morethan100_hosts_perc:.2f}%)"`** hosts, [own over 100 properties]{.underline} but still make up **`{python} f"{df_morethan100_perc:.0f}%"`** of the total number of entire homes available.
 
-*\[From Owen's week7 doc; incorporate and expand further to include his results:\]* The London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. *\[expand source?\]*
+-   Out of the total entire home / apartment listings, a larger proportion of properties belonging to multi-listings hosts were let out for 90 or more days (14%), compared to properties belonging to single-listing hosts (7%).
+
+#### 2.4 What is the median income from renting out entire homes / apartments for single-listing and multi-listing hosts? How does this compare with median incomes for working persons in London?
 
 ```{python}
-#[Expand to include relevant code/calculations]
+# Computing median earnings for single and multiple listing hosts over the last 365 days 
+# Setting conditions for dataframe filters
+single = df["host_size_group"] == "1"
+multi  = df["host_size_group"] != "1"
+less90   = df["occupancy_group"] == "<90 days"
+more90   = df["occupancy_group"] == "≥90 days"
+
+# Compute number of rows with 0 estimated revenue or NaN 
+no_revenue = df["estimated_revenue_l365d"].isna() | (df["estimated_revenue_l365d"] == 0)
+no_revenue_count = no_revenue.sum()
+print(f"After excluding rows with 0 or NaN revenue: {no_revenue_count:,}")
+
+# Median income for single listing hosts 
+median_income_single_90d = round(df.loc[single & less90 & ~no_revenue, "estimated_revenue_l365d"].median(),0)
+median_income_single_90dmore = round(df.loc[single & more90 & ~no_revenue, "estimated_revenue_l365d"].median(),0)
+
+# median income for multiple listing hosts 
+median_income_multi_90d = round(df.loc[multi & less90 & ~no_revenue, "estimated_revenue_l365d"].median(),0)
+median_income_multi_90dmore = round(df.loc[multi & more90 & ~no_revenue, "estimated_revenue_l365d"].median(),0)
+
+print(f"{median_income_single_90d:,.0f}", 
+      f"{median_income_single_90dmore:,.0f}",
+      f"{median_income_multi_90d:,.0f}",
+      f"{median_income_multi_90dmore:,.0f}")
+```
+
+Based on estimated revenues from Inside Airbnb data[^8],
+
+[^8]: Owen to insert a footnote to flesh out assumptions for data cleaning and compilation.
+
+-   The median single-listing host renting out their home for less than 90 days earned **£`{python} f"{median_income_single_90d:,.0f}"`**, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`** a year per property.
+
+-   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90dmore:,.0f}"`**, while multi-listing hosts earned **`{median_income_multi_90dmore:,.0f}"`** a year per property.
+
+The London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. *\[expand source?\]*
+
+```{python}
+# How many properties does a multi-listing host need to have to earn comparably to the median working adult? 
+multi_listing_host_90d = 34100 / median_income_multi_90d  # 7 properties
+
+# How does this change if the property was frequently rented out? 
+multi_listing_host_90dmore = 34100 / median_income_multi_90dmore  # just 1 property
 ```
 
 #### 2.5 What is the profile of these hosts ?
 
 ```{python}
-#use 'host_location' column in the dfs to try to compare whether hosts who own > 1 property are more likely to be based outside the UK. Note that there are NA values in some host_location rows; these have been excluded (method for doing so queried with CoPilot) (but the numbers of these are noted below).
+# Use 'host_location' column in the dfs to compare whether hosts who own > 1 property are more likely to be based outside the UK. Note that there are NA values in some host_location rows; these have been excluded (method for doing so queried with CoPilot) 
+
+# Count the countries (UK/Non-UK) of unique hosts with only 1 property 
+only1prop_NA = df_only1.loc[df_only1.host_location.isna(), "host_id"].nunique() #5,258
+only1prop_UK = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na=False)]["host_id"].nunique() #20,538
+only1prop_notUK = df_only1[~df_only1.host_location.str.contains(r"United Kingdom", regex = False, na=True)]["host_id"].nunique() #1,312
+only1prop_UK_per = round(only1prop_UK / (only1prop_UK + only1prop_notUK) *100 , 1) #94.0%
+
+# Count the countries (UK/Non-UK) of unique hosts with more than 1 property 
+propmorethan1_NA = df_morethan1.loc[df_morethan1.host_location.isna(), "host_id"].nunique() #1,460
+propmorethan1_UK = df_morethan1[df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na=False)]["host_id"].nunique() #3,369
+propmorethan1_notUK = df_morethan1[~df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na=True)]["host_id"].nunique() #137
+propmorethan1_UK_per = round(propmorethan1_UK / (propmorethan1_UK + propmorethan1_notUK) *100 , 1) #96.1%
+
+# Count the properties belonging to (UK/Non-UK) hosts with only 1 property
+only1prop_NA_n = df_only1.loc[df_only1.host_location.isna(), "id"].nunique() #5,258
+only1prop_UK_n = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na=False)]["id"].nunique() #20,538
+only1prop_notUK_n = df_only1[~df_only1.host_location.str.contains(r"United Kingdom", regex = False, na=True)]["id"].nunique() #1,312
+only1prop_UK_n_per = round(only1prop_UK_n / (only1prop_UK_n + only1prop_notUK_n) *100 , 1) #94.0%
+
+# Count the properties belonging to (UK/Non-UK) hosts with more than 1 property
+propmorethan1_NA_n = df_morethan1.loc[df_morethan1.host_location.isna(), "id"].nunique() #8,875
+propmorethan1_UK_n = df_morethan1[df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na=False)]["id"].nunique() #20,456
+propmorethan1_notUK_n = df_morethan1[~df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na=True)]["id"].nunique() #1,115
+propmorethan1_UK_n_per = round(propmorethan1_UK_n / (propmorethan1_UK_n + propmorethan1_notUK_n) *100 , 1) #94.8%
+
+# Investigate hosts that own more than 100 properties to establish where they are based, how many properties each of them own and whether it can be established that they are individuals or companies
+df_100plus_grouped = df_100plus.groupby(['host_id', 'host_name', 'host_location']).size().reset_index(name = "number_of_properties").sort_values("number_of_properties", ascending=False) 
+df_100plus_grouped_len = len(df_100plus_grouped) # 13 hosts
+df_100plus_grouped['number_of_properties'].sum() # total of 2,472 properties
+
+########################################
+# Built the above from Alice's code below, retaining for reference and disucssion. 
 
 only1propUK = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = False)] #20,538 hosts
 only1propUKNAs = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = True)] #25,798 hosts
@@ -1340,6 +1453,107 @@ df_100plus_grouped = df_100plus.groupby(['host_id', 'host_name', 'host_location'
 
 df_100plus_grouped_len = len(df_100plus_grouped) #13 hosts
 df_100plus_grouped['number_of_properties'].sum() #total of 2,472 properties
+```
+
+```{python}
+# Plot a bar charts to visualise this data 
+data = {
+    "Group": ["Single-listing hosts"] * 3 + ["Multi-listing hosts"] * 3,
+    "Country": ["UK", "Non-UK", "Unknown"] * 2,
+    "Count": [
+        only1prop_UK,
+        only1prop_notUK,
+        only1prop_NA,
+        propmorethan1_UK,
+        propmorethan1_notUK,
+        propmorethan1_NA
+    ]
+}
+df_country = pd.DataFrame(data)
+
+# Compute percentages within each group
+df_country["Percent"] = (
+    df_country.groupby("Group")["Count"]
+    .transform(lambda x: x / x.sum() * 100)
+    .round(0))
+
+# Prepare data
+groups = ["Single-listing hosts", "Multi-listing hosts"]
+countries = ["UK", "Non-UK", "Unknown"]
+colors = {"UK": "#6BAED6", "Non-UK": "#FD8D3C", "Unknown": "#D3D3D3"}
+
+df_percent = df_country.pivot(index="Group", columns="Country", values="Percent").loc[groups]
+df_counts  = df_country.pivot(index="Group", columns="Country", values="Count").loc[groups]
+
+# SAMPLE SIZES
+group_totals = df_counts.sum(axis=1)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+
+x = np.arange(len(groups)) * 0.7 # bring bars closer together
+bar_width = 0.5        # reduce the thickness of the bars for readability 
+bottom = np.zeros(len(groups))
+
+for country in countries:
+    pct_vals = df_percent[country].values
+    count_vals = df_counts[country].values
+
+    # Stacked % bars
+    ax.bar(
+        x, pct_vals, width=bar_width, bottom=bottom,
+        color=colors[country], edgecolor="black", label=country)
+
+    # Set labels inside bar: "XX% (X,XXX)"
+    for i, (pct, count) in enumerate(zip(pct_vals, count_vals)):
+        if pct > 0:
+            ax.text(
+                x[i],
+                bottom[i] + pct_vals[i] / 2,
+                f"{pct:.0f}% ({count:,})",
+                ha="center", va="center",
+                fontsize=13)
+
+    bottom += pct_vals
+
+# X-axis labels
+ax.set_xticks(x)
+ax.set_xticklabels(groups, fontsize=13)
+
+# Include total number of hosts in each category at the bottom 
+for i, total in enumerate(group_totals):
+    ax.text(
+        x[i], -8.5,                 
+        f"(n = {total:,})",
+        ha="center", va="top", fontsize=12)
+
+# Y-axis and title
+ax.set_ylabel("Percentage of Hosts (%)", fontsize=12)
+ax.set_ylim(0, 103)
+fig.suptitle(
+    "Figure 2.3: Profile of Single- and Multi-listing Hosts by Country (2025)",
+    fontsize=14, y=0.97)
+
+# Legend *outside on the RIGHT*
+ax.legend(
+    title="Country Category",
+    fontsize=12,
+    title_fontsize=12,
+    bbox_to_anchor=(1.04, 0.5),  
+    loc="center left",
+    borderaxespad=0)
+
+# Figure Caption
+fig.text(
+    0.03, -0.08,
+    "Source: Listings from Insideairbnb.com \nNote: Above analysis includes hosts of entire homes/apartments only.\nMulti-listing hosts refer to hosts that list more than one entire home/apartment.",
+    ha='left',
+    fontsize=11)
+
+# Adjust spacing so legend doesn't overlap
+plt.subplots_adjust(right=0.80, bottom=0.20, top=0.90)
+
+plt.tight_layout()
+plt.show()
 ```
 
 A large majority of hosts renting out entire rooms/apts in London, whether they rent out one or more than 100, are based in the UK.
