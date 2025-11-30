@@ -936,7 +936,7 @@ plt.show()
 
 #### 1.5 How many listings potentially breach the current 90-day limit for rentals?
 
--   Since 2015 *(AS note: I think 2015: www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law)*, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
+-   Since 2015, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
 
 ```{python}
 #| echo: false
@@ -1037,8 +1037,8 @@ table.scale(1.0, 1.3)
 
 # Legend for coloured bars 
 legend_handles = [
-    plt.Rectangle((0, 0), 1, 1, color="skyblue", label="Up to 90 days"),
-    plt.Rectangle((0, 0), 1, 1, color="tomato", label="More than 90 days")
+    plt.Rectangle((0, 0), 1, 1, color="skyblue", label="<90 days"),
+    plt.Rectangle((0, 0), 1, 1, color="tomato", label="≥90 days")
 ]
 ax.legend(handles=legend_handles, fontsize=12, loc="upper right")
 
@@ -1082,7 +1082,7 @@ top3_names = top3.index.tolist()
 top3_pcts = top3['pct_high_occupancy'].tolist()
 ```
 
-The spatial pattern is consistent with earlier trends. Boroughs in inner London show the **highest rates of intense use** (i.e \>90 days).
+The spatial pattern is consistent with earlier trends. Inner London Boroughs show the **highest rates of intense use** (i.e \>90 days).
 
 -   **`{python} f"{top3_names[0]}: {top3_pcts[0]:.0f}%"`** of entire home listings have occupancy exceeding 90 nights"
 
@@ -1352,6 +1352,8 @@ An analysis of host listings[^6] shows that a **small number of hosts are respon
 #### 2.4 What is the median income from renting out entire homes / apartments for single-listing and multi-listing hosts? How does this compare with median incomes for working persons in London?
 
 ```{python}
+#| echo: false
+#| warning: false
 # Computing median earnings for single and multiple listing hosts over the last 365 days 
 # Setting conditions for dataframe filters
 single = df["host_size_group"] == "1"
@@ -1384,11 +1386,86 @@ Based on estimated revenues from Inside Airbnb data[^8],
 
 -   The median single-listing host renting out their home for less than 90 days earned **£`{python} f"{median_income_single_90d:,.0f}"`**, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`** a year per property.
 
--   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90dmore:,.0f}"`**, while multi-listing hosts earned **`{median_income_multi_90dmore:,.0f}"`** a year per property.
+-   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90dmore:,.0f}"`**, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** a year per property.
+
+```{python}
+#| echo: false
+#| warning: false
+## Distribution of revenue per property for standard lets and frequent lets hosts
+# Helper function to drop NaN and zeros
+def clean(series):
+    return series[(series > 0) & series.notna()]
+    
+# Re-ordered subsets
+a = clean(df.loc[single & less90, "estimated_revenue_l365d"])   # Single <90
+b = clean(df.loc[multi & less90,  "estimated_revenue_l365d"])   # Multi <90
+c = clean(df.loc[single & more90, "estimated_revenue_l365d"])   # Single ≥90
+d = clean(df.loc[multi & more90,  "estimated_revenue_l365d"])   # Multi ≥90
+
+# Labels in new order
+labels = ["Single <90 days","Multi <90 days","Single ≥90 days","Multi ≥90 days"]
+
+# Plot a series of four boxplots 
+fig = plt.figure(figsize=(8, 5))
+
+# Boxplot
+bp = plt.boxplot(
+    [a, b, c, d],
+    labels=labels,
+    showfliers=False,
+    patch_artist=True 
+)
+# Define colors for each box
+colors = ["skyblue", "skyblue", "tomato", "tomato"]
+
+# Apply the colors
+for box, color in zip(bp['boxes'], colors):
+    box.set_facecolor(color)
+    box.set_edgecolor("black")
+
+# Also color medians, whiskers, and caps to match (optional but nicer)
+for i, color in enumerate(colors):
+    plt.setp(bp['medians'][i], color='black')
+    plt.setp(bp['whiskers'][2*i:2*i+2], color='black')
+    plt.setp(bp['caps'][2*i:2*i+2], color='black')
+
+# Add dotted vertical separator between (b) and (c)
+plt.axvline(x=2.5, color="grey", linestyle="--", linewidth=1)
+
+# Add group labels
+plt.text(1.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1), "Standard Lets",
+         ha="center", va="top", fontsize=12)
+
+plt.text(3.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1), "Frequent Lets",
+         ha="center", va="top", fontsize=12)
+
+# Adjust margin at bottom to fit the group labels
+plt.subplots_adjust(bottom=0.2)
+
+# Y-axis formatting with thousand separators
+plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, p: format(int(x), ",")))
+
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.ylabel("Estimated Revenue per property (Last 365 days)", fontsize = 12)
+plt.title("Figure 2.3 Distribution of revenue per property by host portfolio size \nand occupancy group (2025)", fontsize = 14)
+
+# Figure Caption
+fig.text(
+    0.03, -0.02,
+    "Source: Listings from Insideairbnb.com",
+    ha='left',
+    fontsize=11)
+
+plt.tight_layout()
+plt.show()
+```
 
 The London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. *\[expand source?\]*
 
 ```{python}
+#| echo: false
+#| warning: false
 # How many properties does a multi-listing host need to have to earn comparably to the median working adult? 
 multi_listing_host_90d = 34100 / median_income_multi_90d  # 7 properties
 
@@ -1399,6 +1476,8 @@ multi_listing_host_90dmore = 34100 / median_income_multi_90dmore  # just 1 prope
 #### 2.5 What is the profile of these hosts ?
 
 ```{python}
+#| echo: false
+#| warning: false
 # Use 'host_location' column in the dfs to compare whether hosts who own > 1 property are more likely to be based outside the UK. Note that there are NA values in some host_location rows; these have been excluded (method for doing so queried with CoPilot) 
 
 # Count the countries (UK/Non-UK) of unique hosts with only 1 property 
@@ -1456,6 +1535,8 @@ df_100plus_grouped['number_of_properties'].sum() #total of 2,472 properties
 ```
 
 ```{python}
+#| echo: false
+#| warning: false
 # Plot a bar charts to visualise this data 
 data = {
     "Group": ["Single-listing hosts"] * 3 + ["Multi-listing hosts"] * 3,
@@ -1530,7 +1611,7 @@ for i, total in enumerate(group_totals):
 ax.set_ylabel("Percentage of Hosts (%)", fontsize=12)
 ax.set_ylim(0, 103)
 fig.suptitle(
-    "Figure 2.3: Profile of Single- and Multi-listing Hosts by Country (2025)",
+    "Figure 2.4: Profile of Single- and Multi-listing Hosts by Country (2025)",
     fontsize=14, y=0.97)
 
 # Legend *outside on the RIGHT*
