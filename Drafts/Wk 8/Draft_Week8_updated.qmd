@@ -860,7 +860,7 @@ MSOA = MSOA.merge(df_stock_MSOA2025[['ecode', 'all_properties']], on='ecode', ho
 MSOA = MSOA.rename(columns={'all_properties': 'allprop2024'})
 
 # Count Airbnb listings inside each MSOA polygon
-gdf_MSOA = gpd.sjoin(gdf, MSOA[['ecode', 'geometry']], how='left', predicate='within')
+gdf_MSOA = gpd.sjoin(gdfs["2025"], MSOA[['ecode', 'geometry']], how='left', predicate='within')
 MSOA = MSOA.merge(gdf_MSOA.groupby('ecode').size().rename('listings2025'), on='ecode', how='left')
 MSOA['listings2025'] = MSOA['listings2025'].fillna(0).astype(int)
 
@@ -874,64 +874,73 @@ MSOA['listing_prop2025'] = MSOA['listing_prop2025'].replace([np.inf, -np.inf], n
 ```{python}
 #| echo: false
 #| warning: false
-### Visualising the percentage of listings of housing stock in 2025 using Jenks breaks
+### Mapping the percentage of listings of housing stock in 2025 using Jenks breaks
 import mapclassify
 from matplotlib.patches import Patch
 
-# Jenks classification
-classifier = mapclassify.NaturalBreaks(MSOA['listing_prop2025'], k=5)
-MSOA['jenks_class'] = classifier.yb  # 0..k-1
+def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
 
-# Prepare class boundaries for labels
-bin_edges = [round(b, 1) for b in classifier.bins]  
-labels = []
-prev = round(MSOA['listing_prop2025'].min(), 1)
+    # Jenks classification
+    classifier = mapclassify.NaturalBreaks(MSOA[column], k=5)
+    MSOA[f"Jenks_{column}"] = classifier.yb  # 0..k-1
 
-for b in bin_edges:
-    labels.append(f"{prev} – {round(b, 1)}")
-    prev = round(b, 1)
+    # Prepare class boundaries for labels
+    bin_edges = [round(b, 1) for b in classifier.bins]  
+    labels = []
+    prev = round(MSOA[column].min(), 1)
 
-# Assign colours
-k = len(bin_edges)
-cmap = plt.cm.viridis
-colors = [cmap(i / (k-1)) for i in range(k)]
+    for b in bin_edges:
+        labels.append(f"{prev} – {round(b, 1)}")
+        prev = round(b, 1)
 
-# Create figure
-fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+    # Assign colours
+    k = len(bin_edges)
+    cmap = plt.cm.viridis
+    colors = [cmap(i / (k-1)) for i in range(k)]
 
-# Plot each class separately for categorical legend
-for i, color in enumerate(colors):
-    MSOA[MSOA['jenks_class'] == i].plot(
-        ax=ax,
-        color=color,
-        edgecolor="gray",
-        linewidth=0.35)
+    # Create figure
+    fig, ax = plt.subplots(1, 1, figsize=(10, 8))
 
-# Plot Borough boundaries on top
-BORO.boundary.plot(ax=ax, edgecolor='black', linewidth=1.0)
+    # Plot each class separately for categorical legend
+    for i, color in enumerate(colors):
+        MSOA[MSOA[f"Jenks_{column}"] == i].plot(
+            ax=ax,
+            color=color,
+            edgecolor="gray",
+            linewidth=0.35)
 
-# Create custom legend with class boundaries
-legend_handles = [Patch(facecolor=color, edgecolor='gray', label=label)
-                  for color, label in zip(colors, labels)]
-ax.legend(
-    handles=legend_handles,
-    title="Listings as Proportion\n of Housing Stock (%)",
-    title_fontsize=12,
-    fontsize=12,
-    loc="upper right")
+    # Plot Borough boundaries on top
+    BORO.boundary.plot(ax=ax, edgecolor='black', linewidth=1.0)
 
-# Titles and annotations
-ax.set_title("Figure 1.6: Airbnb Listings as a Proportion of Housing Stock (MSOA, 2025)", fontsize=14, pad=15)
-ax.axis("off")
-fig.text(
-    0.03, -0.02,
-    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\n"
-    "Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used.",
-    ha='left',
-    fontsize=11)
+    # Create custom legend with class boundaries
+    legend_handles = [Patch(facecolor=color, edgecolor='gray', label=label)
+                      for color, label in zip(colors, labels)]
+    ax.legend(
+        handles=legend_handles,
+        title=Legend_title,
+        title_fontsize=12,
+        fontsize=12,
+        loc="upper left",
+        bbox_to_anchor=(1.00,0.4))
 
-plt.tight_layout()
-plt.show()
+    # Titles and annotations
+    ax.set_title(Map_title, fontsize=14, pad=15)
+    ax.axis("off")
+    fig.text(
+        0.03, -0.02,
+        Notes,
+        ha='left',
+        fontsize=11)
+
+    plt.tight_layout()
+    plt.show()
+
+MSOA_map_plotter (
+    'listing_prop2025',
+    "Listings as Proportion\n of Housing Stock (%)",
+    "Figure 1.6: Airbnb Listings as a Proportion of Housing Stock (MSOA, 2025)",
+    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\n Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used."
+)
 ```
 
 #### 1.5 How many listings potentially breach the current 90-day limit for rentals?
@@ -1150,6 +1159,32 @@ plt.subplots_adjust(top=0.88)
 plt.show()
 ```
 
+```{python}
+# Count 2025 entire home listings inside each MSOA polygon
+gdf_entire25_MSOA = gpd.sjoin(entire_homes_2025_gdf, MSOA[['ecode', 'geometry']], how='left', predicate='within')
+MSOA = MSOA.merge(gdf_entire25_MSOA.groupby('ecode').size().rename('entire_listings_2025'), on='ecode', how='left')
+MSOA['entire_listings_2025'] = MSOA['entire_listings_2025'].fillna(0).astype(int)
+
+# Count 2025 entire listings as a proportion of total listings
+MSOA['entire_prop2025'] = (MSOA['entire_listings_2025'] / MSOA['listings2025']) * 100
+MSOA['entire_prop2025'] = MSOA['entire_prop2025'].replace([np.inf, -np.inf], np.nan).fillna(0)
+```
+
+```{python}
+#| echo: false
+#| warning: false
+### Mapping the percentage of listings that are entire homes in 2025 using Jenks breaks
+import mapclassify
+from matplotlib.patches import Patch
+
+MSOA_map_plotter (
+    "entire_prop2025",
+    "Proportion of listings \n that are entire homes (%)",
+    "Figure 2.1.2: Proportion of Airbnb Listings that are entire homes (MSOA, 2025)",
+    "Source: Listings data from Insideairbnb.com"
+)
+```
+
 #### 2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?
 
 *\[I wrote the below before I realised that Owen had dont an analysis of this point in his separate doc. I'm leaving it in as some of it may be helpful. I think the below has the possible benefit that it makes the point re business rates, which we may want to come back to as part of our recommendations, and also refers to the details of the question.\]*
@@ -1296,6 +1331,33 @@ fig.text(
 plt.tight_layout()
 plt.subplots_adjust(wspace=0.03)
 plt.show()
+```
+
+```{python}
+### Mapping percentage of listings that are professionally operated and entire homes
+
+#left join professional host and 90days count to entire_homes_2025_gdf
+entire_homes_2025_gdf = (
+    entire_homes_2025_gdf
+    .merge(df[["id","listing_count","host_size_group","occupancy_group"]],on="id",how="left")
+)
+
+# Count 2025 entire home listings operated by professional hosts inside each MSOA polygon
+gdf_entire_prof_25_MSOA = gpd.sjoin(entire_homes_2025_gdf[~ (entire_homes_2025_gdf.host_size_group=="1")], MSOA[['ecode', 'geometry']], how='left', predicate='within')
+MSOA = MSOA.merge(gdf_entire_prof_25_MSOA.groupby('ecode').size().rename('prof_entire_listings_2025'), on='ecode', how='left')
+MSOA['prof_entire_listings_2025'] = MSOA['prof_entire_listings_2025'].fillna(0).astype(int)
+
+# Count 2025 entire home listings operated by professionals as a proportion of total listings
+MSOA['entire_prof_prop2025'] = (MSOA['prof_entire_listings_2025'] / MSOA['listings2025']) * 100
+MSOA['entire_prof_prop2025'] = MSOA['entire_prof_prop2025'].replace([np.inf, -np.inf], np.nan).fillna(0)
+
+# Map professionally operated entire home listings / total listings by MSOA (Jenks)
+MSOA_map_plotter (
+    "entire_prof_prop2025",
+    "Proportion of listings \n that are professionally \n operated entire homes (%)",
+    "Figure 2.3: Proportion of Airbnb Listings that are \n professionally operated entire homes (MSOA, 2025)",
+    "Source: Listings data from Insideairbnb.com"
+)
 ```
 
 ```{python}
