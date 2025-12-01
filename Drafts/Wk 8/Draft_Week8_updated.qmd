@@ -899,7 +899,7 @@ def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
     colors = [cmap(i / (k-1)) for i in range(k)]
 
     # Create figure
-    fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
     # Plot each class separately for categorical legend
     for i, color in enumerate(colors):
@@ -1181,8 +1181,7 @@ MSOA_map_plotter (
     "entire_prop2025",
     "Proportion of listings \n that are entire homes (%)",
     "Figure 2.1.2: Proportion of Airbnb Listings that are entire homes (MSOA, 2025)",
-    "Source: Listings data from Insideairbnb.com"
-)
+    "Source: Listings data from Insideairbnb.com")
 ```
 
 #### 2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?
@@ -1237,7 +1236,6 @@ table = df.groupby(["host_size_group", "occupancy_group"]).size().unstack(fill_v
 dist = table / table.sum().sum() * 100
 labels = ["1", "2", "3-10", "11-100", "100+"]
 dist = dist.reindex(labels)
-print(dist)
 
 # Computing number of hosts for each category 
 host_count = (
@@ -1339,8 +1337,7 @@ plt.show()
 #left join professional host and 90days count to entire_homes_2025_gdf
 entire_homes_2025_gdf = (
     entire_homes_2025_gdf
-    .merge(df[["id","listing_count","host_size_group","occupancy_group"]],on="id",how="left")
-)
+.merge(df[["id","listing_count","host_size_group","occupancy_group"]],on="id",how="left"))
 
 # Count 2025 entire home listings operated by professional hosts inside each MSOA polygon
 gdf_entire_prof_25_MSOA = gpd.sjoin(entire_homes_2025_gdf[~ (entire_homes_2025_gdf.host_size_group=="1")], MSOA[['ecode', 'geometry']], how='left', predicate='within')
@@ -1448,7 +1445,7 @@ Based on estimated revenues from Inside Airbnb data[^8],
 
 -   The median single-listing host renting out their home for less than 90 days earned **£`{python} f"{median_income_single_90d:,.0f}"`**, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`** a year per property.
 
--   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90dmore:,.0f}"`**, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** a year per property.
+-   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** a year per property.
 
 ```{python}
 #| echo: false
@@ -1712,6 +1709,46 @@ On the basis set out above that any individual owning two or more properties is 
 If, instead, the threshold is set at \\5 properties, then `{python}len(df_5ormore)` would require registration.
 
 ## **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
+
+-   Not straightforward.
+
+-   Systems-view needed.
+
+    -   Any council tax adjustments will require updating of 1991 values, which would be (i) administratively difficult to implement (i.e. enforcement of registration), (b) have a wide-ranging impact on all residents. In particular, residents whose properties move into a higher value bracket will need to pay more tax (even if they do not rent out properties).
+
+    -   Council tax increases will reduce margins for landlords who may pass on tax increase to renters. Differentiated impact depending on whether they have deeper pockets, others may raise prices or exit the market. Also likely to see more shift towards more frequent lets (i.e. greater than 90 days per year).
+
+        -   Reduction in Airbnb listings. Some near-term increase in housing supply if unprofitable listings are converted to homes for sale. But longer-term likely to see more listings move to frequent lets.
+
+        -   Higher prices of rental listings may see reduction in tourist attractiveness
+
+        -   Overall, London would be seen to be taking a stricter stance on short-term lets, but overall impact of council tax increases is broad-based and sweeping.
+
+        -   Room for more progressive taxation measure targeting business owners, and those who do frequent lets (i.e. \>140 days reduce to 120 or 90 days).
+
++----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Stakeholder Group          | Benefits (Pros)                                                                                              | Drawbacks (Cons)                                                                                                                                                  |
++============================+==============================================================================================================+===================================================================================================================================================================+
+| Mayor                      | -   Seen to be taking action against errant listings and tackling disamenities from frequent lets.           | -   Politically unfavorable tax increases in longer-term, loss of votes from residents (who do not let out their homes) and commercial landlords                  |
+|                            |                                                                                                              |                                                                                                                                                                   |
+|                            | -   Politically expedient (i.e. near-term vote share increase) to be seen to be moving on a 'problem area'   | -   Difficult to convince council managers to implement system changes to allow for registration of multi-listing owners. May require funding or see gridlock.    |
+|                            |                                                                                                              |                                                                                                                                                                   |
+|                            |                                                                                                              | -   Limited impact on housing supply increase and could instead see more shifting towards frequent lets.                                                          |
++----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Residents (Landlords)      | -   For those able to remain in the market, may have an opportunity to raise rent prices.                    | -   Higher taxes for multiple-listing owners.                                                                                                                     |
+|                            |                                                                                                              |                                                                                                                                                                   |
+|                            |                                                                                                              | -   For those without deeper pockets, may be compelled to increase the occupation frequency of properties.                                                        |
++----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Residents (Non-Landlords)  | -   Reduced disamenities                                                                                     | -   Higher council taxes                                                                                                                                          |
+|                            |                                                                                                              |                                                                                                                                                                   |
+|                            | -   Some increase in housing supply                                                                          |                                                                                                                                                                   |
++----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| City of London             | -   Overall curtailing of negative impact of Airbnb in some pockets of London                                | -   Impact on tourism attractiveness from higher rental prices for business / leisure travelers - (a) reduced numbers, (b) reduced stay duration per individual.  |
+|                            |                                                                                                              |                                                                                                                                                                   |
+|                            |                                                                                                              | -   May be perceived to be less business friendly, especially to liberal market/capitalist disruptors like Airbnb.                                                |
+|                            |                                                                                                              |                                                                                                                                                                   |
+|                            |                                                                                                              | -   Limited impact on housing supply.                                                                                                                             |
++----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ## **5. Can the story be reframed as a positive one about social mobility or housing opportunity?**
 
