@@ -1520,6 +1520,147 @@ plt.tight_layout()
 plt.show()
 ```
 
+```{python}
+# Remove NaN and 0
+def clean(series):
+    return series[(series > 0) & series.notna()]
+
+# Summarise to *host-level total revenue* for a given mask
+def host_total_revenue(mask):
+    temp = df.loc[mask, ["host_id", "estimated_revenue_l365d"]]
+    temp = temp[temp["estimated_revenue_l365d"] > 0]
+    return (
+        temp.groupby("host_id")["estimated_revenue_l365d"]
+            .sum()
+    )
+
+# --------------------------
+# Four host groups
+# --------------------------
+
+a = host_total_revenue(single & less90)   # Single <90 days
+b = host_total_revenue(multi  & less90)   # Multi <90 days
+c = host_total_revenue(single & more90)   # Single ≥90 days
+d = host_total_revenue(multi  & more90)   # Multi ≥90 days
+
+labels = ["Single <90 days","Multi <90 days",
+          "Single ≥90 days","Multi ≥90 days"]
+
+# --------------------------
+# Plot
+# --------------------------
+
+fig = plt.figure(figsize=(8, 5))
+
+bp = plt.boxplot(
+    [a, b, c, d],
+    labels=labels,
+    showfliers= False,
+    patch_artist=True
+)
+
+# Colors: Standard (blue), Frequent (red)
+colors = ["skyblue", "skyblue", "tomato", "tomato"]
+
+for box, color in zip(bp['boxes'], colors):
+    box.set_facecolor(color)
+    box.set_edgecolor("black")
+
+# Style medians, whiskers, caps
+for i, color in enumerate(colors):
+    plt.setp(bp['medians'][i], color='black')
+    plt.setp(bp['whiskers'][2*i:2*i+2], color='black')
+    plt.setp(bp['caps'][2*i:2*i+2], color='black')
+
+# Dotted separator between (b) and (c)
+plt.axvline(x=2.5, color="grey", linestyle="--", linewidth=1)
+
+# Group labels
+plt.text(
+    1.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1),
+    "Standard Lets",
+    ha="center", va="top", fontsize=12
+)
+
+plt.text(
+    3.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1),
+    "Frequent Lets",
+    ha="center", va="top", fontsize=12
+)
+
+# Adjust margins
+plt.subplots_adjust(bottom=0.2)
+
+# Thousands separators
+plt.gca().yaxis.set_major_formatter(
+    ticker.FuncFormatter(lambda x, p: format(int(x), ","))
+)
+
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.ylabel("Total Revenue per Host (Last 365 days)", fontsize=12)
+plt.title(
+    "Distribution of total revenue per host by portfolio size \n"
+    "and occupancy group (2025)",
+    fontsize=14
+)
+
+# Caption
+fig.text(
+    0.03, -0.02,
+    "Source: Listings from Insideairbnb.com",
+    ha='left',
+    fontsize=11
+)
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+
+host_summary = (
+    df.groupby("host_id")
+      .agg(
+          total_revenue_l365d=("estimated_revenue_l365d", "sum"),
+          listing_count=("host_id", "size")
+      )
+      .reset_index()
+)
+
+# Remove hosts with zero revenue if desired:
+host_summary = host_summary[host_summary["total_revenue_l365d"] > 0]
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
+plt.figure(figsize=(7, 5))
+
+plt.scatter(
+    host_summary["listing_count"],
+    host_summary["total_revenue_l365d"],
+    alpha=0.4,
+    s=30,
+    color="steelblue"
+)
+
+# Formatting
+plt.xlabel("Number of Listings per Host", fontsize=12)
+plt.ylabel("Total Revenue per Host (Last 365 Days)", fontsize=12)
+plt.title("Host Total Revenue vs. Number of Listings", fontsize=14)
+
+# Thousands separators on y-axis
+plt.gca().yaxis.set_major_formatter(
+    ticker.FuncFormatter(lambda x, p: format(int(x), ","))
+)
+
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.tight_layout()
+plt.show()
+```
+
 The London Datastore reported that the mean income in London for 2022-2023 was £59,000 and the median was £34,100. *\[expand source?\]*
 
 ```{python}
@@ -1726,29 +1867,29 @@ If, instead, the threshold is set at \\5 properties, then `{python}len(df_5ormor
 
         -   Room for more progressive taxation measure targeting business owners, and those who do frequent lets (i.e. \>140 days reduce to 120 or 90 days).
 
-+----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Stakeholder Group          | Benefits (Pros)                                                                                              | Drawbacks (Cons)                                                                                                                                                  |
-+============================+==============================================================================================================+===================================================================================================================================================================+
-| Mayor                      | -   Seen to be taking action against errant listings and tackling disamenities from frequent lets.           | -   Politically unfavorable tax increases in longer-term, loss of votes from residents (who do not let out their homes) and commercial landlords                  |
-|                            |                                                                                                              |                                                                                                                                                                   |
-|                            | -   Politically expedient (i.e. near-term vote share increase) to be seen to be moving on a 'problem area'   | -   Difficult to convince council managers to implement system changes to allow for registration of multi-listing owners. May require funding or see gridlock.    |
-|                            |                                                                                                              |                                                                                                                                                                   |
-|                            |                                                                                                              | -   Limited impact on housing supply increase and could instead see more shifting towards frequent lets.                                                          |
-+----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Residents (Landlords)      | -   For those able to remain in the market, may have an opportunity to raise rent prices.                    | -   Higher taxes for multiple-listing owners.                                                                                                                     |
-|                            |                                                                                                              |                                                                                                                                                                   |
-|                            |                                                                                                              | -   For those without deeper pockets, may be compelled to increase the occupation frequency of properties.                                                        |
-+----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Residents (Non-Landlords)  | -   Reduced disamenities                                                                                     | -   Higher council taxes                                                                                                                                          |
-|                            |                                                                                                              |                                                                                                                                                                   |
-|                            | -   Some increase in housing supply                                                                          |                                                                                                                                                                   |
-+----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| City of London             | -   Overall curtailing of negative impact of Airbnb in some pockets of London                                | -   Impact on tourism attractiveness from higher rental prices for business / leisure travelers - (a) reduced numbers, (b) reduced stay duration per individual.  |
-|                            |                                                                                                              |                                                                                                                                                                   |
-|                            |                                                                                                              | -   May be perceived to be less business friendly, especially to liberal market/capitalist disruptors like Airbnb.                                                |
-|                            |                                                                                                              |                                                                                                                                                                   |
-|                            |                                                                                                              | -   Limited impact on housing supply.                                                                                                                             |
-+----------------------------+--------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++---------------------------+------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Stakeholder Group         | Benefits (Pros)                                                                                            | Drawbacks (Cons)                                                                                                                                                 |
++===========================+============================================================================================================+==================================================================================================================================================================+
+| Mayor                     | -   Seen to be taking action against errant listings and tackling disamenities from frequent lets.         | -   Politically unfavorable tax increases in longer-term, loss of votes from residents (who do not let out their homes) and commercial landlords                 |
+|                           |                                                                                                            |                                                                                                                                                                  |
+|                           | -   Politically expedient (i.e. near-term vote share increase) to be seen to be moving on a 'problem area' | -   Difficult to convince council managers to implement system changes to allow for registration of multi-listing owners. May require funding or see gridlock.   |
+|                           |                                                                                                            |                                                                                                                                                                  |
+|                           |                                                                                                            | -   Limited impact on housing supply increase and could instead see more shifting towards frequent lets.                                                         |
++---------------------------+------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Residents (Landlords)     | -   For those able to remain in the market, may have an opportunity to raise rent prices.                  | -   Higher taxes for multiple-listing owners.                                                                                                                    |
+|                           |                                                                                                            |                                                                                                                                                                  |
+|                           |                                                                                                            | -   For those without deeper pockets, may be compelled to increase the occupation frequency of properties.                                                       |
++---------------------------+------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Residents (Non-Landlords) | -   Reduced disamenities                                                                                   | -   Higher council taxes                                                                                                                                         |
+|                           |                                                                                                            |                                                                                                                                                                  |
+|                           | -   Some increase in housing supply                                                                        |                                                                                                                                                                  |
++---------------------------+------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| City of London            | -   Overall curtailing of negative impact of Airbnb in some pockets of London                              | -   Impact on tourism attractiveness from higher rental prices for business / leisure travelers - (a) reduced numbers, (b) reduced stay duration per individual. |
+|                           |                                                                                                            |                                                                                                                                                                  |
+|                           |                                                                                                            | -   May be perceived to be less business friendly, especially to liberal market/capitalist disruptors like Airbnb.                                               |
+|                           |                                                                                                            |                                                                                                                                                                  |
+|                           |                                                                                                            | -   Limited impact on housing supply.                                                                                                                            |
++---------------------------+------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ## **5. Can the story be reframed as a positive one about social mobility or housing opportunity?**
 
