@@ -293,6 +293,7 @@ print("\nAll dataframes cleaned successfully!")
 #| echo: false
 #| warning: false
 #| output: false
+#Investigate increase in listings 2021-2025
 listings_2021 = len(dfs["2021"])
 listings_2025 = len(dfs["2025"])
 listings_pct_change = (listings_2025 - listings_2021) / listings_2021 * 100
@@ -568,7 +569,7 @@ df_stock_LA = df_stock[
 This block first extracts names of London Boroughs, then filters the df_stock to select only the MSOAs with name strings that contain any of the London Borough names, hence forming a dataframe of property stock by MSOA in Greater London only
 """
 
-#list of london Boroughs
+#list of London Boroughs
 london_boroughs = df_stock_LA.area_name.unique().tolist()
 
 # Build regex pattern — escape special chars and join with |
@@ -825,7 +826,7 @@ ax.set_xticklabels(df_bar["name"], rotation=90, ha="right", fontsize=12)
 ax.tick_params(axis="y", labelsize=12)
 ax.set_ylabel("Listings as percentage of Housing Stock (%)", fontsize=12)
 ax.set_title(
-    "Figure 1.5: Airbnb Listings as a Proportion of Housing Stock by Boroughs (2025)",
+    "Figure 1.5: Airbnb Listings as a Proportion of Housing Stock by Borough (2025)",
     fontsize=14,
     pad=15)
 
@@ -939,13 +940,13 @@ MSOA_map_plotter (
     'listing_prop2025',
     "Listings as Proportion\n of Housing Stock (%)",
     "Figure 1.6: Airbnb Listings as a Proportion of Housing Stock (MSOA, 2025)",
-    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\n Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used."
+    "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\nNote: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used."
 )
 ```
 
 #### 1.5 How many listings potentially breach the current 90-day limit for rentals?
 
--   Since 2015, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation.
+-   Since 2015, London planning rules state that *entire homes* let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission being obtained. The intention of this restriction is to prevent permanent housing from being converted into de facto holiday accommodation.
 
 ```{python}
 #| echo: false
@@ -965,7 +966,7 @@ entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 
 
 -   In 2025, **`{python} f"{entire_homes_2025_n:,}"` or `{python} f"{entire_homes_2025_per}%"` of all listings** were for "entire homes / apartments". Based on occupancy estimates[^3] , **`{python} f"{entire_homes_2025_90_n:,}"`** entire homes / apartments were used for more than 90 nights per year. This represents **more than 2 in 10 of all entire homes listings**, and **around 1 in 8 of all listings in London** that were possibly in breach of this rule.
 
--   Notwithstanding the sensitivity of the assumptions in Inside Airbnb's methodology[^4], we expect this estimate to be a conservative one, given reported **likelihood of multiple listings of the same property**, which some owners have used to circumvent the 90 day rule[^5].
+-   Notwithstanding the sensitivity of the assumptions in Inside Airbnb's methodology[^4], we expect this estimate to be a conservative one, given reported **likelihood of multiple listings of the same property**, which some owners have used to circumvent the 90 day rule[^5]. *\[AS note: we should add some concluding remark that brings this back to the issue of "control"?\]*
 
 [^3]: Occupancy estimates are obtained from Inside Airbnb data. First, a review rate is used to compute reviews to estimated bookings. Thereafter, the average length of stay for London was multiplied by the estimated bookings for each listing giving the occupancy rate (out of 365 days). To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments", and the occupancy rate, which estimates how many nights the listing was booked in the last 365 days, providing a useful proxy for annual use, where raw daily calendar data are unavailable.
 
@@ -1186,7 +1187,7 @@ MSOA_map_plotter (
 
 #### 2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?
 
-*\[I wrote the below before I realised that Owen had dont an analysis of this point in his separate doc. I'm leaving it in as some of it may be helpful. I think the below has the possible benefit that it makes the point re business rates, which we may want to come back to as part of our recommendations, and also refers to the details of the question.\]*
+*\[I wrote the below before I realised that Owen had done an analysis of this point in his separate doc. I'm leaving it in as some of it may be helpful. I think the below has the possible benefit that it makes the point re business rates, which we may want to come back to as part of our recommendations, and also refers to the details of the question.\]*
 
 The opposition proposes that "professional" landlords' properties should be subject to increased council tax. Leaving aside for the moment the question of how that proposal might be implemented and administered *\[see below...- could refer to recent Budget's proposals on Council Tax for "mansions"\]*, a separate issue is how the opposition would determine which Airbnb landlords would be classed as "professional".
 
@@ -1370,7 +1371,7 @@ same_location_same_host = (
       .reset_index(name="count")
       .query("count > 1")
       .sort_values("count", ascending=False))
-# Ok, so it seems that there were 86 locations with multiple listings from the same host, there were up to 10 listings in each location, which could be plausible if they owned 10 homes at each location. Given the data limitations, we shall not puruse this line of enquiry further. 
+# Ok, so it seems that there were 86 locations with multiple listings from the same host, there were up to 10 listings in each location, which could be plausible if they owned 10 homes at each location. Given the data limitations, we shall not pursue this line of enquiry further. 
 
 # Calculate statistics for hosts with 1, more than 1, and 100 or more entire homes on Airbnb
 df_only1 = df[df["host_size_group"] == "1"].copy()
@@ -1404,9 +1405,9 @@ An analysis of host listings[^6] shows that a **small number of hosts are respon
 
 -   **`{python} f"{df_morethan1_hosts:,} ({df_morethan1_hosts_perc:.0f}%)"`** hosts own [two or more properties (i.e. multi-listing hosts)]{.underline}, and they disproportionately make up **`{python} f"{df_morethan1_perc:.0f}%"`** of listings.
 
--   A small number, **`{python} f"{df_morethan100_hosts:,} ({df_morethan100_hosts_perc:.2f}%)"`** hosts, [own over 100 properties]{.underline} but still make up **`{python} f"{df_morethan100_perc:.0f}%"`** of the total number of entire homes available.
+-   A small number, **`{python} f"{df_morethan100_hosts:,} ({df_morethan100_hosts_perc:.2f}%)"`** of hosts, [own over 100 properties]{.underline} but still make up **`{python} f"{df_morethan100_perc:.0f}%"`** of the total number of entire homes available.
 
--   Out of the total entire home / apartment listings, a larger proportion of properties belonging to multi-listings hosts were let out for 90 or more days (14%), compared to properties belonging to single-listing hosts (7%).
+-   Out of the total entire home / apartment listings, a larger proportion of properties belonging to multi-listings hosts were let out for 90 or more days (14%), compared to properties belonging to single-listing hosts (7%). *[AS note: should we mention again that they may well have obtained planning permission?]*
 
 #### 2.4 What is the median income from renting out entire homes / apartments for single-listing and multi-listing hosts? How does this compare with median incomes for working persons in London?
 
@@ -1447,6 +1448,8 @@ Based on estimated revenues from Inside Airbnb data[^8],
 
 -   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** a year per property.
 
+*[AS note: add a concluding sentence explaining the findings as regards comparison with median income and whether therefore considered "professional"?]*
+
 ```{python}
 #| echo: false
 #| warning: false
@@ -1477,12 +1480,12 @@ bp = plt.boxplot(
 # Define colors for each box
 colors = ["skyblue", "skyblue", "tomato", "tomato"]
 
-# Apply the colors
+# Apply the colours
 for box, color in zip(bp['boxes'], colors):
     box.set_facecolor(color)
     box.set_edgecolor("black")
 
-# Also color medians, whiskers, and caps to match (optional but nicer)
+# Also colour medians, whiskers, and caps to match (optional but nicer)
 for i, color in enumerate(colors):
     plt.setp(bp['medians'][i], color='black')
     plt.setp(bp['whiskers'][2*i:2*i+2], color='black')
@@ -1708,30 +1711,6 @@ propmorethan1_UK_n_per = round(propmorethan1_UK_n / (propmorethan1_UK_n + propmo
 df_100plus_grouped = df_100plus.groupby(['host_id', 'host_name', 'host_location']).size().reset_index(name = "number_of_properties").sort_values("number_of_properties", ascending=False) 
 df_100plus_grouped_len = len(df_100plus_grouped) # 13 hosts
 df_100plus_grouped['number_of_properties'].sum() # total of 2,472 properties
-
-########################################
-# Built the above from Alice's code below, retaining for reference and disucssion. 
-
-only1propUK = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = False)] #20,538 hosts
-only1propUKNAs = df_only1[df_only1.host_location.str.contains(r'United Kingdom', regex = False, na = True)] #25,798 hosts
-only1propUKNAcount = len(only1propUKNAs) - len(only1propUK) #5,260 hosts not giving locations
-only1propUK_per = (len(only1propUK)/len(df_only1))*100 #75.6% of hosts with only 1 property are UK-based (not counting NAs)
-
-propmorethan1UK = df_morethan1[df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na = False)] #20,457 hosts
-propmorethan1UKNAs = df_morethan1[df_morethan1.host_location.str.contains(r'United Kingdom', regex = False, na = True)] #29,333 hosts
-morethan1propUKNAcount = len(propmorethan1UKNAs) - len(propmorethan1UK) #8,876 hosts not giving locations
-propmorethan1UK_per = (len(propmorethan1UK)/len(df_morethan1))*100 #67.2% of hosts with more than 1 property are UK-based (not counting NAs)
-
-prop100plusUK = df_100plus[df_100plus.host_location.str.contains(r'United Kingdom', regex= False, na = False)] #2,003 hosts
-prop100plusUKNA = df_100plus[df_100plus.host_location.str.contains(r'United Kingdom', regex= False, na = True)] #2,282 hosts
-prop100plusUKNAcount = len(prop100plusUKNA) - len(prop100plusUK)#279 hosts not giving location
-prop100plusUK_per = (len(prop100plusUK)/len(df_100plus))*100 #72.8% of hosts with more than 100 properties are UK-based (not including NAs)
-
-#investigate the hosts that own more than 100 properties to establish where they are based, how many properties each of them own and whether it can be established that they are individuals or companies
-df_100plus_grouped = df_100plus.groupby(['host_id', 'host_name', 'host_location']).size().reset_index(name = "number_of_properties").sort_values("number_of_properties", ascending=False) 
-
-df_100plus_grouped_len = len(df_100plus_grouped) #13 hosts
-df_100plus_grouped['number_of_properties'].sum() #total of 2,472 properties
 ```
 
 ```{python}
@@ -1851,7 +1830,7 @@ If, instead, the threshold is set at \\5 properties, then `{python}len(df_5ormor
 
 ## **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
 
--   Not straightforward.
+-   Not straightforward. *[AS note: However, we note that the recent Budget proposed changes to the Council Tax system in order to introduce the so-called "Mansion Tax"; reviewing the methods used to introduce this new tax may be instructive in determining a mechanism for introducing an Airbnb Council Tax surcharge.]*
 
 -   Systems-view needed.
 
