@@ -1218,13 +1218,13 @@ multi_listing_host_90dmore = 34100 / median_income_multi_90dmore  # just 1 prope
 
 Based on estimated revenues from Inside Airbnb data[^10],
 
-[^10]: Owen to insert a footnote to flesh out assumptions for data cleaning and compilation.
+[^10]: From InsideAirbnb data, 'estimated_revenue_l365d' field computes revenue collected for each listing based on price and occupancy over the last 365 days. This estimate depends on earlier assumptions used for 'estimated_occupancy_l365d' and 'listing_price', but provides a helpful sense of revenues per listing. 
 
 -   The median single-listing host renting out their home for less than 90 days earned **£`{python} f"{median_income_single_90d:,.0f}"`**, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`** a year per property.
 
 -   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** a year per property.
 
--   Using the more conservative yearly income of **£`{python} f"{median_income_single_90d:,.0f}"`**, \*\*owning seven properties\*\* becomes the threshold to make more than the London median income. In contrast, \*\*owning just two properties\*\* is sufficient to make close to double the median income of London when letting for more than 90 days. Given the range of income, one can definitively suggest that owning between just \*\*2 and 7\*\* listings is sufficient to make Airbnb a source of primary income.
+-   Using the more conservative yearly income of **£`{python} f"{median_income_single_90d:,.0f}"`**, owning seven properties becomes the threshold to make more than the London median income. In contrast, owning just two properties is sufficient to make close to double the median income of London when letting for more than 90 days. Given the range of income, one can definitively suggest that owning between just 2 and 7 listings is sufficient to make Airbnb a source of primary income.
 
 *\[AS note: add a concluding sentence explaining the findings as regards comparison with median income and whether therefore considered "professional"?\]*
 
