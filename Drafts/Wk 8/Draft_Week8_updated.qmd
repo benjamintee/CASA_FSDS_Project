@@ -1407,7 +1407,7 @@ An analysis of host listings[^6] shows that a **small number of hosts are respon
 
 -   A small number, **`{python} f"{df_morethan100_hosts:,} ({df_morethan100_hosts_perc:.2f}%)"`** of hosts, [own over 100 properties]{.underline} but still make up **`{python} f"{df_morethan100_perc:.0f}%"`** of the total number of entire homes available.
 
--   Out of the total entire home / apartment listings, a larger proportion of properties belonging to multi-listings hosts were let out for 90 or more days (14%), compared to properties belonging to single-listing hosts (7%). *[AS note: should we mention again that they may well have obtained planning permission?]*
+-   Out of the total entire home / apartment listings, a larger proportion of properties belonging to multi-listings hosts were let out for 90 or more days (14%), compared to properties belonging to single-listing hosts (7%). *\[AS note: should we mention again that they may well have obtained planning permission?\]*
 
 #### 2.4 What is the median income from renting out entire homes / apartments for single-listing and multi-listing hosts? How does this compare with median incomes for working persons in London?
 
@@ -1448,7 +1448,7 @@ Based on estimated revenues from Inside Airbnb data[^8],
 
 -   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** a year per property.
 
-*[AS note: add a concluding sentence explaining the findings as regards comparison with median income and whether therefore considered "professional"?]*
+*\[AS note: add a concluding sentence explaining the findings as regards comparison with median income and whether therefore considered "professional"?\]*
 
 ```{python}
 #| echo: false
@@ -1681,7 +1681,7 @@ multi_listing_host_90dmore = 34100 / median_income_multi_90dmore  # just 1 prope
 ```{python}
 #| echo: false
 #| warning: false
-# Use 'host_location' column in the dfs to compare whether hosts who own > 1 property are more likely to be based outside the UK. Note that there are NA values in some host_location rows; these have been excluded (method for doing so queried with CoPilot) 
+# Use 'host_location' column in the dfs to compare whether hosts who own > 1 property are more likely to be based outside the UK. 
 
 # Count the countries (UK/Non-UK) of unique hosts with only 1 property 
 only1prop_NA = df_only1.loc[df_only1.host_location.isna(), "host_id"].nunique() #5,258
@@ -1830,7 +1830,7 @@ If, instead, the threshold is set at \\5 properties, then `{python}len(df_5ormor
 
 ## **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
 
--   Not straightforward. *[AS note: However, we note that the recent Budget proposed changes to the Council Tax system in order to introduce the so-called "Mansion Tax"; reviewing the methods used to introduce this new tax may be instructive in determining a mechanism for introducing an Airbnb Council Tax surcharge.]*
+-   Not straightforward. *\[AS note: However, we note that the recent Budget proposed changes to the Council Tax system in order to introduce the so-called "Mansion Tax"; reviewing the methods used to introduce this new tax may be instructive in determining a mechanism for introducing an Airbnb Council Tax surcharge.\]*
 
 -   Systems-view needed.
 

@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-11-24">
+<meta name="dcterms.date" content="2025-12-02">
 
 <title>The Pythoneers’ Group Project</title>
 <style>
@@ -24,7 +24,7 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="Group_Work_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="Group_Work_files/libs/clipboard/clipboard.min.js"></script>
 <script src="Group_Work_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="Group_Work_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="Group_Work_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -36,6 +36,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="Group_Work_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="Group_Work_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="Group_Work_files/libs/bootstrap/bootstrap-1fbf936f5d115924c956bdfb76a204f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -52,7 +55,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#briefing-on-airbnb-growth-trends-policy-implications" id="toc-briefing-on-airbnb-growth-trends-policy-implications" class="nav-link" data-scroll-target="#briefing-on-airbnb-growth-trends-policy-implications">Briefing on Airbnb Growth Trends &amp; Policy Implications</a>
   <ul class="collapse">
   <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link" data-scroll-target="#executive-summary"><strong>Executive Summary</strong></a></li>
-  <li><a href="#is-airbnb-out-of-control-in-london" id="toc-is-airbnb-out-of-control-in-london" class="nav-link" data-scroll-target="#is-airbnb-out-of-control-in-london"><strong>1. Is Airbnb ‘out of control’ in London?</strong></a></li>
+  <li><a href="#is-airbnb-out-of-control-in-london" id="toc-is-airbnb-out-of-control-in-london" class="nav-link" data-scroll-target="#is-airbnb-out-of-control-in-london">1. Is Airbnb ‘out of control’ in London?</a></li>
   <li><a href="#how-many-professional-landlords-are-there" id="toc-how-many-professional-landlords-are-there" class="nav-link" data-scroll-target="#how-many-professional-landlords-are-there"><strong>2. How many professional landlords are there?</strong></a></li>
   <li><a href="#how-many-properties-would-be-affected-by-the-oppositions-proposal" id="toc-how-many-properties-would-be-affected-by-the-oppositions-proposal" class="nav-link" data-scroll-target="#how-many-properties-would-be-affected-by-the-oppositions-proposal"><strong>3. How many properties would be affected by the opposition’s proposal?</strong></a></li>
   <li><a href="#what-are-the-likely-pros-and-cons-of-the-oppositions-proposal-for-the-mayor-for-residents-and-for-the-city" id="toc-what-are-the-likely-pros-and-cons-of-the-oppositions-proposal-for-the-mayor-for-residents-and-for-the-city" class="nav-link" data-scroll-target="#what-are-the-likely-pros-and-cons-of-the-oppositions-proposal-for-the-mayor-for-residents-and-for-the-city"><strong>4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?</strong></a></li>
@@ -77,7 +80,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 24, 2025</p>
+      <p class="date">December 2, 2025</p>
     </div>
   </div>
   
@@ -139,12 +142,12 @@ ul.task-list li input[type="checkbox"] {
 <h1>Briefing on Airbnb Growth Trends &amp; Policy Implications</h1>
 <section id="executive-summary" class="level2">
 <h2 class="anchored" data-anchor-id="executive-summary"><strong>Executive Summary</strong></h2>
-<p>This report provides an analysis of Airbnb activity in London in recent years (2021-2025), with a focus on 2025. Given time-sensitivity amidst the impending election, and a data-poor environment, we utilise appropriate data-driven approaches to provide insight into the following questions:</p>
+<p>This report analyses Airbnb activity in London over the last five years, with a focus on 2025. Given time-sensitivity amidst the impending election, and a data-poor environment, we utilise appropriate data-driven approaches to provide insight into the following questions:</p>
 <p>a.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Is Airbnb out of control in London?</p>
 <p>b.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; How many professional landlords are there?</p>
 <p>c.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; How many properties would be affected by the opposition’s proposal?</p>
 <p>d.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; What are the benefits and trade-offs with the opposition’s proposal?</p>
-<p>e.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; What are options to reframe the narrative to one about social mobility and housing opportunity?</p>
+<p>e.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; What are the Mayor’s options to reframe the narrative to one about social mobility and housing opportunity?</p>
 <section id="key-findings" class="level3">
 <h3 class="anchored" data-anchor-id="key-findings">Key Findings</h3>
 <p><em>(Insert findings in 2 column table)</em></p>
@@ -156,61 +159,259 @@ ul.task-list li input[type="checkbox"] {
 </section>
 </section>
 <section id="is-airbnb-out-of-control-in-london" class="level2">
-<h2 class="anchored" data-anchor-id="is-airbnb-out-of-control-in-london"><strong>1. Is Airbnb ‘out of control’ in London?</strong></h2>
-<p>Opposition critics have suggested that the growth and spread of Airbnb’s in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. This chapter provides a systematic analysis of the situation.&nbsp;</p>
+<h2 class="anchored" data-anchor-id="is-airbnb-out-of-control-in-london">1. Is Airbnb ‘out of control’ in London?</h2>
+<p>Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. The increase of short-term lets and its potential to damage the housing supply in London is a concern that the Mayor’s office had raised <a href="https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply">previously</a><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, and is one of the reasons that London’s <a href="https://www.london.gov.uk/programmes-strategies/housing-and-land/buying-and-owning-home/guidance-short-term-and-holiday-lets-london">90-day limit</a><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> was introduced. Indeed, the Mayor called for a registration system to be put in place as early as <a href="www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law">2019</a><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. This chapter provides a systematic analysis of the latest situation.&nbsp;</p>
 <section id="what-is-the-growth-trend-in-airbnb-listings-across-london" class="level4">
 <h4 class="anchored" data-anchor-id="what-is-the-growth-trend-in-airbnb-listings-across-london">1.1 What is the growth trend in Airbnb listings across London?</h4>
-</section>
-<section id="which-areas-saw-the-fastest-growth-in-airbnb-listings" class="level4">
-<h4 class="anchored" data-anchor-id="which-areas-saw-the-fastest-growth-in-airbnb-listings">1.2 Which areas saw the fastest growth in Airbnb listings?</h4>
+<ul>
+<li><p>Since 2021, London has seen a dramatic increase in Airbnb listings<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> , rising from <strong>69,402</strong> to <strong>86,383 listings,</strong> a <strong>24%</strong> increase (<u>Figure 1.1</u>).</p></li>
+<li><p>The majority of these listings arose between <strong>2022-2023 (↑24%</strong>) with the most evident concentrations in new listings in central London boroughs.</p></li>
+<li><p>Specifically, <strong>Westminster</strong>, <strong>Camden</strong>, <strong>Southwark</strong>, <strong>Lambeth</strong> and <strong>Kensington and Chelsea</strong> saw the highest increase in listings. <strong>Westminster</strong> alone added <strong>2,947</strong> <strong>listings</strong>, a <strong>39%</strong> increase in Airbnb listings within the borough.</p></li>
+</ul>
+<div id="342362aa" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Group_Work_files/figure-html/cell-10-output-1.png" width="685" height="502" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="how-does-this-compare-to-changes-in-the-overall-housing-stock" class="level4">
-<h4 class="anchored" data-anchor-id="how-does-this-compare-to-changes-in-the-overall-housing-stock">1.3 How does this compare to changes in the overall housing stock?</h4>
+<h4 class="anchored" data-anchor-id="how-does-this-compare-to-changes-in-the-overall-housing-stock">1.2 How does this compare to changes in the overall housing stock?</h4>
+<ul>
+<li>In comparison with the <strong>24%</strong> <strong>increase</strong> in Airbnb listings, London housing stock increases lag significantly behind. Between 2020 and 2024, properties in London grew from <strong>3.68M</strong> to <strong>3.81M</strong> constituting a mere <strong>3.7%</strong> <strong>increase</strong> in housing stock. Amidst a tight housing market, the faster increase in properties for short-term rental relative to housing stock exacerbates pressures on housing prices and rents (<a href="https://discovery.ucl.ac.uk/id/eprint/10124650/7/Musah_23998083211001836.pdf">Todd, Musah &amp; Cheshire (2022)</a>).</li>
+<li>Unsurprisingly, when comparing the ratio of listings increases and housing stock increases at the Borough level, central London Boroughs display more accelerated rates of listings increases compared to housing stock increases than peripheral Boroughs. In particular, <strong>Kensington and Chelsea</strong> saw <strong>5 times</strong> more new Airbnb listings than new housing stock between 2020 and 2024.</li>
+</ul>
 </section>
-<section id="what-is-the-situation-at-the-borough--and-msoa-levels-in-2025-are-issues-widespread-or-localised" class="level4">
-<h4 class="anchored" data-anchor-id="what-is-the-situation-at-the-borough--and-msoa-levels-in-2025-are-issues-widespread-or-localised">1.4 What is the situation at the Borough- and MSOA-levels in 2025? Are issues widespread or localised?</h4>
+<section id="what-is-the-situation-at-the-borough--and-msoa-levels-in-2025" class="level4">
+<h4 class="anchored" data-anchor-id="what-is-the-situation-at-the-borough--and-msoa-levels-in-2025">1.3 What is the situation at the Borough- and MSOA-levels in 2025?</h4>
+<ul>
+<li>Across London Boroughs in 2025, the average number of listings as a percent total housing stock was <strong>1.86%</strong>, though <strong>11 Boroughs</strong> exceed this average. All <strong>11 Boroughs</strong> are located in Central London with <strong>Westminster</strong> and <strong>Kensington and Chelsea</strong> having close to <strong>6%</strong> of total housing stock listed as an Airbnb (Figure 1.2).</li>
+</ul>
+<div id="ac911bfa" class="cell" data-execution_count="14">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Group_Work_files/figure-html/cell-15-output-1.png" width="783" height="612" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>At the MSOA-level, it becomes clear that there are pockets of concentration of listings relative to housing stock in these Boroughs, with <strong>up to 1 in 8 homes (12.5%)</strong> listed for Airbnb (<u>Figure 1.3</u>). This high proportion could be driving negative sentiments in some parts of London that Airbnb could be out of control.</li>
+</ul>
+<div id="8a0a3256" class="cell" data-execution_count="16">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Group_Work_files/figure-html/cell-17-output-1.png" width="829" height="614" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="how-many-listings-potentially-breach-the-current-90-day-limit-for-rentals" class="level4">
-<h4 class="anchored" data-anchor-id="how-many-listings-potentially-breach-the-current-90-day-limit-for-rentals">1.5 How many listings potentially breach the current 90-day limit for rentals?</h4>
+<h4 class="anchored" data-anchor-id="how-many-listings-potentially-breach-the-current-90-day-limit-for-rentals">1.4 How many listings potentially breach the current 90-day limit for rentals?</h4>
+<ul>
+<li>Since 2015, London planning rules state that entire homes / apartments let on platforms such as Airbnb should not be used for short-term letting for more than <strong>90 nights per calendar year</strong>, without planning permission obtained. This prevent permanent housing from being converted into de facto holiday accommodation. Given its negative impact , we thus focused our analysis on entire homes / apartments.</li>
+<li>Based on occupancy estimates<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> ,<strong>12,081</strong> entire homes / apartments were used for more than 90 nights per year (“frequent lets”). This represented <strong>more than 2 in 10 of all entire homes listings</strong>, and <strong>1 in 8 of all listings in London</strong> that were possibly in breach of this rule.</li>
+<li>Spatially, the pattern is consistent with earlier trends with Inner London Boroughs showing the highest rates of intense use. For example <strong>Westminster: 27%</strong>, <strong>Camden: 25%</strong> and <strong>Islington: 23%</strong> of entire home listings in these Boroughs were frequent lets.</li>
+<li>Notwithstanding the sensitivity of assumptions used by Inside Airbnb<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>, we expect this to be a conservative estimate, given reported likelihood of multiple listings of the same property, which some owners have used to circumvent the 90 day rule<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>. These high numbers relative to planning permissions, suggest possible misuse of Airbnbs in inner London, fanning the perception that it is out of control.</li>
+</ul>
+<div id="af88d778" class="cell" data-execution_count="19">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Group_Work_files/figure-html/cell-20-output-1.png" width="786" height="497" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
-<section id="why-might-this-be-a-problem-and-what-is-the-impact-on-communities" class="level4">
-<h4 class="anchored" data-anchor-id="why-might-this-be-a-problem-and-what-is-the-impact-on-communities">1.6 Why might this be a problem and what is the impact on communities?</h4>
+<section id="taken-together-what-is-the-extent-of-the-problem-and-possible-impact-on-communities" class="level4">
+<h4 class="anchored" data-anchor-id="taken-together-what-is-the-extent-of-the-problem-and-possible-impact-on-communities">1.5 Taken together, what is the extent of the problem and possible impact on communities?</h4>
+<p><em>[AS note: just to flag that previous Mayoral press releases may be a good source of high level commentary about the impact, and be quite helpful in the context of ‘advising’ the Mayor now. e.g.&nbsp;https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply]</em></p>
+<p><em>[AS note 2: we could perhaps refer to measures taken in other jurisdictions here and the reasons (basically competition for housing) but we should also talk about the positives i.e.&nbsp;money in Londoners’ pockets for renting out their spare rooms/tourist income etc. https://www.bbc.co.uk/travel/article/20240701-what-does-a-world-without-airbnb-look-like; https://hbr.org/2024/02/what-does-banning-short-term-rentals-really-accomplish ]</em></p>
 </section>
 </section>
 <section id="how-many-professional-landlords-are-there" class="level2">
 <h2 class="anchored" data-anchor-id="how-many-professional-landlords-are-there"><strong>2. How many professional landlords are there?</strong></h2>
-<section id="what-is-the-distribution-of-airbnb-types-in-london" class="level4">
-<h4 class="anchored" data-anchor-id="what-is-the-distribution-of-airbnb-types-in-london">2.1 What is the distribution of Airbnb types in London?</h4>
+<section id="how-might-we-define-a-professional-landlord" class="level4">
+<h4 class="anchored" data-anchor-id="how-might-we-define-a-professional-landlord">2.1 How might we define a professional landlord?</h4>
+<p>The opposition proposes that “professional” landlords’ properties should be subject to increased council tax. Leaving aside the question of how this might be administered, a separate issue is how the opposition would determine which landlords are classed as “professional”.</p>
+<p>In this report a “professional” landlord is defined as one:</p>
+<ul>
+<li><p>whose income from their Airbnb properties is <em>[greater than the median UK/London? income]</em>. This is on the basis that the meaning of the word “professional” is as a counterpart to “amateur”. In this context, “professional” suggests that the landlord could be relying on Airbnb for their living; that is, to provide the income that they would otherwise be earning through employment.</p></li>
+<li><p>whose properties are residential, rather than commercial. This is based on, first, the opposition’s reference to Council Tax (which is not paid by commercial landlords; instead they pay business rates) and, second, the context for the opposition’s proposal: the letting of three “homes” (including one council-owned property) on Airbnb - the likely argument on the opposition’s part being that letting these homes on Airbnb means that they are not available either for private rental (or council tenants) or sale to buyers on the property market.</p></li>
+</ul>
+<p>Our approach is consistent with relevant literature investigating how Airbnb listings affect local rent and property value (Todd et al., Cox and Slee) which suggest that a professional landlord can be a company or individual that operates <u>2 or more</u> entire home / apartment listings (i.e.&nbsp;“multi-listing owners”). With this, the next two chapters focus on multi-listing owners, with an emphasis on the extent of “frequent lets” vs “standard lets”.</p>
 </section>
-<section id="what-is-the-difference-between-a-professional-landlord-and-a-commercial-landlord-does-this-matter-for-analysis" class="level4">
-<h4 class="anchored" data-anchor-id="what-is-the-difference-between-a-professional-landlord-and-a-commercial-landlord-does-this-matter-for-analysis">2.2 What is the difference between a professional landlord and a commercial landlord? Does this matter for analysis?</h4>
-</section>
-<section id="how-many-hosts-own-2-or-more-airbnb-properties-and-what-is-the-range-of-the-number-of-listings-per-host" class="level4">
-<h4 class="anchored" data-anchor-id="how-many-hosts-own-2-or-more-airbnb-properties-and-what-is-the-range-of-the-number-of-listings-per-host">2.3 How many hosts own 2 or more Airbnb properties, and what is the range of the number of listings per host?</h4>
+<section id="how-many-hosts-have-listings-for-two-or-more-entire-properties-homes-apartments" class="level4">
+<h4 class="anchored" data-anchor-id="how-many-hosts-have-listings-for-two-or-more-entire-properties-homes-apartments">2.2 How many hosts have listings for two or more entire properties (homes / apartments)?</h4>
+<p>An analysis of host listings<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> shows that a <strong>small number of hosts are responsible for a disproportionately large number of listings</strong> (<u>Figure 2.1)</u>. Previous studies have found that such “multi-listing hosts” are significant drivers of increase in rent and Airbnb’s profit in London<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a>.</p>
+<ul>
+<li><p><strong>27,108 (85%)</strong> hosts own <u>only 1 entire property (i.e.&nbsp;single-listing hosts)</u>, and they are responsible for <strong>47%</strong> of listings.</p></li>
+<li><p><strong>4,966 (15%)</strong> hosts own <u>two or more properties (i.e.&nbsp;multi-listing hosts)</u>, and they disproportionately make up <strong>53%</strong> of listings.</p></li>
+<li><p>A small number, <strong>15 (0.05%)</strong> of hosts, <u>own over 100 properties</u> but made up <strong>5%</strong> of the total number of entire homes available.</p></li>
+<li><p>Out of the total entire home / apartment listings, a larger proportion of properties belonging to multi-listings hosts were let out for 90 or more days (14%), compared to properties belonging to single-listing hosts (7%). <em>[AS note: should we mention again that they may well have obtained planning permission?]</em></p></li>
+</ul>
+<div id="351d25b9" class="cell" data-execution_count="21">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Group_Work_files/figure-html/cell-22-output-1.png" width="762" height="483" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="63525d85" class="cell" data-execution_count="22">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Group_Work_files/figure-html/cell-23-output-1.png" width="757" height="605" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="what-is-the-average-income-from-these-properties-and-how-does-it-compare-with-median-average-incomes-in-london" class="level4">
-<h4 class="anchored" data-anchor-id="what-is-the-average-income-from-these-properties-and-how-does-it-compare-with-median-average-incomes-in-london">2.4 What is the average income from these properties, and how does it compare with median / average incomes in London?</h4>
+<h4 class="anchored" data-anchor-id="what-is-the-average-income-from-these-properties-and-how-does-it-compare-with-median-average-incomes-in-london">2.3 What is the average income from these properties, and how does it compare with median / average incomes in London?</h4>
+<p>Based on estimated revenues from Inside Airbnb data<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a>,</p>
+<ul>
+<li><p>The median single-listing host renting out their home for less than 90 days earned <strong>£4,858</strong>, while the median multi-listing host earned <strong>£5,600</strong> a year per property.</p></li>
+<li><p>This rises much further when we look at <u>frequent hosts (i.e.&nbsp;occupancy ≥90 days)</u>. The median single-listing host earned <strong>£5,600</strong>, while multi-listing hosts earned <strong>30,300</strong> a year per property.</p></li>
+<li><p>Using the more conservative yearly income of <strong>£4,858</strong>, **owning seven properties** becomes the threshold to make more than the London median income. In contrast, **owning just two properties** is sufficient to make close to double the median income of London when letting for more than 90 days. Given the range of income, one can definitively suggest that owning between just **2 and 7** listings is sufficient to make Airbnb a source of primary income.</p></li>
+</ul>
+<p><em>[AS note: add a concluding sentence explaining the findings as regards comparison with median income and whether therefore considered “professional”?]</em></p>
 </section>
 <section id="what-is-the-profile-of-these-hosts" class="level4">
-<h4 class="anchored" data-anchor-id="what-is-the-profile-of-these-hosts">2.5 What is the profile of these hosts ?</h4>
+<h4 class="anchored" data-anchor-id="what-is-the-profile-of-these-hosts">2.4 What is the profile of these hosts?</h4>
+<ul>
+<li><p>The large majority of hosts renting out entire properties are from the UK.</p></li>
+<li><p>The host with the most properties is a company based in Dubai; three other host names suggest that they are companies rather than individuals. <em>[AS note: possible link to pros/cons of Council Tax approach vs business rates approach: these hosts may be paying a huge amount of tax already if they are properly registered for business rates already - this could be entirely lawful (and be compliant with planning permission too).]</em></p></li>
+<li><p>(Comment about sizable proportion of data is NA and why this may require more reporting)</p></li>
+</ul>
+<div id="6354e148" class="cell" data-execution_count="27">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Group_Work_files/figure-html/cell-28-output-1.png" width="757" height="526" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="how-many-properties-would-be-affected-by-the-oppositions-proposal" class="level2">
 <h2 class="anchored" data-anchor-id="how-many-properties-would-be-affected-by-the-oppositions-proposal"><strong>3. How many properties would be affected by the opposition’s proposal?</strong></h2>
-<p>Draft answer due Week 9.</p>
 </section>
 <section id="what-are-the-likely-pros-and-cons-of-the-oppositions-proposal-for-the-mayor-for-residents-and-for-the-city" class="level2">
 <h2 class="anchored" data-anchor-id="what-are-the-likely-pros-and-cons-of-the-oppositions-proposal-for-the-mayor-for-residents-and-for-the-city"><strong>4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?</strong></h2>
+<ul>
+<li><p>Not straightforward. <em>[AS note: However, we note that the recent Budget proposed changes to the Council Tax system in order to introduce the so-called “Mansion Tax”; reviewing the methods used to introduce this new tax may be instructive in determining a mechanism for introducing an Airbnb Council Tax surcharge.]</em></p></li>
+<li><p>Systems-view needed.</p>
+<ul>
+<li><p>Any council tax adjustments will require updating of 1991 values, which would be (i) administratively difficult to implement (i.e.&nbsp;enforcement of registration), (b) have a wide-ranging impact on all residents. In particular, residents whose properties move into a higher value bracket will need to pay more tax (even if they do not rent out properties).</p></li>
+<li><p>Council tax increases will reduce margins for landlords who may pass on tax increase to renters. Differentiated impact depending on whether they have deeper pockets, others may raise prices or exit the market. Also likely to see more shift towards more frequent lets (i.e.&nbsp;greater than 90 days per year).</p>
+<ul>
+<li><p>Reduction in Airbnb listings. Some near-term increase in housing supply if unprofitable listings are converted to homes for sale. But longer-term likely to see more listings move to frequent lets.</p></li>
+<li><p>Higher prices of rental listings may see reduction in tourist attractiveness</p></li>
+<li><p>Overall, London would be seen to be taking a stricter stance on short-term lets, but overall impact of council tax increases is broad-based and sweeping.</p></li>
+<li><p>Room for more progressive taxation measure targeting business owners, and those who do frequent lets (i.e.&nbsp;&gt;140 days reduce to 120 or 90 days).</p></li>
+</ul></li>
+</ul></li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 36%">
+<col style="width: 54%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Stakeholder Group</th>
+<th>Benefits (Pros)</th>
+<th>Drawbacks (Cons)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mayor</td>
+<td><ul>
+<li><p>Seen to be taking action against errant listings and tackling disamenities from frequent lets.</p></li>
+<li><p>Politically expedient (i.e.&nbsp;near-term vote share increase) to be seen to be moving on a ‘problem area’</p></li>
+</ul></td>
+<td><ul>
+<li><p>Politically unfavorable tax increases in longer-term, loss of votes from residents (who do not let out their homes) and commercial landlords</p></li>
+<li><p>Difficult to convince council managers to implement system changes to allow for registration of multi-listing owners. May require funding or see gridlock.</p></li>
+<li><p>Limited impact on housing supply increase and could instead see more shifting towards frequent lets.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td>Residents (Landlords)</td>
+<td><ul>
+<li>For those able to remain in the market, may have an opportunity to raise rent prices.</li>
+</ul></td>
+<td><ul>
+<li><p>Higher taxes for multiple-listing owners.</p></li>
+<li><p>For those without deeper pockets, may be compelled to increase the occupation frequency of properties.</p></li>
+</ul></td>
+</tr>
+<tr class="odd">
+<td>Residents (Non-Landlords)</td>
+<td><ul>
+<li><p>Reduced disamenities</p></li>
+<li><p>Some increase in housing supply</p></li>
+</ul></td>
+<td><ul>
+<li>Higher council taxes</li>
+</ul></td>
+</tr>
+<tr class="even">
+<td>City of London</td>
+<td><ul>
+<li>Overall curtailing of negative impact of Airbnb in some pockets of London</li>
+</ul></td>
+<td><ul>
+<li><p>Impact on tourism attractiveness from higher rental prices for business / leisure travelers - (a) reduced numbers, (b) reduced stay duration per individual.</p></li>
+<li><p>May be perceived to be less business friendly, especially to liberal market/capitalist disruptors like Airbnb.</p></li>
+<li><p>Limited impact on housing supply.</p></li>
+</ul></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="can-the-story-be-reframed-as-a-positive-one-about-social-mobility-or-housing-opportunity" class="level2">
 <h2 class="anchored" data-anchor-id="can-the-story-be-reframed-as-a-positive-one-about-social-mobility-or-housing-opportunity"><strong>5. Can the story be reframed as a positive one about social mobility or housing opportunity?</strong></h2>
+<ul>
+<li><p>Airbnb largely operating legitimately. Supports tourism and encourages local stay. For locals, it helps to provide additional source of income.</p></li>
+<li><p>But there are small number of hosts who are profiting off Airbnb and aren’t compliant. This has seen listings boom in certain areas, with disamenities to some. Additional competition raises housing prices and limiting young people from accessing these flats.</p></li>
+<li><p>Main issue with housing shortage and this government will continue to focus on that instead of mindlessly raising the tax burden for everyone. Advise the mayor to double down on his plans to expand housing supply in brownfield and greyfield areas.</p></li>
+</ul>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
 </section>
 </section>
 
-</main>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Mayor demands licensing scheme to prevent short-term lets damaging housing supply (19 Jul 2023). <a href="https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply" class="uri">https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Unless planning permission is obtained, Londoners are restricted to renting their property short term for a maximum of 90 nights in a calendar year. <a href="https://www.london.gov.uk/programmes-strategies/housing-and-land/buying-and-owning-home/guidance-short-term-and-holiday-lets-london" class="uri">https://www.london.gov.uk/programmes-strategies/housing-and-land/buying-and-owning-home/guidance-short-term-and-holiday-lets-london</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Mayor Calls For Registration System To Enforce Short-term Letting Law (23 Apr 2019). <a href="https://www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law" class="uri">https://www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Data from (<a href="http://insideairbnb.com/">http://insideairbnb.com</a>) which uses public information on rentals available for booking at specific months in each year.&nbsp;While owners have exercised care with data processing and cleaning, this dataset is the best publicly available estimate of Airbnb listings. We further process the data to remove listings with duplicate IDs, or more than six null fields, which typically reflects the fact that entries have no reviews or incomplete information. &nbsp;<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Occupancy estimates are obtained from Inside Airbnb data. First, a review rate is used to compute reviews to estimated bookings. Thereafter, the average length of stay for London was multiplied by the estimated bookings for each listing giving the occupancy rate (out of 365 days). To estimate potential breaches, we look at the subset of listings that are “entire homes / apartments”, and the occupancy rate, which estimates how many nights the listing was booked in the last 365 days, providing a useful proxy for annual use, where raw daily calendar data are unavailable.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>The occupancy model assumed (a) a review rate of 50% and (b) average length of stay of 3.1 days for London. This is conservative given that Airbnb previously cited an average review rate of 78%, and, community forums have cited a range of 33% and 85% for various properties.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>BBC journalists found about 1,300 listings had reused identical images - such as the same furniture, rooms and decor - from other supposedly unique listing. <a href="https://www.bbc.co.uk/news/articles/cvg96rz9061o" class="uri">https://www.bbc.co.uk/news/articles/cvg96rz9061o</a><a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>We assume that hosts either <u>own</u> the entire home / apartment that they list, or have <u>written permission</u> from owners to list on Airbnb.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Todd et al.&nbsp;and Cox and Slee BT: Need to cite this properly and reference the key finding.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>Owen to insert a footnote to flesh out assumptions for data cleaning and compilation.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
