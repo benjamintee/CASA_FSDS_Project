@@ -860,10 +860,10 @@ top3_names = top3.index.tolist()
 top3_pcts = top3['pct_high_occupancy'].tolist()
 ```
 
--   Since 2015, London planning rules state that entire homes / apartments let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevent permanent housing from being converted into de facto holiday accommodation. Given its negative impact , we thus focused our analysis on entire homes / apartments.
--   Based on occupancy estimates[^5] ,**`{python} f"{entire_homes_2025_90_n:,}"`** entire homes / apartments were used for more than 90 nights per year ("frequent lets"). This represented **more than 2 in 10 of all entire homes listings**, and **1 in 8 of all listings in London** that were possibly in breach of this rule.
--   Spatially, the pattern is consistent with earlier trends with Inner London Boroughs showing the highest rates of intense use. For example **`{python} f"{top3_names[0]}: {top3_pcts[0]:.0f}%"`**, **`{python} f"{top3_names[1]}: {top3_pcts[1]:.0f}%"`** and **`{python} f"{top3_names[2]}: {top3_pcts[2]:.0f}%"`** of entire home listings in these Boroughs were frequent lets.
--   Notwithstanding the sensitivity of assumptions used by Inside Airbnb[^6], we expect this to be a conservative estimate, given reported likelihood of multiple listings of the same property, which some owners have used to circumvent the 90 day rule[^7]. These high numbers relative to planning permissions, suggest possible misuse of Airbnbs in inner London, fanning the perception that it is out of control.
+-   Since 2015, London planning rules state that entire homes / apartments let on platforms such as Airbnb should not be used for short-term letting for more than **90 nights per calendar year**, without planning permission obtained. This prevents permanent housing from being converted into de facto holiday accommodation. Given its negative impact, we thus focused our analysis on entire homes / apartments.
+-   Based on occupancy estimates[^5] ,**`{python} f"{entire_homes_2025_90_n:,}"`** entire homes / apartments were used for 90 or more nights per year ("frequent lets"). This represented **more than 2 in 10 of all entire homes listings**, and **1 in 8 of all listings in London**.
+-   Spatially, the pattern is consistent with earlier trends, with Inner London Boroughs showing the highest rates of intense use. **`{python} f"{top3_names[0]}, {top3_names[1]} and {top3_names[2]}"`** had **`{python} f"{top3_pcts[0]:.0f}%, {top3_pcts[1]:.0f}% and {top3_pcts[2]:.0f}%"`** of entire home listings on frequent lets.
+-   Notwithstanding the sensitivity of assumptions used by Inside Airbnb[^6], we expect this to be a conservative estimate, given reported likelihood of multiple listings of the same property, which some owners have used to circumvent the 90 day rule[^7]. These high numbers, notwithstanding that some may have sought planning permissions, suggest misuse of Airbnbs in inner London, fanning the perception that it is out of control.
 
 [^5]: Occupancy estimates are obtained from Inside Airbnb data. First, a review rate is used to compute reviews to estimated bookings. Thereafter, the average length of stay for London was multiplied by the estimated bookings for each listing giving the occupancy rate (out of 365 days). To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments", and the occupancy rate, which estimates how many nights the listing was booked in the last 365 days, providing a useful proxy for annual use, where raw daily calendar data are unavailable.
 
@@ -971,7 +971,7 @@ The opposition proposes that "professional" landlords' properties should be subj
 
 In this report a "professional" landlord is defined as one:
 
--   whose income from their Airbnb properties is *\[greater than the median UK/London? income\]*. This is on the basis that the meaning of the word "professional" is as a counterpart to "amateur". In this context, "professional" suggests that the landlord could be relying on Airbnb for their living; that is, to provide the income that they would otherwise be earning through employment.
+-   whose income from their Airbnb properties, in an economically ideal circumstance, is greater than the London median income. This is on the basis that the meaning of the word "professional" is as a counterpart to "amateur". In this context, "professional" suggests that the landlord could be relying on Airbnb for their living; that is, to provide the income that they would otherwise be earning through employment.
 
 -   whose properties are residential, rather than commercial. This is based on, first, the opposition's reference to Council Tax (which is not paid by commercial landlords; instead they pay business rates) and, second, the context for the opposition's proposal: the letting of three "homes" (including one council-owned property) on Airbnb - the likely argument on the opposition's part being that letting these homes on Airbnb means that they are not available either for private rental (or council tenants) or sale to buyers on the property market.
 
@@ -1060,7 +1060,7 @@ An analysis of host listings[^8] shows that a **small number of hosts are respon
 
 -   **`{python} f"{df_morethan1_hosts:,} ({df_morethan1_hosts_perc:.0f}%)"`** hosts own [two or more properties (i.e. multi-listing hosts)]{.underline}, and they disproportionately make up **`{python} f"{df_morethan1_perc:.0f}%"`** of listings.
 
--   A small number, **`{python} f"{df_morethan100_hosts:,} ({df_morethan100_hosts_perc:.2f}%)"`** of hosts, [own over 100 properties]{.underline} but made up **`{python} f"{df_morethan100_perc:.0f}%"`** of the total number of entire homes available.
+-   A small number, **`{python} f"{df_morethan100_hosts:,} ({df_morethan100_hosts_perc:.2f}%)"`** of hosts, [own over 100 properties]{.underline} but made up **`{python} f"{df_morethan100_perc:.0f}%"`** of listings.
 
 -   Out of the total entire home / apartment listings, a larger proportion of properties belonging to multi-listings hosts were let out for 90 or more days (14%), compared to properties belonging to single-listing hosts (7%). *\[AS note: should we mention again that they may well have obtained planning permission?\]*
 
@@ -1218,15 +1218,13 @@ multi_listing_host_90dmore = 34100 / median_income_multi_90dmore  # just 1 prope
 
 Based on estimated revenues from Inside Airbnb data[^10],
 
-[^10]: From InsideAirbnb data, 'estimated_revenue_l365d' field computes revenue collected for each listing based on price and occupancy over the last 365 days. This estimate depends on earlier assumptions used for 'estimated_occupancy_l365d' and 'listing_price', but provides a helpful sense of revenues per listing. 
+[^10]: Initially, mean income of frequently rented listings and all listings was taken direnctly from the Inside Airbnb. This assumed that our definition of a frequenly listed property (one listed fro \>90 days) aligned with the equivalent definition from Inside Airbnb. Though, the average income per listing was eventualy compiled using the same listing dataset from earlier analyses. This aligns closer with aspects of our proposal.
 
--   The median single-listing host renting out their home for less than 90 days earned **£`{python} f"{median_income_single_90d:,.0f}"`**, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`** a year per property.
+-   The median single-listing host renting out their home for 'standard lets' (i.e. less than 90 days) earned **£`{python} f"{median_income_single_90d:,.0f}"`**a year per property, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**.
 
--   This rises much further when we look at [frequent hosts (i.e. occupancy ≥90 days)]{.underline}. The median single-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** a year per property.
+-   This rises much further when we look at 'frequent lets' (i.e. occupancy 90 days or more). The median single-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**a year per property, while multi-listing hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`** .
 
--   Using the more conservative yearly income of **£`{python} f"{median_income_single_90d:,.0f}"`**, owning seven properties becomes the threshold to make more than the London median income. In contrast, owning just two properties is sufficient to make close to double the median income of London when letting for more than 90 days. Given the range of income, one can definitively suggest that owning between just 2 and 7 listings is sufficient to make Airbnb a source of primary income.
-
-*\[AS note: add a concluding sentence explaining the findings as regards comparison with median income and whether therefore considered "professional"?\]*
+-   Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, \*\*owning seven properties\*\* becomes the threshold to make more than the London median income. In contrast, \*\*owning two properties\*\* is sufficient to make close to double the median income of London when letting for 90 days or more. Given this range, one can definitively suggest that owning between \*\*2 and 7\*\* listings is sufficient to make Airbnb a source of primary income. This assertion that under ideal circumstances just 2 properties can generate nearly double the median income of London further suggests that a professional landlord and multi-listing host (when considering entire homes and apartments) are synonymous.
 
 ```{python}
 #| lst-label: Figure 2.3 - Distribution of revenue per property for standard lets and frequent lets hosts
@@ -1341,11 +1339,11 @@ df_100plus_grouped_len = len(df_100plus_grouped) # 13 hosts
 df_100plus_grouped_n = df_100plus_grouped['number_of_properties'].sum() # total of 2,472 properties
 ```
 
--   The large majority of hosts renting out entire properties are from the UK.
+Among hosts whose origin is known, the vast majority are UK-based, suggesting that any drawbacks of increased Aribnb presence in London are locally initiated and perpetuated. Notwithstanding, the host owning the most properties is a company based in Dubai, while three other hosts have names suggesting that they are companies.
 
--   The host with the most properties is a company based in Dubai; three other host names suggest that they are companies rather than individuals. *\[AS note: possible link to pros/cons of Council Tax approach vs business rates approach: these hosts may be paying a huge amount of tax already if they are properly registered for business rates already - this could be entirely lawful (and be compliant with planning permission too).\]*
+This raises potential concerns with the opposition's proposal of raising council tax as these companies may already be properly registered as companies and complying with London business tax. Given the mayor's history of working with Airbnb for several years and Airbnb's largely cooperative history in London, targeting all professional landlords with business taxes may be more consistent with business precedent.
 
--   (Comment about sizable proportion of data is NA and why this may require more reporting)
+Additionally, a substantial number of listings do not provide a host origin. This potentially contradicts the proposition in the above paragraph that drawbacks of Airbnb presence is locally sourced. Despite this, a host origin does not affect the feasibility of imposing business taxes onto multi-listing hosts as they apply irrespective of host origin.
 
 ```{python}
 #| echo: false
