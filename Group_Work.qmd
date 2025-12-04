@@ -116,35 +116,35 @@ from matplotlib.lines import Line2D
 ```
 
 ```{python}
-#| lst-label: Download the BibTeX file into the same folder as this qmd if it has not been downloaded yet
+#| lst-label: Download the BibTeX and csl files into the same folder as this qmd if it has not been downloaded yet
 #| echo: false
 #| warning: false
 
 from pathlib import Path
 import requests
 
-# Name of the BibTeX file
-bib_name = "fsds_group_work.bib"
+# Name of the BibTeX and csl files
+bib_name = ["fsds_group_work.bib", "harvard-cite-them-right.csl"]
 
 # Folder where the .qmd file lives
-# This assumes you opened the folder containing the .qmd in Positron
 qmd_folder = Path(".").resolve()  
-
-# Full path for the BibTeX file
-bib_path = qmd_folder / bib_name
 
 # Raw GitHub URL
 url_bib = "https://raw.githubusercontent.com/BoscoChoi/CASA_FSDS_Project/refs/heads/main/fsds_group_work.bib"
 
-# Download only if missing
-if not bib_path.exists():
-    print(f"{bib_name} not found. Downloading to {bib_path} ...")
-    response = requests.get(url_bib)
-    response.raise_for_status()
-    bib_path.write_bytes(response.content)
-    print("Download complete!")
-else:
-    print(f"{bib_name} already exists at {bib_path}")
+for bib in bib_name:
+    # Full path for the BibTeX/csl file
+    bib_path = qmd_folder / bib
+
+    # Download only if missing
+    if not bib_path.exists():
+        print(f"{bib_name} not found. Downloading to {bib_path} ...")
+        response = requests.get(url_bib)
+        response.raise_for_status()
+        bib_path.write_bytes(response.content)
+        print("Download complete!")
+    else:
+        print(f"{bib_name} already exists at {bib_path}")
 ```
 
 ```{python}
@@ -1200,8 +1200,8 @@ MSOA['entire_prof_prop2025'] = MSOA['entire_prof_prop2025'].replace([np.inf, -np
 # Map professionally operated entire home listings / total listings by MSOA (Jenks)
 MSOA_map_plotter (
     "entire_prof_prop2025",
-    "Proportion of listings \n that are professionally \n operated entire homes (%)",
-    "Figure 2.2: Proportion of Airbnb Listings that are \n professionally operated entire homes (MSOA, 2025)",
+    "Proportion of listings that \n are entire homes operated \n by multi-listing owners(%)",
+    "Figure 2.2: Proportion of Airbnb Listings that are \n entire homes operated by multi-listing owners (MSOA, 2025)",
     "Source: Listings data from Insideairbnb.com"
 )
 ```
