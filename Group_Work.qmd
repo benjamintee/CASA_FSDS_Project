@@ -1449,8 +1449,212 @@ plt.show()
 ```
 
 ## **3. How many properties would be affected by the opposition’s proposal?**
+To determine the scale of the opposition's proposal, we applied the definition of "professional landlord" established in Section 2 (hosts with two or more listings). We also modelled a "High Threshold" scenario (three or more listings) to reflect the specific circumstances of the recent advisor scandal.
+
+```{python}
+#| lst-label: Calculate affected listings and revenue
+#| echo: false
+#| warning: false
+
+# 1. Define the Total Market (Entire Homes 2025)
+total_listings = len(df)
+total_revenue = df["estimated_revenue_l365d"].sum()
+
+# 2. Scenario A: Opposition Proposal (Threshold = 2+)
+# Filter: Hosts who own 2 or more properties
+df_affected_2 = df[df["listing_count"] >= 2]
+
+# Calculate Counts
+count_2 = len(df_affected_2)
+hosts_2 = df_affected_2["host_id"].nunique()
+rev_2 = df_affected_2["estimated_revenue_l365d"].sum()
+
+# Calculate % Share
+pct_listings_2 = (count_2 / total_listings) * 100
+pct_rev_2      = (rev_2 / total_revenue) * 100
+
+# 3. Scenario B: Scandal Threshold (Threshold = 3+)
+df_affected_3 = df[df["listing_count"] >= 3]
+count_3 = len(df_affected_3)
+rev_3   = df_affected_3["estimated_revenue_l365d"].sum()
+
+pct_listings_3 = (count_3 / total_listings) * 100
+pct_rev_3      = (rev_3 / total_revenue) * 100
+```
+
+Analysis of the 2025 dataset indicates that the opposition's proposal targets a concentrated, high value segment of the market. If implemented, the tax premium would apply to `{python} f"{count_2:,}"` listings. These properties are held by just `{python} f"{hosts_2:,}"` unique hosts, representing `{python} f"{pct_listings_2:.0f}%"` of London's entire home short term rental supply.
+
+While professional listings comprise a minority of the total count, they generate £`{python} f"{rev_2/1000000:.1f}m"` annually. Consequently, professional landlords control `{python} f"{pct_rev_2:.0f}%"` of the total revenue in the sector ([Figure 3.1]{.underline}).
+
+This disparity highlights a significant concentration of market power. Even under a more conservative definition (three or more properties), which aligns with higher thresholds discussed in recent debates, the policy would still capture `{python} f"{count_3:,}"` homes and `{python} f"{pct_rev_3:.0f}%"` of the market's total revenue.
+
+The data demonstrates that the opposition's proposal is not a niche intervention; rather, it effectively targets the segment of the market extracting the highest value from London's housing stock, whilst leaving the majority of "casual" hosts unaffected.
+```{python}
+#| lst-label: Figure 3.1 - Impact of Proposal on Market Share
+#| echo: false
+#| warning: false
+
+# Data preparation for the chart
+categories = ['Total Listings', 'Total Revenue']
+# The "Unaffected" share (Single-listing hosts)
+single_share = [100 - pct_listings_2, 100 - pct_rev_2]
+# The "Affected" share (Professionals)
+pro_share = [pct_listings_2, pct_rev_2]
+
+fig, ax = plt.subplots(figsize=(8, 4))
+
+# Create horizontal stacked bars
+# Bar 1: Single-Listing (Skyblue) -> UPDATED LABEL HERE
+ax.barh(categories, single_share, color='skyblue', edgecolor='black', label='Single-Listing (1 Home)')
+# Bar 2: Professionals (Tomato) - stacked on top
+ax.barh(categories, pro_share, left=single_share, color='tomato', edgecolor='black', label='Professional (2+ Homes)')
+
+# Add labels inside the "Professional" bars (Tomato section)
+for i, val in enumerate(pro_share):
+    ax.text(val/2 + single_share[i], i, 
+            f"{val:.0f}% Affected", 
+            ha='center', va='center', color='black', fontweight='bold', fontsize=11)
+
+# Add labels inside the "Single-Listing" bars (Skyblue section)
+for i, val in enumerate(single_share):
+    ax.text(val/2, i, 
+            f"{val:.0f}% Unaffected", 
+            ha='center', va='center', color='black', fontsize=11)
+
+# Styling to match previous graphs
+ax.set_xlim(0, 100)
+ax.set_xlabel("Market Share (%)", fontsize=12)
+ax.set_title("Figure 3.1: Impact of Opposition Proposal (2+ Listings)\non Listings vs. Revenue", fontsize=14, pad=15)
+ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.3), ncol=2, fontsize=11)
+
+# Clean up axes
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.tick_params(axis='y', labelsize=12)
+
+# Caption
+fig.text(0.01, -0.15, "Source: Listings data from InsideAirbnb.com. 'Affected' defined as hosts with >1 listing.", ha='left', fontsize=10)
+
+plt.tight_layout()
+plt.show()
+```
 
 ## **4. What are the likely pros and cons of the opposition’s proposal (for the Mayor, for residents, and for the city)?**
+```{python}
+#| lst-label: Figure 4.1 - Revenue Projection & Spatial Analysis
+#| echo: false
+#| warning: false
+
+from matplotlib.ticker import FuncFormatter
+
+# Remove duplicate columns if re-running the chunk to avoid merge errors
+cols_to_drop = ['band_d_tax', 'is_inner', 'band_d_tax_x', 'band_d_tax_y', 'neighbourhood_cleansed_x', 'neighbourhood_cleansed_y']
+df = df.drop(columns=[c for c in cols_to_drop if c in df.columns], errors='ignore')
+
+# Spatial join to associate listings with Boroughs
+boros = gpd.read_file('Data/LONDON_BOROUGH.gpkg')
+# Ensure both have the same CRS (Coordinate Reference System)
+gdf_temp = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude), crs="EPSG:4326").to_crs(boros.crs)
+joined = gpd.sjoin(gdf_temp, boros[['name', 'geometry']], how='left', predicate='within')
+df['neighbourhood_cleansed'] = joined['name_right'].str.lower().str.strip()
+
+# Load and clean Council Tax data (Band D)
+df_tax = pd.read_csv('Data/tax_2025.csv', header=0)
+df_tax = df_tax[['Local authority', 'Band D']]
+df_tax = df_tax.rename(columns={'Local authority': 'neighbourhood_cleansed', 'Band D': 'band_d_tax'})
+df_tax = df_tax.dropna(subset=['neighbourhood_cleansed'])
+
+# Remove commas and convert tax values to float
+df_tax['band_d_tax'] = df_tax['band_d_tax'].astype(str).str.replace(',', '').astype(float)
+df_tax['neighbourhood_cleansed'] = df_tax['neighbourhood_cleansed'].str.lower().str.strip().str.replace('&', 'and')
+
+# Merge tax data onto the main listings dataframe
+df = pd.merge(df, df_tax, on='neighbourhood_cleansed', how='left')
+
+# Filter for professional landlords (hosts with 2 or more listings)
+pro_df = df[df["listing_count"] >= 2].copy()
+
+# Aggregate potential revenue by Borough (assuming 100% premium on Band D)
+borough_revenue = pro_df.groupby('neighbourhood_cleansed')['band_d_tax'].sum().reset_index()
+borough_revenue.columns = ['name', 'potential_revenue']
+borough_revenue['name'] = borough_revenue['name'].str.title().str.replace('And', 'and')
+
+# Merge aggregated revenue data with Borough geometries for plotting
+boros_map = boros.merge(borough_revenue, on='name', how='left').fillna(0)
+
+# Plot Figure 4.1: Spatial Concentration of Revenue
+fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+
+# Define helper function to format currency as £XM
+def million_formatter(x, pos):
+    return f'£{x/1e6:.1f}M'
+
+# Create formatter object
+currency_fmt = FuncFormatter(million_formatter)
+
+boros_map.plot(column='potential_revenue', 
+               cmap='OrRd', 
+               linewidth=0.8, 
+               edgecolor='0.8', 
+               legend=True, 
+               legend_kwds={
+                   'label': "Potential Revenue per Borough (£)", 
+                   'orientation': "horizontal", 
+                   'shrink': 0.6,
+                   'format': currency_fmt
+               },
+               ax=ax)
+
+ax.set_axis_off()
+ax.set_title('Figure 4.1: Spatial Concentration of Potential Tax Revenue', fontsize=14)
+
+# Highlight Inner London Boroughs with a blue boundary
+inner_london_list = ["Camden", "City of London", "Greenwich", "Hackney", "Hammersmith and Fulham", "Islington", "Kensington and Chelsea", "Lambeth", "Lewisham", "Southwark", "Tower Hamlets", "Wandsworth", "Westminster"]
+boros[boros['name'].isin(inner_london_list)].boundary.plot(ax=ax, color='blue', linewidth=1.5, alpha=0.6)
+
+# Add annotation for Inner London
+ax.text(505000, 160000, "Blue Outline =\nInner London", color='blue', fontsize=10, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+# Calculate variables for revenue projection scenarios
+df_tax['is_inner'] = df_tax['neighbourhood_cleansed'].apply(lambda x: x in [i.lower() for i in inner_london_list])
+
+# Calculate total potential revenue for sensitivity analysis
+total_rev = pro_df['band_d_tax'].sum()
+inner_rev = pro_df[pro_df['neighbourhood_cleansed'].isin([x.lower() for x in inner_london_list])]['band_d_tax'].sum()
+
+# Create dataframe for Table 4.1 projections
+projections = pd.DataFrame({
+    'Premium Rate': ['50%', '100% (Proposed)', '150%'],
+    'Revenue (City-Wide)': [total_rev * 0.5, total_rev * 1.0, total_rev * 1.5],
+    'Revenue (Inner London Only)': [inner_rev * 0.5, inner_rev * 1.0, inner_rev * 1.5]
+})
+
+# Print Table 4.1
+pd.options.display.float_format = '£{:,.1f}'.format
+print("\nTable 4.1: Revenue Projections (Sensitivity Analysis)")
+print(projections.to_string(index=False))
+
+```
+
+The opposition’s proposal to levy a Council Tax premium on "professional" landlords operates on the premise that fiscal penalties will either act as a revenue mechanism or a catalyst for returning housing stock to the residential market. However, our analysis suggests a profound disconnect between the policy's theoretical revenue generation and the practical realities of London's platform economy.
+
+#### **Revenue Potential and Spatial Inequity**
+Our modelling demonstrates that the financial argument for the proposal is substantial. As detailed in **Table 4.1**, a 100% Council Tax premium applied to hosts with two or more listings would generate an estimated **£50.4 million** annually. However, **Figure 4.1** reveals that this revenue is spatially polarised; the financial yield is overwhelmingly concentrated in Westminster, Kensington and Chelsea and Camden. This supports the findings of @Quattrone:2016, who argue that the economic benefits of the sharing economy are rarely distributed equitably. While this revenue could theoretically fund housing enforcement, the spatial mismatch suggests that the boroughs with the most severe housing shortages (often in Outer London) would see the least direct financial benefit from the levy.
+
+#### **The Enforcement Gap and "Regulated Deregulation"**
+The primary failure point of the proposal lies in identification. The policy assumes that "professional" landlords are visible entities, yet the reality of London's platform economy is far more opaque[^8]. Professional operators routinely take advantage of fragmented corporate structures to mask portfolio sizes, placing them in a "regulatory grey zone". Without the mandatory registration scheme that the Mayor has advocated for but lacks the statutory power to implement, local councils would be forced to rely on Council Tax data which fails to distinguish between a second home and a commercial short term let. Consequently, the administrative cost of identifying liable properties could consume a significant portion of the projected £50.4m revenue.
+
+#### **Economic Displacement and the 'Rent Gap'**
+Finally, there is a risk that the tax will fail to incentivise the return of housing stock due to the mechanics of the "rent gap"[^9]. In Central London, where our data indicates occupancy rates and daily pricing are highest, the disparity between short term yields and long term rental income is likely sufficient for landlords to simply absorb the tax premium as a cost of doing business[^10]. In this scenario, the policy becomes a revenue raising exercise rather than a housing solution, potentially entrenching the commercialisation of residential zones while failing to increase the long term housing supply.
+
+[^8]: @Ferreri:2018 argue that this "grey zone" allows commercial operators to evade scrutiny, complicating the identification of liable properties without granular platform data.
+[^9]: @Wachsmuth:2018 describe this as the "rent gap"; unless the tax burden is high enough to close the profitability gap between short term and long term letting, housing stock is unlikely to return to the residential market.
+[^10]: This phenomenon is consistent with the findings of @Horn:2017 in Boston, where regulatory attempts failed to curb rent increases because the underlying profitability of short term letting remained superior to the long term rental market.
+
+
 
 -   Not straightforward. *\[AS note: However, we note that the recent Budget proposed changes to the Council Tax system in order to introduce the so-called "Mansion Tax"; reviewing the methods used to introduce this new tax may be instructive in determining a mechanism for introducing an Airbnb Council Tax surcharge.\]*
 
