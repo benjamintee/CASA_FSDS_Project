@@ -1,6 +1,7 @@
 ---
 date: last-modified
 title: The Pythoneers' Group Project
+bibliography: fsds_group_work.bib
 csl: harvard-cite-them-right.csl
 execute:
   echo: false
@@ -96,11 +97,11 @@ e.      What are the Mayor's options to reframe the narrative to one about 
 
 Opposition critics have suggested that the growth and spread of Airbnbs in London has accelerated, with professional landlords rapidly accumulating properties, flouting rental restrictions to make a profit. The increase of short-term lets and its potential to damage the housing supply in London is a concern that the Mayor's office had raised [previously](https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply)[^1], and is one of the reasons that London's [90-day limit](https://www.london.gov.uk/programmes-strategies/housing-and-land/buying-and-owning-home/guidance-short-term-and-holiday-lets-london)[^2] was introduced. Indeed, the Mayor called for a registration system to be put in place as early as [2019](www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law)[^3]. This chapter provides a systematic analysis of the latest situation. 
 
-[^1]: Mayor demands licensing scheme to prevent short-term lets damaging housing supply (19 Jul 2023). <https://www.london.gov.uk/mayor-demands-licencing-scheme-prevent-short-term-lets-damaging-housing-supply>
+[^1]: \[ @mayoroflondon2023 \]
 
-[^2]: Unless planning permission is obtained, Londoners are restricted to renting their property short term for a maximum of 90 nights in a calendar year. <https://www.london.gov.uk/programmes-strategies/housing-and-land/buying-and-owning-home/guidance-short-term-and-holiday-lets-london>
+[^2]: \[ @mayoroflondonn.d.\]
 
-[^3]: Mayor Calls For Registration System To Enforce Short-term Letting Law (23 Apr 2019). <https://www.london.gov.uk/press-releases/mayoral/registration-system-for-short-term-letting-law>
+[^3]: \[ @mayoroflondon2019\]
 
 ```{python}
 #| lst-label: Load common libraries and packages
@@ -112,6 +113,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.lines import Line2D
+```
+
+```{python}
+#| lst-label: Download the BibTeX and csl files into the same folder as this qmd if it has not been downloaded yet
+#| echo: false
+#| warning: false
+
+from pathlib import Path
+import requests
+
+# Name of the BibTeX and csl files
+bib_name = ["fsds_group_work.bib", "harvard-cite-them-right.csl"]
+
+# Folder where the .qmd file lives
+qmd_folder = Path(".").resolve()  
+
+# Raw GitHub URL
+url_bib = "https://raw.githubusercontent.com/BoscoChoi/CASA_FSDS_Project/refs/heads/main/fsds_group_work.bib"
+
+for bib in bib_name:
+    # Full path for the BibTeX/csl file
+    bib_path = qmd_folder / bib
+
+    # Download only if missing
+    if not bib_path.exists():
+        print(f"{bib_name} not found. Downloading to {bib_path} ...")
+        response = requests.get(url_bib)
+        response.raise_for_status()
+        bib_path.write_bytes(response.content)
+        print("Download complete!")
+    else:
+        print(f"{bib_name} already exists at {bib_path}")
 ```
 
 ```{python}
@@ -577,7 +610,7 @@ largest_ratio_name = df_change_LA_sorted.iloc[0]["name"]
 largest_ratio_value = round(df_change_LA_sorted.iloc[0]["listings_stock_perc"])
 ```
 
--   In comparison with the **`{python} f"{listings_pct_change:.0f}%"`** **increase** in Airbnb listings, London housing stock increases lag significantly behind. Between 2020 and 2024, properties in London grew from **`{python} f"{stock_2020 / 1000000:.2f}M"`** to **`{python} f"{stock_2024 / 1000000:.2f}M"`** constituting a mere **`{python} f"{stock_growth:.1f}%"`** **increase** in housing stock. Amidst a tight housing market, the faster increase in properties for short-term rental relative to housing stock exacerbates pressures on housing prices and rents ([Todd, Musah & Cheshire (2022)](https://discovery.ucl.ac.uk/id/eprint/10124650/7/Musah_23998083211001836.pdf)).
+-   In comparison with the **`{python} f"{listings_pct_change:.0f}%"`** **increase** in Airbnb listings, London housing stock increases lag significantly behind. Between 2020 and 2024, properties in London grew from **`{python} f"{stock_2020 / 1000000:.2f}M"`** to **`{python} f"{stock_2024 / 1000000:.2f}M"`** constituting a mere **`{python} f"{stock_growth:.1f}%"`** **increase** in housing stock. Amidst a tight housing market, the faster increase in properties for short-term rental relative to housing stock exacerbates pressures on housing prices and rents [@todd2021].
 -   Unsurprisingly, when comparing the ratio of listings increases and housing stock increases at the Borough level, central London Boroughs display more accelerated rates of listings increases compared to housing stock increases than peripheral Boroughs. In particular, **`{python} f"{largest_ratio_name}"`** saw **`{python} f"{largest_ratio_value} times"`** more new Airbnb listings than new housing stock between 2020 and 2024.
 
 #### 1.3 What is the situation at the Borough- and MSOA-levels in 2025?
@@ -975,7 +1008,7 @@ In this report a "professional" landlord is defined as one:
 
 -   whose properties are residential, rather than commercial. This is based on, first, the opposition's reference to Council Tax (which is not paid by commercial landlords; instead they pay business rates) and, second, the context for the opposition's proposal: the letting of three "homes" (including one council-owned property) on Airbnb - the likely argument on the opposition's part being that letting these homes on Airbnb means that they are not available either for private rental (or council tenants) or sale to buyers on the property market.
 
-Our approach is consistent with relevant literature investigating how Airbnb listings affect local rent and property value (Todd et al., Cox and Slee) which suggest that a professional landlord can be a company or individual that operates [2 or more]{.underline} entire home / apartment listings (i.e. "multi-listing owners"). With this, the next two chapters focus on multi-listing owners, with an emphasis on the extent of "frequent lets" vs "standard lets".
+Our approach is consistent with relevant literature investigating how Airbnb listings affect local rent and property value [@todd2021; @cox2016] which suggest that a professional landlord can be a company or individual that operates [2 or more]{.underline} entire home / apartment listings (i.e. "multi-listing owners"). With this, the next two chapters focus on multi-listing owners, with an emphasis on the extent of "frequent lets" vs "standard lets".
 
 #### 2.2 How many hosts have listings for two or more entire properties (homes / apartments)?
 
@@ -1167,8 +1200,8 @@ MSOA['entire_prof_prop2025'] = MSOA['entire_prof_prop2025'].replace([np.inf, -np
 # Map professionally operated entire home listings / total listings by MSOA (Jenks)
 MSOA_map_plotter (
     "entire_prof_prop2025",
-    "Proportion of listings \n that are professionally \n operated entire homes (%)",
-    "Figure 2.2: Proportion of Airbnb Listings that are \n professionally operated entire homes (MSOA, 2025)",
+    "Proportion of listings that \n are entire homes operated \n by multi-listing owners(%)",
+    "Figure 2.2: Proportion of Airbnb Listings that are \n entire homes operated by multi-listing owners (MSOA, 2025)",
     "Source: Listings data from Insideairbnb.com"
 )
 ```
