@@ -236,7 +236,7 @@ for year, df in dfs.items():
 na_summary = pd.DataFrame(row_na_summary).T
 na_summary
 
-# The na_summary shows that rows with 7 or more NAs comprise about 10,000 entries in 2024 and 2025. These are typically rows that do not have any reviews or do not have a price and data on bathrooms and bedrooms. 
+# The na_summary shows that rows with more than six NAs comprise about 10,000 entries in 2024 and 2025. These are typically rows that do not have any reviews or do not have a price and data on bathrooms and bedrooms. 
 ```
 
 ```{python}
@@ -250,7 +250,7 @@ for year, df in dfs.items():
     before = df.shape[0]
     df.drop(df[df['id'].isna()].index, inplace=True)
 
-    # Dropping rows missing more than 6 values, which may be problematic - these rows tend to be those without reviews (4 columns) and three additional columns (e.g. bedrooms, bathrooms, price)
+    # Dropping rows missing more than six NA values, which may be problematic - these rows tend to be those without reviews (4 columns) and three additional columns (e.g. bedrooms, bathrooms, price)
     cutoff = 6
     probs = df.isnull().sum(axis=1)
     problematic_rows = df.loc[probs > cutoff]
@@ -610,7 +610,7 @@ largest_ratio_name = df_change_LA_sorted.iloc[0]["name"]
 largest_ratio_value = round(df_change_LA_sorted.iloc[0]["listings_stock_perc"])
 ```
 
--   In comparison with the **`{python} f"{listings_pct_change:.0f}%"`** **increase** in Airbnb listings, London housing stock increases lag significantly behind. Between 2020 and 2024, properties in London grew from **`{python} f"{stock_2020 / 1000000:.2f}M"`** to **`{python} f"{stock_2024 / 1000000:.2f}M"`** constituting a mere **`{python} f"{stock_growth:.1f}%"`** **increase** in housing stock. Amidst a tight housing market, the faster increase in properties for short-term rental relative to housing stock exacerbates pressures on housing prices and rents [@todd2021].
+-   In comparison with the **`{python} f"{listings_pct_change:.0f}%"`** **increase** in Airbnb listings, London housing stock increases lag significantly behind. Between 2020 and 2024, properties in London grew from **`{python} f"{stock_2020 / 1000000:.2f}M"`** to **`{python} f"{stock_2024 / 1000000:.2f}M"`** constituting a mere **`{python} f"{stock_growth:.1f}%"`** **increase** in housing stock. Amidst a tight housing market, the faster increase in properties for short-term rental relative to housing stock exacerbates pressures on housing prices and rents [@todd2021]).
 -   Unsurprisingly, when comparing the ratio of listings increases and housing stock increases at the Borough level, central London Boroughs display more accelerated rates of listings increases compared to housing stock increases than peripheral Boroughs. In particular, **`{python} f"{largest_ratio_name}"`** saw **`{python} f"{largest_ratio_value} times"`** more new Airbnb listings than new housing stock between 2020 and 2024.
 
 #### 1.3 What is the situation at the Borough- and MSOA-levels in 2025?
@@ -791,7 +791,7 @@ def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
     colors = [cmap(i / (k-1)) for i in range(k)]
 
     # Create figure
-    fig, ax = plt.subplots(1, 1, figsize=(8, 7))
+    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
     # Plot each class separately for categorical legend
     for i, color in enumerate(colors):
@@ -813,7 +813,7 @@ def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
         title_fontsize=12,
         fontsize=12,
         loc="upper left",
-        bbox_to_anchor=(1.00,0.4))
+        bbox_to_anchor=(0.85,0.4))
 
     # Titles and annotations
     ax.set_title(Map_title, fontsize=14, pad=15)
@@ -1249,6 +1249,90 @@ multi_listing_host_90d = 34100 / median_income_multi_90d  # 7 properties
 multi_listing_host_90dmore = 34100 / median_income_multi_90dmore  # just 1 property
 ```
 
+```{python}
+# Number of Listings that were private rooms 
+private_rooms_2025 = df_2025[df_2025["room_type"] == "Private room"]
+private_rooms_2025_n = len(private_rooms_2025)
+private_rooms_2025_per = round(private_rooms_2025_n / len(df_2025) * 100, 0)
+
+# Number of private rooms that had estimated occupancy > 90 days 
+private_rooms_2025_90 = private_rooms_2025[private_rooms_2025['estimated_occupancy_l365d'] > 90]
+private_rooms_2025_90_n = len(private_rooms_2025_90)
+private_rooms_2025_90_per = round(private_rooms_2025_90_n / private_rooms_2025_n * 100, 2)
+
+# Count the number of private rooms held by unique hosts
+host_sizes_rooms = (
+    private_rooms_2025
+    .groupby("host_id")["id"]
+    .count()
+    .reset_index(name="listing_count"))
+
+# Merging the total number of entire homes back to the listings dataframe
+private_rooms_2025_df = private_rooms_2025.merge(host_sizes_rooms, on="host_id", how="left")
+
+# Given the wide and long-tailed distribution, we visualise them in discrete buckets instead
+# Using 1, 2, 10, 100, 100+ as discrete categories for a sense of scale 
+bins = [0, 1, 2, 10, 100, float("inf")]
+labels = ["1", "2", "3-10", "11-100", "100+"]
+
+private_rooms_2025_df["host_size_group"] = pd.cut(
+    private_rooms_2025_df["listing_count"],
+    bins=bins,
+    labels=labels,
+    include_lowest=True
+)
+
+# Further check for each bucket of listings, how many were let out for 90 or more days
+private_rooms_2025_df["occupancy_group"] = private_rooms_2025_df["estimated_occupancy_l365d"].apply(
+    lambda x: "<90 days" if x < 90 else "≥90 days")
+
+# Total number of private room listings
+total_private_rooms = len(private_rooms_2025_df)
+
+# Count per host_size_group
+host_group_counts_room = (
+    private_rooms_2025_df["host_size_group"]
+    .value_counts()
+    .sort_index()
+    .to_frame("count")
+)
+
+# Add percentage column
+host_group_counts_room["percentage"] = (
+    host_group_counts_room["count"] / total_private_rooms * 100
+).round(2)
+
+# Filter to relevant rows (non-zero, non-null revenue)
+private_rooms_clean = private_rooms_2025_df[
+    (private_rooms_2025_df["estimated_revenue_l365d"] > 0) &
+    private_rooms_2025_df["estimated_revenue_l365d"].notna()
+]
+
+# Count listings & compute median revenue by property_type
+private_rooms_summary = (
+    private_rooms_2025_df
+    .groupby("property_type")
+    .agg(
+        count=("id", "count"),
+        median_standard=("estimated_revenue_l365d",
+                     lambda s: s[private_rooms_2025_df.loc[s.index, "occupancy_group"] == "<90 days"]
+                     .replace(0, np.nan)
+                     .median()),
+        median_frequent=("estimated_revenue_l365d",
+                     lambda s: s[private_rooms_2025_df.loc[s.index, "occupancy_group"] == "≥90 days"]
+                     .replace(0, np.nan)
+                     .median())
+    )
+)
+
+private_rooms_summary = private_rooms_summary[
+    (private_rooms_summary["median_standard"].notna()) &
+    (private_rooms_summary["median_standard"] != 0) & 
+    (private_rooms_summary["median_frequent"].notna()) &
+    (private_rooms_summary["median_frequent"] != 0) 
+]
+```
+
 Based on estimated revenues from Inside Airbnb data[^10],
 
 [^10]: Initially, mean income of frequently rented listings and all listings was taken direnctly from the Inside Airbnb. This assumed that our definition of a frequenly listed property (one listed fro \>90 days) aligned with the equivalent definition from Inside Airbnb. Though, the average income per listing was eventualy compiled using the same listing dataset from earlier analyses. This aligns closer with aspects of our proposal.
@@ -1275,7 +1359,15 @@ c = clean(df.loc[single & more90, "estimated_revenue_l365d"])   # Single ≥90
 d = clean(df.loc[multi & more90,  "estimated_revenue_l365d"])   # Multi ≥90
 
 # Labels in new order
-labels = ["Single <90 days","Multi <90 days","Single ≥90 days","Multi ≥90 days"]
+labels = ["Single-listing","Multi-listing","Single-listing","Multi-listing"]
+
+# Prepare data table for medians
+table_data = [
+    ["Single (Standard)", f"£{median_income_single_90d:,.0f}"],
+    ["Multi (Standard)",  f"£{median_income_multi_90d:,.0f}"],
+    ["Single (Frequent)", f"£{median_income_single_90dmore:,.0f}"],
+    ["Multi (Frequent)",  f"£{median_income_multi_90dmore:,.0f}"]
+]
 
 # Plot a series of four boxplots 
 fig = plt.figure(figsize=(8, 5))
@@ -1305,10 +1397,10 @@ for i, color in enumerate(colors):
 plt.axvline(x=2.5, color="grey", linestyle="--", linewidth=1)
 
 # Add group labels
-plt.text(1.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1), "Standard Lets",
+plt.text(1.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1), "Standard Lets (<90 days)",
          ha="center", va="top", fontsize=12)
 
-plt.text(3.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1), "Frequent Lets",
+plt.text(3.5, plt.ylim()[0] - (plt.ylim()[1] * 0.1), "Frequent Lets (≥90 days)",
          ha="center", va="top", fontsize=12)
 
 # Adjust margin at bottom to fit the group labels
@@ -1321,6 +1413,28 @@ plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
 plt.ylabel("Estimated Revenue per property (Last 365 days)", fontsize = 12)
 plt.title("Figure 2.3 Distribution of revenue per property by host portfolio size \nand occupancy group (2025)", fontsize = 14)
+
+ax = plt.gca()
+
+# Add table in top-left corner
+table = plt.table(
+    cellText=table_data,
+    colLabels=["Group", "Median"],
+    colColours=["lightgray"] * 2,
+    colLoc="left",
+    cellLoc="left",
+    loc="upper left",
+    bbox=[0.01, 0.68, 0.42, 0.30]   # (x, y, width, height)
+)
+
+# Set column widths to 65%, 35%
+for row in range(len(table_data) + 1):  # include header
+    table[row, 0].set_width(0.65)
+    table[row, 1].set_width(0.35)
+
+# Set font sizes in table
+table.auto_set_font_size(False)
+table.set_fontsize(11)
 
 # Figure Caption
 fig.text(
@@ -1532,5 +1646,270 @@ plt.show()
 -   But there are small number of hosts who are profiting off Airbnb and aren’t compliant. This has seen listings boom in certain areas, with disamenities to some. Additional competition raises housing prices and limiting young people from accessing these flats.
 
 -   Main issue with housing shortage and this government will continue to focus on that instead of mindlessly raising the tax burden for everyone. Advise the mayor to double down on his plans to expand housing supply in brownfield and greyfield areas.
+
+```{python}
+# Bonus: Working on a cities based comparison 
+host = 'https://raw.githubusercontent.com/benjamintee/'
+ddir = 'CASA_FSDS_Project/main/Data/cities/'
+
+# List of cities with inside airbnb data available
+cities = ["amsterdam", "athens", "barcelona", "berlin", "budapest", "copenhagen", "florence",
+    "lisbon", "london", "paris", "prague", "vienna"]
+
+# Select set of columns needed
+cols_select = [
+    "id", "name", "host_id", "host_name",
+    "latitude", "longitude", "room_type", "price",
+    "minimum_nights", "number_of_reviews"]
+
+# Define a function to load the data from github and convert it 
+def load_city(city):
+    url = f"{host}{ddir}{city}_listings.csv"
+    df = pd.read_csv(url, usecols=lambda c: c in cols_select)
+
+    # Remove NAs in id and host_id
+    before = len(df)
+    df = df.dropna(subset=["id", "host_id"])
+    after = len(df)
+    print(f"{city}: Removed {before - after} rows with NA id/host_id")
+    
+    # Convert data types
+    cats  = ['room_type']
+    money = ['price']
+    ints  = ['id','host_id','minimum_nights','number_of_reviews']
+
+    for c in cats:
+        if c in df.columns:
+            df[c] = df[c].astype('category')
+
+    for m in money:
+        if m in df.columns:
+            df[m] = (
+                df[m]
+                .astype(str)
+                .str.replace("$", "", regex=False)
+                .str.replace(",", "", regex=False)
+                .astype(float)
+            )
+
+    for i in ints:
+        if i in df.columns:
+            df[i] = df[i].astype("float").astype("Int64")
+
+    return df
+
+# Define a function to compute the distribution of host_sizes for each city 
+def compute_distribution(df):
+
+    # Entire homes only
+    entire = df[df["room_type"] == "Entire home/apt"]
+
+    if entire.empty:
+        return pd.Series({"1":0, "2":0, "3-10":0, "11-100":0, "100+":0})
+
+    # Count listings per host
+    host_sizes = (
+        entire.groupby("host_id")["id"]
+        .count()
+        .reset_index(name="listing_count")
+    )
+
+    # Merge
+    df2 = entire.merge(host_sizes, on="host_id", how="left")
+
+    # Bucket into host size groups
+    bins   = [0, 1, 2, 10, 100, float("inf")]
+    labels = ["1", "2", "3-10", "11-100", "100+"]
+
+    df2["host_size_group"] = pd.cut(
+        df2["listing_count"], bins=bins, labels=labels, include_lowest=True
+    )
+
+    # Compute distribution (%)
+    dist = df2["host_size_group"].value_counts(normalize=True) * 100
+
+    # Ensure missing groups appear as 0
+    dist = dist.reindex(labels, fill_value=0)
+
+    return dist
+
+# Load all cities into a dictionary and convert to a dataframe 
+dist_dict = {}
+
+for city in cities:
+    print("Processing:", city)
+    df = load_city(city)
+    dist = compute_distribution(df)
+    dist_dict[city.capitalize()] = dist
+
+dist_df = pd.DataFrame(dist_dict).T
+dist_df
+```
+
+```{python}
+# Set color palette and groups and zip them together
+palette = ["#7ba591", "#ffd45b", "#faa41b", "#f15b4c", "#cc222b"]
+groups = ["1", "2", "3-10", "11-100", "100+"]
+colors = dict(zip(groups, palette))
+
+# Make a working copy
+dist_plot = dist_df.copy()
+dist_plot = dist_plot.sort_values(by="1", ascending=False)
+
+# Negative values for single-listing hosts (left side)
+dist_plot["1"] = dist_plot["1"] * -1
+
+# Set the plot for a horizontal bar chart 
+fig, ax = plt.subplots(figsize=(8, 6))
+
+ypos = range(len(dist_plot))
+
+# Left side horizontal bar 
+ax.barh(
+    ypos,
+    dist_plot["1"],
+    color=colors["1"],
+    label="1"
+)
+
+# Right side horizontal stacked bar 
+right_groups = ["2", "3-10", "11-100", "100+"]
+left_offset = 0
+
+for g in right_groups:
+    ax.barh(
+        ypos,
+        dist_plot[g],
+        left=left_offset,
+        color=colors[g],
+        label=g
+    )
+    left_offset += dist_plot[g]
+
+# Set grid to invisible but retain structure
+ax.grid(color="none")
+for spine in ax.spines.values():
+    spine.set_color("none")
+    spine.set_linewidth(0.0)
+
+# Plot title
+plt.title(
+    "Figure X.X - % of Listings by Single/Multi-listing hosts in European cities (2025)",
+    fontsize=13,
+    pad= 32
+)
+
+# Customized legend (under title, no border)
+handles, labels_found = ax.get_legend_handles_labels()
+unique = dict(zip(labels_found, handles))
+legend_order = ["1", "2", "3-10", "11-100", "100+"]
+legend_labels = ["1", "2", "3–10", "11–100", "100+"]
+empty_handle = plt.Line2D([], [], linestyle="none")
+
+ax.legend(
+    [empty_handle] + [unique[k] for k in legend_order],
+    ["Entire home listings per host:"] + ["1", "2", "3–10", "11–100", "100+"],
+    fontsize=12,
+    ncol=6,                   
+    columnspacing=0.8,
+    handletextpad=0.4,
+    bbox_to_anchor=(0.5, 0.99),
+    loc="lower center",
+    frameon=False
+)
+
+# City labels on y-axis
+ax.set_yticks(list(ypos))
+ax.set_yticklabels(dist_plot.index, fontsize=12)
+ax.tick_params(axis='y', length=0)
+
+# Customize x-axis labels
+ax.set_xlabel("")  # remove original
+# Custom labels outside the plotting area (below x-axis)
+ax.text(
+    -20, -2, "Single-listing hosts",
+    ha="right", va="top", fontsize=12
+)
+
+ax.text(
+    20, -2, "Multi-listing hosts",
+    ha="left", va="top", fontsize=12
+)
+
+# Thicken the zero line 
+ax.axvline(0, color="black", linewidth=2)
+
+# Set labels for total percentages on the left and right 
+for i, city in enumerate(dist_plot.index):
+
+    single = abs(dist_plot.loc[city, "1"])
+    multi  = dist_plot.loc[city, right_groups].sum()
+
+    # Left-side label
+    ax.text(
+        -single - 2.5, i,
+        f"{single:.0f}",
+        ha="right", va="center",
+        fontsize=11
+    )
+
+    # Right-side label
+    ax.text(
+        multi + 2.5, i,
+        f"{multi:.0f}",
+        ha="left", va="center",
+        fontsize=11
+    )
+
+# CLEAN X-TICK LABELS (remove negative signs)
+ax.tick_params(axis="x", length=0) 
+ticks = ax.get_xticks()
+ax.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f"{abs(int(x))}%"))
+
+# Expand the x-axis limits to provide spacing for labels 
+ax.set_xlim(-105, 100)
+x_pos = 105   
+
+# Dotted horizontal line above London
+london_index = list(dist_plot.index).index("London")
+ax.axhline(london_index + 0.5, color="gray", linestyle=":", linewidth=1.5)
+
+# Y positions: above and below the London divider
+y_above = london_index - 2   # midpoint of upper section
+y_below = london_index + 4   # midpoint of lower section
+
+# Upper label (looser regulations)
+ax.text(
+    x_pos, y_above,
+    "Generally stricter\nregulations",
+    fontsize=11,
+    rotation=90,
+    rotation_mode="anchor",
+    ha="center", va="center"
+)
+
+# Lower label (stricter regulations)
+ax.text(
+    x_pos, y_below,
+    "Generally looser\nregulations",
+    fontsize=11,
+    rotation=90,
+    rotation_mode="anchor",
+    ha="center", va="center"
+)
+
+# Figure Caption
+fig.text(
+    0.03, -0.07,
+    "Source: Cities data from Insideairbnb.com. Analysis includes hosts of entire homes/apartments only.\nNote: Barcelona is implementing a ban on short-term rentals from 2026, with the final phase to be \ncompleted by the end of 2028. Likewise, Budapest has committed to a ban from 2026.",
+    ha='left',
+    fontsize=11)
+
+plt.tight_layout()
+plt.show()
+
+## Inspiration for the figure was taken from https://towardsdatascience.com/who-really-owns-the-airbnbs-youre-booking-marketing-perception-vs-data-analytics-reality-94407a32679c/
+## ChatGPT was used to refine the plot layout and include the customized labels 
+```
 
 ## References
