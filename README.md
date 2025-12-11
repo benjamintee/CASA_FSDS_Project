@@ -9,5 +9,5 @@ The assignment overview can be fouund [here](https://jreades.github.io/fsds/asse
 - Additional resources are [here](https://jreades.github.io/fsds/assessments/resources.html)
 - Datasets are on orca [here](https://orca.casa.ucl.ac.uk/~jreades/data/)
 
-Summary of insights and findings from readings on Airbnb found [here](https://benjamintee.github.io/CASA_FSDS_Project/Articles/Summary.html)
+Summary of insights and findings from readings on Airbnb found [here](https://benjamintee.github.io/CASA_FSDS_Project/Articles/Summary.html)  
 Group project submission can be found [here](https://benjamintee.github.io/CASA_FSDS_Project/Group_Work.html)
