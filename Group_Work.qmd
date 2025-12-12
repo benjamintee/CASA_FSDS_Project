@@ -207,7 +207,7 @@ print("Done!")
 # Evaluate the number of rows with NA in id and other columns 
 na_summary = {}
 for year, df in dfs.items():
-    na_summary[year] = df.isna().sum()   
+    na_summary[year] = df.isna().sum()    
 
 na_table = pd.DataFrame(na_summary).T  
 na_table 
