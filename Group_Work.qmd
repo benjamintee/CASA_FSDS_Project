@@ -20,9 +20,9 @@ format:
     include-in-header:
       text: |
         \addtokomafont{disposition}{\rmfamily}
-    mainfont: Spectral
-    sansfont: "Roboto Flex"
-    monofont: "Liberation Mono"
+    mainfont: "Source Serif 4"
+    sansfont: "Source Sans 3"
+    monofont: "Source Code Pro"
     papersize: a4
     geometry:
       - top=25mm
@@ -107,6 +107,17 @@ import mapclassify
 import math
 from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter
+```
+
+```{python}
+# Set overall font for chart plots
+import matplotlib as mpl
+mpl.rcParams.update({
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Source Sans 3"],
+    "pdf.fonttype": 42,   # TrueType embedding
+    "ps.fonttype": 42,
+})
 ```
 
 ```{python}
@@ -364,8 +375,8 @@ b.  Whether landlords are flouting the planning permission requirement.
 #| echo: false
 #| warning: false
 #| output: false
-listings_2021 = len(dfs["2021"])
-listings_2025 = len(dfs["2025"])
+listings_2021 = round(len(dfs["2021"]),-2)
+listings_2025 = round(len(dfs["2025"]),-2)
 listings_pct_change = (listings_2025 - listings_2021) / listings_2021 * 100
 listings_2022 = len(dfs["2022"])
 listings_2023 = len(dfs["2023"])
@@ -474,14 +485,14 @@ cbar = fig.colorbar(
     cax=cax,
     orientation="horizontal"
 )
-cbar.set_label("Number of Listings", fontsize=12)
+cbar.set_label("Number of Listings", fontsize=13)
 cbar.ax.tick_params(labelsize=10)    
 
 # Add main title
 fig.suptitle(
     f"Figure 1: Airbnb listings increased by {listings_pct_change:.0f}% over the last five years",
     x= 0.01, y = 0.98,
-    fontsize=13, 
+    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -519,15 +530,16 @@ top5 = df_boros.nlargest(5, "abs_change")
 # Extracting top 5 boros for summary 
 top5_boros = top5.index.tolist()
 top5_abs   = top5["abs_change"].tolist()
+rounded_top5_abs = [round(x, -2) for x in top5_abs]
 top5_pct   = top5["pct_change"].round(0).tolist()
 top5_2025  = top5["2025"].tolist()
 ```
 
-Most of the increase occurred between 2022-2023 **`{python} f"({listings_pct_change2223:.0f}%)"`**, with new listings concentrated in inner London:
+Most of the increase occurred between 2022-2023, with new listings concentrated in inner London:
 
 -   Specifically, **`{python} f"{top5_boros[0]}"`**, **`{python} f"{top5_boros[1]}"`**, **`{python} f"{top5_boros[2]}"`**, **`{python} f"{top5_boros[3]}"`** and **`{python} f"{top5_boros[4]}"`** saw the highest increase in listings.
 
--   **`{python} f"{top5_boros[0]}"`** alone added **`{python} f"{top5_abs[0]:,}"`** listings, constituting a **`{python} f"{top5_pct[0]:.0f}%"`** increase within the borough.
+-   **`{python} f"{top5_boros[0]}"`** alone added **`{python} f"{rounded_top5_abs[0]:,}"`** listings, constituting a **`{python} f"{top5_pct[0]:.0f}%"`** increase within the borough.
 
 ```{python}
 #| lst-label: Download data from Valuation Office Agency on Housing Stock 
@@ -666,7 +678,7 @@ ax.text(
     s="increase in listings > increease in housing stock",
     ha="right",
     va="bottom",
-    fontsize=11,
+    fontsize=12,
     color="black")
 
 # Axis labels & title 
@@ -689,7 +701,7 @@ legend.get_frame().set_facecolor("none")
 # Figure title 
 fig.suptitle("Figure 2: Inner London Boroughs saw higher increases in listings \nrelative to housing stock",
     x= 0.02, y = 0.98,
-    fontsize=13, 
+    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -747,7 +759,7 @@ top2_listingprop_name  = BORO_sorted.iloc[1]["name"]
 top2_listingprop_value = BORO_sorted.iloc[1]["listing_prop2025"]
 ```
 
-Across all London Boroughs in 2025, the average number of listings as a percentage of housing stock was **`{python} f"{BORO_mean:.2f}%"`**, though **`{python} f"{BORO_above_mean_n} Boroughs"`** exceeded this average. These **`{python} f"{BORO_above_mean_n} Boroughs"`** were in inner London. Close to **`{python} f"{top1_listingprop_value:.0f}%"`** of total housing stock in **`{python} f"{top1_listingprop_name}",`** and **`{python} f"{top2_listingprop_name}"`** were listed as an Airbnb ([Figure 3]{.underline}). Up to **1 in 8 homes** in some MSOAs in inner London were listed on Airbnb ([Figure 4]{.underline}).
+Across all London Boroughs in 2025, the average number of listings as a percentage of housing stock was **`{python} f"{BORO_mean:.1f}%"`**, though **`{python} f"{BORO_above_mean_n} Boroughs"`** exceeded this average. These **`{python} f"{BORO_above_mean_n} Boroughs"`** were in inner London. Close to **`{python} f"{top1_listingprop_value:.0f}%"`** of total housing stock in **`{python} f"{top1_listingprop_name}"`**, and **`{python} f"{top2_listingprop_name}"`** were listed as an Airbnb ([Figure 3]{.underline}). Up to **1 in 8 homes** in some MSOAs in inner London were listed on Airbnb ([Figure 4]{.underline}).
 
 The growth of Airbnb properties therefore far outstrips the rate of growth of new housing available, particularly in inner London boroughs.
 
@@ -790,7 +802,7 @@ ax.axhline(
     color="grey",
     linestyle="--",
     linewidth=1.2,
-    label=f"Average: {overall_mean:.2f}%")
+    label=f"Average: {overall_mean:.1f}%")
 
 # Label average line
 ax.text(
@@ -813,7 +825,7 @@ ax.spines["right"].set_visible(False)
 # Figure title 
 fig.suptitle("Figure 3: Airbnb listings made up a larger proportion of housing stock \nin inner London Boroughs than in outer London Boroughs in 2025",
     x= 0.02, y = 1.00,
-    fontsize=13, 
+    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -914,7 +926,7 @@ def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
     # Titles and annotations
     ax.set_title(Map_title,
                  x= 0.01, y = 0.98,
-                 fontsize=13, 
+                 fontsize=14, 
                  fontweight="bold",
                  pad=15, 
                  ha="left")
@@ -956,7 +968,7 @@ entire_homes_2025_per = round(entire_homes_2025_n / len(df_2025) * 100, 0)
 
 # Number of entire homes that had estimated occupancy > 90 days 
 entire_homes_2025_90 = entire_homes_2025[entire_homes_2025['estimated_occupancy_l365d'] > 90]
-entire_homes_2025_90_n = len(entire_homes_2025_90)
+entire_homes_2025_90_n = round(len(entire_homes_2025_90), -2)
 entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 100, 2)
 ```
 
@@ -993,7 +1005,7 @@ top3_names = top3.index.tolist()
 top3_pcts = top3['pct_high_occupancy'].tolist()
 ```
 
-Based on occupancy estimates[^3] ,**`{python} f"{entire_homes_2025_90_n:,} entire homes / apartments"`** were used for 90 or more nights per year ("frequent lets"). This represented **more than 1 in 5 of all entire homes listings**, and **1 in 8 of all listings in London**.
+Based on occupancy estimates[^3], **`{python} f"{entire_homes_2025_90_n:,} entire homes / apartments"`** were used for 90 or more nights per year ("frequent lets"). This represented **more than 1 in 5 of all entire homes listings**, and **1 in 8 of all listings in London**.
 
 [^3]: Occupancy estimates obtained from Inside Airbnb. First, a review rate is used to compute reviews to estimated bookings. Thereafter, the average length of stay for London was multiplied by the estimated bookings for each listing giving the occupancy rate (out of 365 days). To estimate potential breaches, we look at the subset of listings that are "entire homes / apartments", and the occupancy rate, which estimates how many nights the listing was booked in the last 365 days, providing a useful proxy for annual use, where raw daily calendar data are unavailable.
 
@@ -1181,9 +1193,9 @@ ax1.axhline(separator_y, color="black", linewidth=1, linestyle="--", alpha=0.8)
 ax2.axhline(separator_y, color="black", linewidth=1, linestyle="--", alpha=0.8)
 
 # Figure title 
-fig.suptitle("Figure 5: A small number of hosts were responsible for a disporportionately \nlarge number of listings",
+fig.suptitle("Figure 5: A small number of hosts were responsible for a \ndisporportionately large number of listings",
     x= 0.02, y = 0.95,
-    fontsize=13, 
+    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -1205,7 +1217,7 @@ We test the robustness of this analysis in a London context by: 
 
 -   Establishing the income earned from renting out entire homes on Airbnb. 
 
--   Comparing this with annual median income of Londoners[^5] ,£34,100, on the basis that a host earning this much could, in theory, treat this as their sole employment.
+-   Comparing this with annual median income of Londoners[^5], **£34,100**, on the basis that a host earning this much could, in theory, treat this as their sole employment.
 
 [^5]: The median income for London taxpayers was £34,100 [(London Datastore, 2023)](https://data.london.gov.uk/dataset/average-income-of-tax-payers-borough-2g1nq/)
 
@@ -1352,13 +1364,12 @@ Based on estimated revenues[^6],
 
 -   The median single-listing host renting out their home for "standard lets" earned **£`{python} f"{median_income_single_90d:,.0f}"`** a year per property, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**.
 
--   The median single-listing "frequent lets" host earned **£`{python} f"{median_income_single_90dmore}"`**a year per property, while multi-listing "frequent lets" hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`**.
+-   The median single-listing "frequent lets" host earned **£`{python} f"{median_income_single_90dmore:,.0f}"`** a year per property, while multi-listing "frequent lets" hosts earned **£`{python} f"{median_income_multi_90dmore:,.0f}"`**.
 
 ```{python}
 #| lst-label: Figure 6 - Distribution of revenue per property for standard lets and frequent lets hosts
 #| echo: false
 #| warning: false
-#| output: false
 # Define helper function to drop NaN and zeros
 def clean(series):
     return series[(series > 0) & series.notna()]
@@ -1423,21 +1434,7 @@ plt.text(
     s="Median household \nincome (£34,100)",
     ha="left",
     va="bottom",
-    fontsize=11)
-
-top = ax.get_ylim()[1] * 1.00  
-
-plt.text(1.5, top,
-         "Standard Lets (<90 days)",
-         ha="center",
-         fontsize=12.5, fontweight="bold",
-         color="skyblue")
-
-plt.text(3.5, top,
-         "Frequent Lets (≥90 days)",
-         ha="center",
-         fontsize=12.5, fontweight="bold",
-         color="tomato")
+    fontsize=12)
 
 # Adjust margin at bottom to fit the group labels
 plt.subplots_adjust(bottom=0.2)
@@ -1446,18 +1443,32 @@ plt.subplots_adjust(bottom=0.2)
 plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, p: format(int(x), ",")))
 ax.set_ylim(0, 100000)
 
+top = ax.get_ylim()[1] * 0.99  
+
+plt.text(1.5, top,
+         "Standard Lets (<90 days)",
+         ha="center",
+         fontsize=13, fontweight="bold",
+         color="skyblue")
+
+plt.text(3.5, top,
+         "Frequent Lets (≥90 days)",
+         ha="center",
+         fontsize=13, fontweight="bold",
+         color="tomato")
+
 plt.xticks(
     ticks=[1, 2, 3, 4],
     labels=xtick_labels,
     fontsize=12
 )
 plt.yticks(fontsize=12)
-plt.ylabel(" £ per property (Last 365 days)", fontsize = 11)
+plt.ylabel(" £ per property (Last 365 days)", fontsize = 12)
 
 # Add title 
-fig.suptitle("Figure 6: Median annual revenues per property for frequent lets were much \ncloser to median household incomes compared to standard lets",
-    x= 0.02, y = 0.96,
-    fontsize=13, 
+fig.suptitle("Figure 6: Median annual revenues per property for frequent lets were \nmuch closer to median household incomes compared to standard lets",
+    x= 0.02, y = 0.99,
+    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -1528,9 +1539,9 @@ df_100plus_grouped_n = df_100plus_grouped['number_of_properties'].sum() # total 
 host_NA = df.loc[df.host_location.isna(), "host_id"].nunique() / df["host_id"].nunique() *100
 ```
 
-Most of both single **`{python} f"({only1prop_UK_per}%)"`** and multi-listing **`{python} f"({propmorethan1_UK_per}%)"`** hosts are UK-based. However, at least one of the hosts who owns over 100 properties is a company based abroad (Dubai). Three others have names suggesting that they are companies.
+Most of both single **`{python} f"({only1prop_UK_per:.0f}%)"`** and multi-listing **`{python} f"({propmorethan1_UK_per:.0f}%)"`** hosts are UK-based. However, at least one of the hosts who owns over 100 properties is a company based abroad (Dubai). Three others have names suggesting that they are companies.
 
-**`{python} f"({host_NA:.0f}%)"`** of hosts do not provide a host location. This provides strong impetus for the Mayor to engage Airbnb to improve host registration and enforcement.
+**`{python} f"{host_NA:.0f}%"`** of hosts do not provide a host location. This provides strong impetus for the Mayor to engage Airbnb to improve host registration and enforcement.
 
 ## 3. Evaluating the opposition's proposal
 
@@ -1653,6 +1664,7 @@ summary_table = summary_table.reset_index(drop=True)
 ```{python}
 #| label: tbl-revenue-simulation
 #| tbl-cap: "Modest increase in revenues across council tax increase scenarios"
+#| tbl-width: 100%
 summary_table
 ```
 
@@ -1758,7 +1770,7 @@ fig.suptitle(
     "Figure 8: Spatial concentration of revenues allows option for justification\n"
     "of targeted measure for inner London boroughs",
     x=0.02, y=0.95,
-    fontsize=13,
+    fontsize=14,
     fontweight="bold",
     ha="left"
 )
@@ -2003,7 +2015,7 @@ for i, city in enumerate(dist_plot.index):
         -single - 2.5, i,
         f"{single:.0f}",
         ha="right", va="center",
-        fontsize=11
+        fontsize=12
     )
 
     # Right-side label
@@ -2011,7 +2023,7 @@ for i, city in enumerate(dist_plot.index):
         multi + 2.5, i,
         f"{multi:.0f}",
         ha="left", va="center",
-        fontsize=11
+        fontsize=12
     )
 
 # Clean X-tick labels (remove negative sign)
@@ -2035,7 +2047,7 @@ y_below = london_index + 4   # midpoint of lower section
 ax.text(
     x_pos, y_above,
     "Generally stricter\nregulations",
-    fontsize=11,
+    fontsize=12,
     rotation=90,
     rotation_mode="anchor",
     ha="center", va="center"
@@ -2045,16 +2057,16 @@ ax.text(
 ax.text(
     x_pos, y_below,
     "Generally looser\nregulations",
-    fontsize=11,
+    fontsize=12,
     rotation=90,
     rotation_mode="anchor",
     ha="center", va="center"
 )
 
 # Add title 
-fig.suptitle("Figure 9: London's regulatory stance on short-term lets is already stricter \nthan many European counterparts and this is reflected in host listings",
+fig.suptitle("Figure 9: London's regulatory stance on short-term lets already stricter \nthan many European counterparts and this is reflected in host listings",
     x= 0.02, y = 0.96,
-    fontsize=13, 
+    fontsize=14, 
     fontweight="bold",
     ha="left")
 
