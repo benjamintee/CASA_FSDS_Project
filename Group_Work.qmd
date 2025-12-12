@@ -357,7 +357,7 @@ a.  The growth of Airbnbs relative to London housing stock; and
 
 b.  Whether landlords are flouting the planning permission requirement.
 
-#### [How many Airbnbs are there in London?]{.underline}
+#### [How have Airbnb listings and housing stock changed?]{.underline}
 
 ```{python}
 #| lst-label: Key statistics for growth trend in listings 2021-2025
@@ -1352,7 +1352,7 @@ Based on estimated revenues[^6],
 
 -   The median single-listing host renting out their home for "standard lets" earned **£`{python} f"{median_income_single_90d:,.0f}"`** a year per property, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**.
 
--   The median single-listing "frequent lets" host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**a year per property, while multi-listing "frequent lets" hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`**.
+-   The median single-listing "frequent lets" host earned **£`{python} f"{median_income_single_90dmore}"`**a year per property, while multi-listing "frequent lets" hosts earned **`{python} f"{median_income_multi_90dmore:,.0f}"`**.
 
 ```{python}
 #| lst-label: Figure 6 - Distribution of revenue per property for standard lets and frequent lets hosts
@@ -2081,5 +2081,17 @@ Introducing additional administrative complexity and costs through broad council
 Our analysis has shown that the **key problems are concentrated among a subset of professional operators in specific boroughs**. A blanket approach such as raising council tax for all would therefore penalise responsible hosts while doing little to address true sources of pressure. **Instead, a targeted strategy, which could combine a tourist tax with a focus on ensuring that professional landlords are registered and paying business rates would be more proportionate, effective, and better aligned** with the Mayor’s aim of reducing harm, without compromising London’s vibrancy or the livelihoods of ordinary residents.  
 
 Some short-term embarrassment stemming from the aide’s circumstances is unavoidable. To maintain public trust, the Mayor should commission an independent investigation, and take disciplinary action if wrongdoing is found. The opposition’s proposal is not a wholly bad development. Given similarities with existing Mayoral initiatives, this presents an opportunity for the Mayor’s office to ride on bipartisan support to implement more progressive tax changes. 
+
+## 5. Limitations
+
+#### [**Inside Airbnb dataset**]{.underline} [@insideairbnb] 
+
+Apart from the limitations of the occupancy estimates previously mentioned, it is possible that listing numbers are underestimated in the cleaning process in response to inaccuracies in scraping. Moreover, the dataset is only a snapshot in time. Since listings can be added or deleted, seasonal/temporary listings might be over/under- represented. 
+
+Our methodology also does not tell how many frequently let properties have legitimate planning permissions. If we have more time, we can connect to the Planning London Datahub’s public API and extract the number of short-term let permissions to provide an estimate. As short-term let falls into “sui generis” rather than an independent use class, the only way to filter them out is by building text regex pattern to search for them from the planning permission descriptions, which is time intensive. 
+
+#### [**Housing stock dataset**]{.underline} [@valuationofficeagency2024]
+
+Using a raw stock of properties dataset to normalise Airbnb listings can overlook variations in housing stock. Some areas can have less Airbnb-eligible dwellings (eg. care homes), and some areas can have higher vacancy rates than others.  
 
 ## References
