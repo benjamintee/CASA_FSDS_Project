@@ -16,6 +16,7 @@ format:
     toc_float:
       collapsed: false
       smooth_scroll: true
+    fontsize: 12pt
   pdf:
     include-in-header:
       text: |
@@ -23,6 +24,7 @@ format:
     mainfont: "Source Serif 4"
     sansfont: "Source Sans 3"
     monofont: "Source Code Pro"
+    fontsize: 12pt
     papersize: a4
     geometry:
       - top=25mm
@@ -113,9 +115,29 @@ from matplotlib.ticker import FuncFormatter
 # Set overall font for chart plots
 import matplotlib as mpl
 mpl.rcParams.update({
+    # Fonts
     "font.family": "sans-serif",
     "font.sans-serif": ["Source Sans 3"],
-    "pdf.fonttype": 42,   # TrueType embedding
+
+    # Base font
+    "font.size": 12,
+
+    # Axes
+    "axes.titlesize": 14,
+    "axes.labelsize": 12,
+
+    # Ticks
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+
+    # Legend
+    "legend.fontsize": 12,
+
+    # Figure titles
+    "figure.titlesize": 14,
+
+    # Vector output (PDF)
+    "pdf.fonttype": 42,
     "ps.fonttype": 42,
 })
 ```
@@ -471,7 +493,6 @@ for ax, year in zip(axes[:5], years):
     
     ax.set_title(
         f"{year}\n{int(boro_counts[year]['listings'].sum()):,} listings",
-        fontsize=13,
         pad=5
     )
     ax.axis("off")
@@ -485,14 +506,13 @@ cbar = fig.colorbar(
     cax=cax,
     orientation="horizontal"
 )
-cbar.set_label("Number of Listings", fontsize=13)
+cbar.set_label("Number of Listings")
 cbar.ax.tick_params(labelsize=10)    
 
 # Add main title
 fig.suptitle(
     f"Figure 1: Airbnb listings increased by {listings_pct_change:.0f}% over the last five years",
     x= 0.01, y = 0.98,
-    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -500,8 +520,8 @@ fig.suptitle(
 fig.text(
     0.01, -0.02,
     "Source: Listings data from Insideairbnb.com, Borough boundaries from data.london.gov.uk",
-    ha="left",
-    fontsize=11)
+    fontsize=11,
+    ha="left")
 
 # Reduce whitespace between rows 
 plt.subplots_adjust(
@@ -685,7 +705,7 @@ ax.text(
 ax.set_xticks(range(len(df_bar)))
 ax.set_xticklabels(df_bar["name"], rotation= 90, ha="right", fontsize=10)
 ax.set_ylabel("Ratio of increase in listings \nto housing stock", fontsize=10)
-ax.tick_params(axis="y", labelsize=12)
+ax.tick_params(axis="y")
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
@@ -701,7 +721,6 @@ legend.get_frame().set_facecolor("none")
 # Figure title 
 fig.suptitle("Figure 2: Inner London Boroughs saw higher increases in listings \nrelative to housing stock",
     x= 0.02, y = 0.98,
-    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -710,8 +729,8 @@ plt.figtext(
     0.01, -0.10,
     "Source: Listings data from Insideairbnb.com, \nBorough boundaries from data.london.gov.uk, Housing Stock from UK Valuation Office Agency.\n"
     "Note: As housing stock in 2025 was unavailable, changes were compared over the last five years",
-    ha="left",
-    fontsize=11)
+    fontsize=11,
+    ha="left")
 
 plt.tight_layout()
 plt.show()
@@ -801,15 +820,13 @@ ax.axhline(
     overall_mean,
     color="grey",
     linestyle="--",
-    linewidth=1.2,
-    label=f"Average: {overall_mean:.1f}%")
+    linewidth=1.2)
 
 # Label average line
 ax.text(
     x=len(df_bar) - 0.5,           
     y=overall_mean + overall_mean*0.02,  
-    s=f"Average: {overall_mean:.2f}%",
-    fontsize=12,
+    s=f"Average: {overall_mean:.1f}%",
     ha="right",
     va="bottom")
 
@@ -817,7 +834,7 @@ ax.text(
 ax.set_xticks(range(len(df_bar)))
 ax.set_xticklabels(df_bar["name"], rotation=90, ha="right", fontsize=10)
 ax.tick_params(axis="y", labelsize=12)
-ax.set_ylabel("Listings as % of Housing Stock", fontsize=12)
+ax.set_ylabel("Listings as % of Housing Stock")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
@@ -825,7 +842,6 @@ ax.spines["right"].set_visible(False)
 # Figure title 
 fig.suptitle("Figure 3: Airbnb listings made up a larger proportion of housing stock \nin inner London Boroughs than in outer London Boroughs in 2025",
     x= 0.02, y = 1.00,
-    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -843,8 +859,8 @@ plt.figtext(
     0.01, -0.05,
     "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\n"
     "Note: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used.",
-    ha="left",
-    fontsize=11)
+    fontsize=11,
+    ha="left")
 
 plt.tight_layout()
 plt.show()
@@ -926,7 +942,6 @@ def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
     # Titles and annotations
     ax.set_title(Map_title,
                  x= 0.01, y = 0.98,
-                 fontsize=14, 
                  fontweight="bold",
                  pad=15, 
                  ha="left")
@@ -934,8 +949,8 @@ def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
     fig.text(
         0.01, -0.02,
         Notes,
-        ha="left",
-        fontsize=11)
+        fontsize=11,
+        ha="left")
 
     plt.tight_layout()
     plt.show()
@@ -1195,7 +1210,6 @@ ax2.axhline(separator_y, color="black", linewidth=1, linestyle="--", alpha=0.8)
 # Figure title 
 fig.suptitle("Figure 5: A small number of hosts were responsible for a \ndisporportionately large number of listings",
     x= 0.02, y = 0.95,
-    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -1203,8 +1217,8 @@ fig.suptitle("Figure 5: A small number of hosts were responsible for a \ndisporp
 fig.text(
     0.02, -0.02,
     "Source: Listings from Insideairbnb.com",
-    ha='left',
-    fontsize=11)
+    fontsize=11,
+    ha='left')
 
 plt.tight_layout()
 plt.subplots_adjust(wspace=0.03)
@@ -1433,8 +1447,7 @@ plt.text(
     y=median_income * 1.05,   
     s="Median household \nincome (£34,100)",
     ha="left",
-    va="bottom",
-    fontsize=12)
+    va="bottom")
 
 # Adjust margin at bottom to fit the group labels
 plt.subplots_adjust(bottom=0.2)
@@ -1460,15 +1473,13 @@ plt.text(3.5, top,
 plt.xticks(
     ticks=[1, 2, 3, 4],
     labels=xtick_labels,
-    fontsize=12
 )
-plt.yticks(fontsize=12)
-plt.ylabel(" £ per property (Last 365 days)", fontsize = 12)
+plt.yticks()
+plt.ylabel(" £ per property (Last 365 days)")
 
 # Add title 
 fig.suptitle("Figure 6: Median annual revenues per property for frequent lets were \nmuch closer to median household incomes compared to standard lets",
     x= 0.02, y = 0.99,
-    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -1480,8 +1491,8 @@ ax.spines["right"].set_visible(False)
 fig.text(
     0.03, -0.05,
     "Source: Listings from Insideairbnb.com\nNote: Figures in brackets refer to median annual revenue for each group",
-    ha='left',
-    fontsize=11)
+    fontsize=11,
+    ha='left')
 
 plt.tight_layout()
 plt.show()
@@ -1551,7 +1562,7 @@ The viability of the opposition’s proposal relies on generating a fiscally sig
 
 Council tax applies to a property’s domestic classification, based on its 1991 valuation. All properties in the same band currently pay the same rate of council tax, unless an exemption applies. It is therefore not a mechanism designed to assess current commercial use or income, making it a blunt instrument for targeted market intervention.
 
-The opposition do not explain how the council tax system might be adjusted. Notwithstanding, we note that the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations[^7]. This suggests directional flexibility in the system than historically possible, and further work to “piggyback” on these changes could be explored.
+The opposition do not explain how the council tax system might be adjusted. Notwithstanding, we note that the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations[^7]. This suggests greater directional flexibility in the system than historically possible, and further work to “piggyback” on these changes could be explored.
 
 [^7]: [Properties worth more than £2m in England face new mansion tax (BBC, 2025)](https://www.bbc.co.uk/news/articles/ce910z9jd3po)
 
@@ -1651,7 +1662,7 @@ inner_10 = inner_df["Band_D_10"].sum()
 
 # Build the summary table
 summary_table = pd.DataFrame({
-    "Premium Rate": ["2%", "5%", "10%"],
+    "Premium": ["2%", "5%", "10%"],
     "Revenue Increase (London Wide)": [total_2, total_5, total_10],
     "Revenue Increase (Inner London Only)": [inner_2, inner_5, inner_10]
 })
@@ -1659,21 +1670,26 @@ summary_table = pd.DataFrame({
 cols = ["Revenue Increase (London Wide)", "Revenue Increase (Inner London Only)"]
 summary_table[cols] = summary_table[cols].applymap(lambda x: f"£{x/1_000_000:.1f}m")
 summary_table = summary_table.reset_index(drop=True)
+summary_table = summary_table.rename(columns={
+    "Revenue Increase (London Wide)": "Increase (London-wide)",
+    "Revenue Increase (Inner London Only)": "Increase (Inner London only)"
+})
 ```
 
 ```{python}
 #| label: tbl-revenue-simulation
 #| tbl-cap: "Modest increase in revenues across council tax increase scenarios"
+#| tbl-colwidths: [15, 42.5, 42.5]
 #| tbl-width: 100%
-summary_table
+summary_table(index=False)
 ```
 
-Source: London Datastore, Council tax charges and bands by borough\
+Source: London Datastore, Council tax charges and bands by borough.\
 Note: A conservative range of 2%, 5%, and 10% was chosen for simulation, given the requirement that councils proposing a \>5% increase must hold a successful local referendum.
 
 The opposition proposal could yield between **`{python} f"£{total_2/1_000_000:.1f}m"`** and **`{python} f"£{total_10/1_000_000:.1f}m"`**. Inner London boroughs, the focus of much of this debate, account for **`{python} f"£{inner_2/1_000_000:.1f}m"`** to **`{python} f"£{inner_10/1_000_000:.1f}m"`** of this total.
 
-The spatial concentration of potential revenue could allow the Mayor to justify the policy as one specifically taxing central areas, where commercial exploitation of housing stock is most acute, rather than a blanket tax rise across London ([Figure 8]{.underline}). 
+The spatial concentration of potential revenue could allow the Mayor to justify the policy as one specifically taxing central areas, where commercial exploitation of housing stock is most acute, rather than a blanket tax rise across London ([Figure 7]{.underline}). 
 
 However, the political viability and implementation logistics of this change remain to be determined:
 
@@ -1767,10 +1783,9 @@ legend.get_frame().set_facecolor("none")
 
 # Title
 fig.suptitle(
-    "Figure 8: Spatial concentration of revenues allows option for justification\n"
+    "Figure 7: Spatial concentration of revenues allows option for justification\n"
     "of targeted measure for inner London boroughs",
     x=0.02, y=0.95,
-    fontsize=14,
     fontweight="bold",
     ha="left"
 )
@@ -1789,8 +1804,8 @@ ax.set_axis_off()
 fig.text(
     0.03, 0,
     "Source: London Datastore, Council Tax by Borough and Bands \nNote: Inner London area is shown with thickened outline",
-    ha="left", fontsize=11
-)
+    fontsize=11,
+    ha="left")
 
 plt.tight_layout()
 plt.show()
@@ -1810,7 +1825,7 @@ Another option is to introduce a form of “[tourist tax]{.underline}”, a comm
 
 ## 4. Weighing up the way ahead: Pros, cons and social mobility
 
-While the opposition now agrees with the Mayor’s intent to curb the negative impacts of short-term lets in London, their proposal is blunt and scant on detail. It risks undermining London’s thriving tourism industry, which contributes at least **£10 billion a year** to London’s economy and supports around **7% of London’s jobs** [@mayoroflondon2025], while failing to distinguish between a small number of problematic commercial operators and the many residents who host legitimately. Moreover, London's short letting market is already more tightly regulated than many European equivalents, and we should be mindful of over-correction ([Figure 9]{.underline}).
+While the opposition now agrees with the Mayor’s intent to curb the negative impacts of short-term lets in London, their proposal is blunt and scant on detail. It risks undermining London’s thriving tourism industry, which contributes at least **£10 billion a year** to London’s economy and supports around **7% of London’s jobs** [@mayoroflondon2025], while failing to distinguish between a small number of problematic commercial operators and the many residents who host legitimately. Moreover, London's short letting market is already more tightly regulated than many European equivalents, and we should be mindful of over-correction ([Figure 8]{.underline}).
 
 ```{python}
 #| lst-label: Computing a cities based comparison of current entire-homes ownership 
@@ -2047,7 +2062,6 @@ y_below = london_index + 4   # midpoint of lower section
 ax.text(
     x_pos, y_above,
     "Generally stricter\nregulations",
-    fontsize=12,
     rotation=90,
     rotation_mode="anchor",
     ha="center", va="center"
@@ -2057,16 +2071,14 @@ ax.text(
 ax.text(
     x_pos, y_below,
     "Generally looser\nregulations",
-    fontsize=12,
     rotation=90,
     rotation_mode="anchor",
     ha="center", va="center"
 )
 
 # Add title 
-fig.suptitle("Figure 9: London's regulatory stance on short-term lets already stricter \nthan many European counterparts and this is reflected in host listings",
+fig.suptitle("Figure 8: London's regulatory stance on short-term lets already stricter \nthan many European counterparts and this is reflected in host listings",
     x= 0.02, y = 0.96,
-    fontsize=14, 
     fontweight="bold",
     ha="left")
 
@@ -2074,8 +2086,8 @@ fig.suptitle("Figure 9: London's regulatory stance on short-term lets already st
 fig.text(
     0.03, -0.07,
     "Source: Cities data from Insideairbnb.com. Analysis includes hosts of entire homes/apartments only.\nNote: Barcelona is implementing a ban on short-term rentals from 2026, with the final phase to be \ncompleted by the end of 2028. Likewise, Budapest has committed to a ban from 2026.",
-    ha='left',
-    fontsize=11)
+    fontsize=11,
+    ha='left')
 
 plt.tight_layout()
 plt.show()
