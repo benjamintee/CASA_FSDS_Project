@@ -1675,19 +1675,18 @@ summary_table = pd.DataFrame({
 
 cols = ["Revenue Increase (London Wide)", "Revenue Increase (Inner London Only)"]
 summary_table[cols] = summary_table[cols].applymap(lambda x: f"£{x/1_000_000:.1f}m")
-summary_table = summary_table.reset_index(drop=True)
 summary_table = summary_table.rename(columns={
     "Revenue Increase (London Wide)": "Increase (London-wide)",
     "Revenue Increase (Inner London Only)": "Increase (Inner London only)"
 })
+summary_table = summary_table.reset_index(drop=True)
 ```
 
 ```{python}
 #| label: tbl-revenue-simulation
 #| tbl-cap: "Modest increase in revenues across council tax increase scenarios"
-#| tbl-colwidths: [15, 42.5, 42.5]
 #| tbl-width: 100%
-summary_table(index=False)
+summary_table
 ```
 
 Source: London Datastore, Council tax charges and bands by borough.\
