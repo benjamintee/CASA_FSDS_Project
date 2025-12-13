@@ -1274,6 +1274,12 @@ multi_listing_host_90d = 34100 / median_income_multi_90d  # 7 properties
 
 # How does this change if the property was frequently rented out? 
 multi_listing_host_90dmore = 34100 / median_income_multi_90dmore  # just 1 property
+
+# How many properties does a single-listing host need to have to earn comparably to the median working adult? 
+single_listing_host_90d = 34100 / median_income_single_90d 
+
+# How does this change if the property was frequently rented out? 
+single_listing_host_90dmore = 34100 / median_income_single_90dmore
 ```
 
 ```{python}
@@ -1498,9 +1504,9 @@ plt.tight_layout()
 plt.show()
 ```
 
-Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, **`{python} f"owning {math.ceil(multi_listing_host_90d):,} properties"`** becomes the threshold to make more than the London median income.
+Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, **`{python} f"owning {math.floor(single_listing_host_90d):,} properties"`** becomes the threshold to make more than the London median income.
 
-However, with frequent lets, **`{python} f"owning {math.floor(multi_listing_host_90dmore):,} properties"`** is sufficient to make close to double the median income of London. Just **two properties** can generate nearly double the median income of London. Under this analysis:
+However, with frequent lets, **`{python} f"owning {math.ceil(single_listing_host_90dmore):,} properties"`** is sufficient to make close to double the median income of London. Just **two properties** can generate nearly double the median income of London. Under this analysis:
 
 -   Categorising any host owning two or more entire properties as a “professional” landlord is a defensible position.
 
@@ -1795,6 +1801,25 @@ inner_boundary_dissolved.boundary.plot(
     ax=ax,
     edgecolor="black",
     linewidth=3
+)
+
+# Get a point inside Inner London
+label_point = inner_boundary_dissolved.geometry.representative_point().iloc[0]
+
+# Optional manual offset (tune these values)
+x_offset = 14000   # metres if CRS is EPSG:27700
+y_offset = -4000
+
+ax.text(
+    label_point.x + x_offset,
+    label_point.y + y_offset,
+    "Inner London",
+    fontsize=13,
+    fontweight="bold",
+    ha="left",
+    va="bottom",
+    color="black",
+    zorder=10
 )
 
 # Remove axes
