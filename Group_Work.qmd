@@ -1568,13 +1568,11 @@ The viability of the opposition’s proposal relies on generating a fiscally sig
 
 Council tax applies to a property’s domestic classification, based on its 1991 valuation. All properties in the same band currently pay the same rate of council tax, unless an exemption applies. It is therefore not a mechanism designed to assess current commercial use or income, making it a blunt instrument for targeted market intervention.
 
-The opposition do not explain how the council tax system might be adjusted. Notwithstanding, we note that the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations[^7]. This suggests greater directional flexibility in the system than historically possible, and further work to “piggyback” on these changes could be explored.
+The opposition do not explain how the council tax system might be adjusted. Notwithstanding, we note that the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations [@mcnamee2025]. This suggests greater directional flexibility in the system than historically possible, and further work to “piggyback” on these changes could be explored.
 
-[^7]: [Properties worth more than £2m in England face new mansion tax (BBC, 2025)](https://www.bbc.co.uk/news/articles/ce910z9jd3po)
+To illustrate potential revenues from council tax adjustments, we calculated the estimated revenue increase based on a **2% - 10%** **premium** applied to the current council tax Band D rate[^7] for all properties operated by "professional" landlords.
 
-To illustrate potential revenues from council tax adjustments, we calculated the estimated revenue increase based on a **2% - 10%** **premium** applied to the current council tax Band D rate[^8] for all properties operated by "professional" landlords.
-
-[^8]: Band D was chosen as it sits in the middle of valuation bands and best represents a typical tax without unfairly skewing towards low or high property values. This is aligned with methodology used by councils for statutory tax base computations.
+[^7]: Band D was chosen as it sits in the middle of valuation bands and best represents a typical tax without unfairly skewing towards low or high property values. This is aligned with methodology used by councils for statutory tax base computations.
 
 ```{python}
 #| lst-label: Simulation of revenue increase for council tax
@@ -1841,7 +1839,7 @@ Given that some of the existing Airbnb hosts are companies, and that a great dea
 
 -   Business rates are triggered when a property is used for commercial purposes and are designed to identify commercial exploitation that should be liable to taxation.
 
--   The business rates requirement for short-term lets is that they must be registered once the threshold of, typically, 140 days of availability per year [@gov.ukn.d.] is reached. However, in practice there is room to improve enforcement, and implement tougher deterrent fines for errant landlords.
+-   The business rates requirement for short-term lets is that they must be registered once the threshold of, typically, 140 days of availability per year [@gov.uk] is reached. However, in practice there is room to improve enforcement, and implement tougher deterrent fines for errant landlords.
 
 -   There is, therefore, a mismatch between the planning permission requirement and the business rates requirement in terms of when registration is required, which should be closed if this avenue were explored.
 
