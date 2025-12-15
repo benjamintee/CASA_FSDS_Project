@@ -69,7 +69,7 @@ Web-friendly HTML version can be found at the following (<https://benjamintee.gi
 
 ## Priorities for Feedback
 
-We would appreciate some comments on (1) the reproducibility of our code and whether this could be improved, and whether there are any coding conventions it would be helpful to be aware of to produce a professional product in future, and (2) any improvements that could be made to the way we have tangled code and prose; the large code chunks in particular, while they seem necessary, do make it difficult to focus on the flow of the narrative when putting the report together and the difficulty of confirming the wordcount of the overall document has made the drafting process somewhat more complicated than perhaps it needed to be.
+We would appreciate some comments on (1) the reproducibility of our code and whether this could be improved, and whether there are any coding conventions it would be helpful to be aware of to produce a professional product in future, and (2) any improvements that could be made to the way we have tangled code and prose; the large code chunks in particular, while they seem necessary, do make it difficult to focus on the flow of the narrative when putting the report together. The difficulty of confirming the wordcount of the overall document has made the drafting process slightly more complicated.
 
 {{< pagebreak >}}
 
@@ -77,22 +77,20 @@ We would appreciate some comments on (1) the reproducibility of our code and whe
 
 ## Executive Summary
 
-The opposition's proposal is likely to gain some traction due to public awareness of recent protests and measures taken against Airbnb in other holiday destinations [@hedgecoe2025], and a perception (due to repeated promises by more than one UK government to build more housing) that there is a shortage of housing in the UK [@mhclg2024]. The discovery of the Mayor's aide's housing circumstances has stirred media interest, feeding into the debate about the housing market and suspicions of political hypocrisy [@mckiernan2025].
+The opposition's proposal will likely gain some traction due to public awareness of measures taken against Airbnb in other holiday destinations [@hedgecoe2025], and of shortage of housing in the UK [@mhclg2024]. The Mayor's aide's circumstances have stirred media interest, feeding into the debate about the housing market and suspicions of political hypocrisy [@mckiernan2025].
 
-While studies have investigated the undesirable consequences for areas that host large proportions of Airbnb properties, such as increased crime rates and anti-social behaviour [@lanfear2024promise], the opposition's proposal focuses on Airbnb's impact on housing stock. This report does likewise by drawing on data from Inside Airbnb[^1], to evaluate the scale and nature of Airbnb's penetration into the London property market, and make recommendations on how to manage both Airbnb's impact, and the fallout from the allegations against the aide.
+While studies have investigated the undesirable consequences for areas that host large proportions of Airbnb properties, such as increased crime rates [@lanfear2024promise], the opposition's proposal focuses on Airbnb's impact on housing stock. This report does likewise by using data from Inside Airbnb[^1], to evaluate Airbnb's penetration into the London property market, and make recommendations on how to manage Airbnb's impact, and the allegations against the aide.
 
-[^1]: Inside Airbnb obtains public information on rentals available for booking at specific months. We discuss the limitations of the data at the end of this report. 
+[^1]: Inside Airbnb obtains public information on rentals available for booking at specific months. See limitations section below.
 
 In summary:
 
 1.  London's Airbnb listings have expanded faster than housing supply, particularly in inner boroughs[^2], likely heightening market pressures and public concern.
 2.  Many entire-home listings exceed the 90-day limit, with potential regulatory breaches concentrated among multi-listing "professional" landlords.
-3.  The opposition's proposed council tax surcharge is a blunt and politically difficult tool. Effective alternatives include implementing landlord registration, enforcement of business rates for commercial operators or a tourist tax, to target problematic hosts without disadvantaging ordinary residents who rely on modest hosting income.
-4.  The aide's conduct may be subject to criminal sanction and could certainly undermine the Mayor's otherwise positive record on this issue. It should be investigated fully but not allowed to dominate the conversation around the opposition's proposal and its deficiencies, or the alternative courses of action.
+3.  A council tax surcharge is a blunt and politically difficult tool. There are effective alternatives that would target problematic hosts without disadvantaging ordinary residents who rely on modest hosting income.
+4.  The aide's conduct may be subject to criminal sanction and could undermine the Mayor's record. It should be investigated fully but not allowed to dominate the conversation around the opposition's proposal and its deficiencies, or the alternative courses of action.
 
 [^2]: Using the statutory definition of inner / outer London boroughs: [statutory definition](https://www.legislation.gov.uk/uksi/1965/540/article/2/made).
-
-  
 
 ```{python}
 #| lst-label: Load common libraries and packages
@@ -383,13 +381,13 @@ MSOA = MSOA[['MSOA21CD', 'MSOA21NM', 'geometry', 'name', 'ons_inner', 'sub_2011'
 
 The opposition are behind the times: the increase in short-term lets and its potential to damage the housing supply is a concern that the Mayor's office has already raised and taken concrete steps to tackle.
 
-Since 2015, London landlords letting their property for more than 90 days per year have been required to obtain planning permission (which can be denied) for a change of use [@mayoroflondonn.d.]. More recently, the Mayor has proposed both a landlord registration system [@mayoroflondon2019] and a licensing system [@mayoroflondon2023]. Airbnb and other equivalent platforms are therefore under far more "control" in London than in many European cities.
+Since 2015, London landlords letting their property for more than 90 days per year must obtain planning permission for a change of use [@mayoroflondonn.d.]. The Mayor has also proposed a landlord registration system [@mayoroflondon2019] and a licensing system [@mayoroflondon2023]. Airbnb and its competitors are therefore under far more "control" in London than in many other cities.
 
 Having said that:
 
--   It is true that the growth of Airbnbs has far outpaced that of housing stock in London in recent years.
+-   the growth of Airbnbs has recently far outpaced that of housing stock in London.
 
--   It may be the case that a large proportion of hosts are flouting the planning permission requirement, although we have not been able to establish an exact figure at this stage (see Limitations section below). One course of action might be to investigate this point and take the appropriate enforcement action against landlords in breach. However, this process is of course not costless.
+-   A large proportion of hosts may be flouting the planning permission requirement, although exact numbers are difficult to establish (see limitations section). Once established, appropriate action could be taken against landlords in breach. However, this process is not costless.
 
 #### [Changes in Airbnb listings and housing stock 2021-2025]{.underline}
 
@@ -406,7 +404,7 @@ listings_2023 = len(dfs["2023"])
 listings_pct_change2223 = (listings_2023 - listings_2022) / listings_2022 * 100
 ```
 
-Since 2021, London has seen a notable increase in Airbnb listings, rising from **`{python} f"{listings_2021:,}"`** to **`{python} f"{listings_2025:,}"`** listings: a **`{python} f"{listings_pct_change:.0f}%"`** increase ([Figure 1]{.underline}).
+Since 2021, London has seen a **`{python} f"{listings_pct_change:.0f}%"`** increase in Airbnb listings, rising from **`{python} f"{listings_2021:,}"`** to **`{python} f"{listings_2025:,}"`** listings ([Figure 1]{.underline}).
 
 ```{python}
 #| lst-label: Increase in Airbnb listings by Borough 2021-2025
@@ -556,9 +554,9 @@ top5_pct   = top5["pct_change"].round(0).tolist()
 top5_2025  = top5["2025"].tolist()
 ```
 
-Most of the increase occurred between 2022-2023, with new listings concentrated in inner London:
+Most of this occurred between 2022-2023, with new listings concentrated in inner London:
 
--   **`{python} f"{top5_boros[0]}"`**, **`{python} f"{top5_boros[1]}"`**, **`{python} f"{top5_boros[2]}"`**, **`{python} f"{top5_boros[3]}"`** and **`{python} f"{top5_boros[4]}"`** saw the highest increase in listings.
+-   **`{python} f"{top5_boros[0]}"`**, **`{python} f"{top5_boros[1]}"`**, **`{python} f"{top5_boros[2]}"`**, **`{python} f"{top5_boros[3]}"`** and **`{python} f"{top5_boros[4]}"`** saw the highest increase.
 
 -   **`{python} f"{top5_boros[0]}"`** alone added **`{python} f"{rounded_top5_abs[0]:,}"`** listings, a **`{python} f"{top5_pct[0]:.0f}%"`** increase.
 
@@ -779,7 +777,7 @@ top2_listingprop_name  = BORO_sorted.iloc[1]["name"]
 top2_listingprop_value = BORO_sorted.iloc[1]["listing_prop2025"]
 ```
 
-Across all London Boroughs in 2025, the average number of listings as a percentage of housing stock was **`{python} f"{BORO_mean:.1f}%"`**, though **`{python} f"{BORO_above_mean_n} Boroughs"`** exceeded this average. These **`{python} f"{BORO_above_mean_n} Boroughs"`** were in inner London. Close to **`{python} f"{top1_listingprop_value:.0f}%"`** of total housing stock in **`{python} f"{top1_listingprop_name}"`**, and **`{python} f"{top2_listingprop_name}"`** were listed as an Airbnb ([Figure 3]{.underline}). Up to **1 in 8 homes** in some MSOAs in inner London were listed on Airbnb ([Figure 4]{.underline}).
+Across London boroughs, the average number of listings as a percentage of housing stock was **`{python} f"{BORO_mean:.1f}%"`**, though **`{python} f"{BORO_above_mean_n} inner London boroughs"`** exceeded this average. Almost **`{python} f"{top1_listingprop_value:.0f}%"`** of total housing stock in **`{python} f"{top1_listingprop_name}"`**, and **`{python} f"{top2_listingprop_name}"`** were listed on Airbnb ([Figure 3]{.underline}). Up to **1 in 8 homes** in some MSOAs in inner London were listed on Airbnb ([Figure 4]{.underline}).
 
 The growth of Airbnb properties therefore far outstrips the rate of growth of new housing available, particularly in inner London boroughs.
 
@@ -1025,19 +1023,19 @@ Based on occupancy estimates[^3], **`{python} f"{entire_homes_2025_90_n:,} entir
 
 [^3]: Occupancy estimates obtained from Inside Airbnb [@insideairbnb]. The review rate was then used to convert reviews to estimated bookings and the average length of stay for London was multiplied by the estimated bookings for each listing, giving the occupancy rate (out of 365 days). The estimate of potential breaches was calculated using the subset of listings that are "entire homes" and the occupancy rate, which provides a useful proxy for annual use by estimating how many nights the listing was booked in the last 365 days, where raw daily calendar data are unavailable.
 
-[^4]: Some of the hosts letting on a "frequent let" basis may have complied with the planning permission requirement. To establish how many hosts fall into this category, it would be necessary to obtain the number of permissions from the Planning London Datahub’s public API as an estimate and conduct time-intensive work to associate the permissions with the relevant Airbnb properties by building a text regex pattern to search for the properties within the planning permission descriptions.
+[^4]: Some hosts letting on a “frequent let” basis may comply with the planning permission requirement. Since “short term lets” are not an independent category of planning permission that can be filtered for, estimating how many fall into this category would require obtaining the number of permissions from the Planning London Datahub’s public API and filtering by building a text regex pattern to search within planning permission descriptions. This is time intensive and has not been possible during the course of this analysis.
 
 Again, inner London boroughs showed the highest rates of intense use. **`{python} f"{top3_names[0]}, {top3_names[1]} and {top3_names[2]}"`** had **`{python} f"{top3_pcts[0]:.0f}%, {top3_pcts[1]:.0f}% and {top3_pcts[2]:.0f}%"`** of entire home listings as frequent lets respectively.
 
-Notwithstanding the sensitivity of assumptions[^5], we expect this to be a conservative estimate, given the reported likelihood of multiple listings of the same property, which some owners have used to circumvent the 90 day rule [@benjamin2025].
+Notwithstanding the sensitivity of assumptions[^5], we expect this to be a conservative estimate, given reports of multiple listings of the same property [@benjamin2025].
 
 [^5]: The occupancy model assumed (a) a review rate of 50% [@iaassumptions] (Inside Airbnb notes that Airbnb has previously cited an average review rate of over 70%) and (b) average length of stay of 3.1 days for London [@ons2025].
 
 ## 2. Taking back "control"?
 
-The opposition proposes that "professional" landlords' properties should be subject to registration and increased council tax. The Mayor's office should make clear in any response that it has already proposed a registration system for landlords, and welcome the opposition's belated support.
+The opposition proposes that "professional" landlords' properties should be subject to registration and increased council tax. The Mayor's office should make clear that it has already proposed a registration system for landlords, and welcome the opposition's belated support.
 
-The opposition has not defined "professional" landlord, nor provided details of how their proposal would be implemented.
+The opposition has not defined "professional" landlord, nor provided a plan for implementation.
 
 -   Our analysis provides a reasoned basis for classing any host letting out two or more entire homes on a "frequent let" basis as a professional landlord (note that this would include the aide at the centre of the current controversy).
 
@@ -1045,7 +1043,7 @@ The opposition has not defined "professional" landlord, nor provided details of 
 
 #### [What is a professional landlord?]{.underline}
 
-Studies suggest that a company or individual that owns and operates [two or more entire homes]{.underline} can be classed as a commercial or professional landlord. Such "multi-listing hosts" could be drivers of increase in rent and of Airbnb's profit in London [@todd2021; @cox2016].
+Studies suggest that a company or individual that operates [two or more entire homes]{.underline} can be classed as a professional landlord. Such "multi-listing hosts" could be drivers of increase in rent and of Airbnb's profit in London [@todd2021; @cox2016].
 
 ```{python}
 #| lst-label: Calculate statistics for hosts 
@@ -1136,7 +1134,7 @@ df_only1_90more_hosts_perc = round(df_only1_90more_hosts / df["host_id"].nunique
 
 The data show that a **small number of hosts are responsible for a disproportionately large number of listings** ([Figure 5)]{.underline}.
 
--   **`{python} f"{df_only1_hosts:,} ({df_only1_hosts_perc:.0f}%)"`** hosts own [only 1 entire property ("single-listing hosts")]{.underline}, and are responsible for **`{python} f"{df_only1_perc:.0f}%"`** of listings.
+-   **`{python} f"{df_only1_hosts:,} ({df_only1_hosts_perc:.0f}%)"`** hosts own [only 1 entire property ("single-listing hosts")]{.underline}, and make up **`{python} f"{df_only1_perc:.0f}%"`** of listings.
 
 -   **`{python} f"{df_morethan1_hosts:,} ({df_morethan1_hosts_perc:.0f}%)"`** hosts own [two or more entire properties ("multi-listing hosts")]{.underline}, and make up **`{python} f"{df_morethan1_perc:.0f}%"`** of listings.
 
@@ -1383,13 +1381,13 @@ median_home_standard = private_rooms_summary.loc["Private room (home)", "median_
 median_home_frequent = private_rooms_summary.loc["Private room (home)", "median_frequent"]
 ```
 
-Based on estimated revenues[^7],
+Based on estimated revenues[^7], the median annual earnings per property were
 
-[^7]: Estimated revenues obtained from Inside Airbnb, computed as a function of price and occupancy estimates. The median was used as providing a more accurate measure of central tendency for revenues, given the skew created by luxury homes.
+[^7]: Estimated revenues from Inside Airbnb, computed as a function of price and occupancy estimates. The median provides a more accurate measure of central tendency for revenues, given the skew created by luxury homes.
 
--   The median single-listing host renting out on "standard lets" earned **£`{python} f"{median_income_single_90d:,.0f}"`** a year per property, while the median multi-listing host earned **£`{python} f"{median_income_multi_90d:,.0f}"`**.
+-   **£`{python} f"{median_income_single_90d:,.0f}"`** for single-listing hosts and **£`{python} f"{median_income_multi_90d:,.0f}"`** for multi-listing hosts on"standard lets".
 
--   The median single-listing "frequent lets" host earned **£`{python} f"{median_income_single_90dmore:,.0f}"`** a year per property, while multi-listing "frequent lets" hosts earned **£`{python} f"{median_income_multi_90dmore:,.0f}"`**.
+-   **£`{python} f"{median_income_single_90dmore:,.0f}"`** for single-listing hosts and **£`{python} f"{median_income_multi_90dmore:,.0f}"`** for multi-listing hosts on "frequent lets".
 
 ```{python}
 #| lst-label: Figure 6 - Distribution of revenue per property for standard lets and frequent lets hosts
@@ -1511,11 +1509,11 @@ plt.show()
 
 Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, **`{python} f" owning {math.floor(single_listing_host_90d):,} properties"`** becomes the threshold to make more than the London median income.
 
-However, with frequent lets, **`{python} f"owning {math.ceil(single_listing_host_90dmore):,} property"`** is sufficient to make close to double the median income of London. Just **two properties** can generate nearly double the median income of London. Therefore, categorising any host owning two or more entire properties as a “professional” landlord is a defensible position.
+However, with frequent lets, **`{python} f"owning {math.ceil(single_listing_host_90dmore):,} properties"`** is sufficient to make near double the median income of London. Therefore, categorising any host owning two or more entire properties as a “professional” landlord is defensible.
 
-If the opposition’s proposal were implemented using this definition of "professional" hosts, **`{python} f"{len(df_morethan1):,}"`** properties would be subject to increased council tax, constituting **`{python} f"{df_morethan1_perc:.0f}%"`** of all entire homes listings.
+If the opposition’s proposal were implemented using this definition, **`{python} f"{len(df_morethan1):,}"`** properties would be subject to increased council tax, **`{python} f"{df_morethan1_perc:.0f}%"`** of all entire homes listings.
 
-These figures do not account for the operating costs that a landlord must pay in relation to their propertie, which reduce the bottom line for a landlord, especially where they own fewer properties and cannot benefit from economies of scale.
+These figures do not account for a landlord's operating costs, which reduces bottom lines, especially where they own fewer properties and cannot benefit from economies of scale.
 
 #### [Who are London's "professional" landlords?]{.underline}
 
@@ -1559,21 +1557,21 @@ df_100plus_grouped_n = df_100plus_grouped['number_of_properties'].sum() # total 
 host_NA = df.loc[df.host_location.isna(), "host_id"].nunique() / df["host_id"].nunique() *100
 ```
 
-Most of both single **`{python} f"({only1prop_UK_per:.0f}%)"`** and multi-listing **`{python} f"({propmorethan1_UK_per:.0f}%)"`** hosts are UK-based. However, at least one of the hosts who owns over 100 properties is a company based abroad (Dubai). Three others have names suggesting that they are companies. However, these numbers are incomplete because **`{python} f"{host_NA:.0f}%"`** of hosts do not provide a host location; a dialogue with Airbnb around their registration process may be beneficial.
+Most of both single **`{python} f"({only1prop_UK_per:.0f}%)"`** and multi-listing **`{python} f"({propmorethan1_UK_per:.0f}%)"`** hosts are UK-based. However, at least one of the hosts that owns over 100 properties is a company based abroad (Dubai). Three others have names suggesting that they are companies. However, these numbers are incomplete because **`{python} f"{host_NA:.0f}%"`** of hosts do not provide a host location; a dialogue with Airbnb around their registration process may be beneficial.
 
 ## 3. Evaluating the opposition's proposal
 
 #### [Is council tax an appropriate additional control?]{.underline}
 
-The viability of the opposition’s proposal relies on the benefits of increasing council tax outweighing any negative impacts of the high proportion of Airbnb properties in London. It is not clear that this would be the effect.
+It is not clear that revenues from increasing council tax would outweigh the negative impact of the high proportion of Airbnb lettings in London.
 
-Council tax applies to a property’s domestic classification, based on its 1991 valuation. All properties in the same band pay the same rate of council tax, unless an exemption applies. It is not a mechanism designed to assess current commercial use or income, making it a blunt instrument for targeted market intervention.
+All properties in the same band, based on valuation in 1991, pay the same rate of council tax, unless an exemption applies. Council tax is not a mechanism designed to assess current commercial use or income, making it a blunt instrument for targeted market intervention.
 
-The opposition do not explain how the council tax system might be adjusted. However, we note that the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations[@mcnamee2025]. This suggests greater flexibility in the system than has historically been possible, and further work to “piggyback” on these changes could be explored.
+The opposition do not explain how the council tax system might be adjusted. However, the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations[@mcnamee2025]. This suggests greater flexibility in the system than has historically been possible, and further work to “piggyback” on these changes could be explored.
 
-To illustrate potential revenues from council tax adjustments, we calculated the estimated revenue increase based on a **2% - 10%** **premium** applied to the current council tax Band D rate[^8] for all properties operated by "professional" landlords.
+To illustrate potential revenues from council tax adjustments, a **2% - 10%** **premium** was applied to the current council tax Band D rate[^8] for all properties operated by "professional" landlords.
 
-[^8]: Band D was chosen as it sits in the middle of valuation bands and best represents a typical tax without unfairly skewing towards low or high property values. This is aligned with methodology used by councils for statutory tax base computations [@mhclg2025a].
+[^8]: Band D sits in the middle of valuation bands and best represents a typical tax without unfairly skewing towards low or high property values \[@mhclg2025a\].
 
 ```{python}
 #| lst-label: Simulation of revenue increase for council tax
@@ -1690,17 +1688,13 @@ summary_table
 ```
 
 Source: London Datastore, Council tax charges and bands by borough.\
-Note: A conservative range of 2%, 5%, and 10% was chosen for simulation, given the requirement that councils proposing a \>5% increase must hold a successful local referendum [@mhclg2025b].
+Note: A conservative range of 2-10% was chosen for simulation, since councils proposing a \>5% increase must hold a successful local referendum [@mhclg2025b].
 
-The opposition proposal could yield between **`{python} f"£{total_2/1_000_000:.1f}m"`** and **`{python} f"£{total_10/1_000_000:.1f}m"`**. Inner London boroughs, the focus of much of this debate, account for **`{python} f"£{inner_2/1_000_000:.1f}m"`** to **`{python} f"£{inner_10/1_000_000:.1f}m"`** of this total.
+This indicates a potential yield of between **`{python} f"£{total_2/1_000_000:.1f}m"`** and **`{python} f"£{total_10/1_000_000:.1f}m"`**. Inner London boroughs account for **`{python} f"£{inner_2/1_000_000:.1f}m"`** to **`{python} f"£{inner_10/1_000_000:.1f}m"`** of this total.
 
-The spatial concentration of potential revenue could allow the Mayor to justify the policy as one specifically taxing central areas, where commercial exploitation of housing stock is most acute, rather than a blanket tax rise across London ([Figure 7]{.underline}). 
+The Mayor could therefore justify the policy as one specifically taxing central areas, where commercial exploitation of housing stock is most acute, rather than a blanket tax rise across London ([Figure 7]{.underline}). A targeted surcharge affecting “professional” Airbnb hosts (in the manner of the Budget’s “Mansion Tax” surcharge) is likely to see far less pushback than a general increase in council tax for all properties.
 
-However, there are some challenges to this approach:
-
--   A targeted surcharge affecting “professional” Airbnb hosts (in the manner of the Budget’s “Mansion Tax” surcharge) is likely to see far less pushback than a general increase in council tax for all properties.
-
--   Determining which bands should be affected is not straightforward, as properties of all types and values are available for short-term let on Airbnb and other platforms.
+However, determining which bands should be affected is not straightforward, as properties of all types and values are available for short-term let on Airbnb and other platforms.
 
 ```{python}
 #| lst-label: Simulation of revenue increase for council tax (2) 
@@ -1837,15 +1831,15 @@ plt.show()
 
 #### [**Can we do better?**]{.underline}
 
-Given that some of the existing Airbnb hosts are companies, and that a great deal more would be required to register as “professional” landlords if some form of these proposals were carried out, [business rates]{.underline} might be a viable targeted alternative that relies on an existing regulatory infrastructure rather than creating a parallel scheme. These rates must be paid when a property is used for commercial purposes for more than the prescribed number of days, typically 140 per year [@gov.uk]. This would have the benefit of clarity, as "professional" hosts would be classed as businesses and there would be no need to set up a separate infrastructure. However, the requirement to register for business rates is based on different thresholds, and some work to align these with the planning permission requirements would be required.
+Given that some Airbnb hosts already operate as companies, and that many more would be required to register as “professional” landlords under these proposals, business rates represent a viable targeted alternative that builds on existing regulatory infrastructure rather than creating a parallel scheme. Business rates apply where a property is used for commercial purposes beyond a prescribed threshold: typically 140 per year [@gov.uk]. This approach offers greater clarity, as "professional" hosts would be classified as businesses removing the need for a separate administrative system. However, business rates are triggered by different thresholds, and additional work would be required to align these with planning permission requirements..
 
-Another option is a “[tourist tax]{.underline}”, a common approach in other countries. The Hackney Citizen estimates that such a measure could raise **£240 million a year** and, if implemented with care, would not necessarily reduce visitor numbers [@jaffer2025]. This would be more targeted and easily administered, without relying on property valuations or enforcement against reluctant or elusive landlords, since it is typically paid by the tourist.
+Alternatively, a “[tourist tax]{.underline}”, could be considered. This could raise **£240 million a year** and would not necessarily reduce visitor numbers [@jaffer2025]. This would be more targeted and easily administered, without relying on property valuations or enforcement against non-compliant landlords, since it is typically paid by the tourist.
 
 ## 4. Weighing up the way ahead: pros, cons and social mobility
 
-The opposition’s proposal is not a wholly bad development and provides an opportunity to emphasise previous steps taken and ride the wave of bipartisan support to implement more progressive tax changes than those the opposition suggests.
+The opposition’s proposal provides an opportunity to emphasise previous steps taken and leverage bipartisan support to implement progressive tax changes.
 
-However, too heavy-handed an approach risks undermining London’s thriving tourism industry, which contributes at least **£10 billion a year** to London’s economy and supports around **7% of London’s jobs** [@mayoroflondon2025]. Moreover, London's short letting market is already more tightly regulated than many European equivalents, and overcorrection should be avoided ([Figure 8]{.underline}).
+However, an overly heavy-handed approach risks undermining London’s thriving tourism industry, which contributes **£10 billion a year** to London’s economy and supports around **7% of London’s jobs** [@mayoroflondon2025]. Moreover, London's short letting market is already more tightly regulated than many European equivalents, and overcorrection should be avoided ([Figure 8]{.underline}).
 
 ```{python}
 #| lst-label: Computing a cities based comparison of current entire-homes ownership 
@@ -2116,39 +2110,36 @@ plt.show()
 ## ChatGPT was used to refine the plot layout and include the customized labels 
 ```
 
-Furthermore, introducing additional administrative complexity and costs through broad council tax increases would reduce opportunities for social mobility.
+Furthermore, introducing administrative complexity and costs through broad council tax increases could curb social mobility.
 
-For ordinary Londoners, hosting often provides a meaningful supplement to household income, helping them manage rising living costs and maintain financial stability. For example, older women living alone and women with disabilities increasingly rely on hosting as a flexible lifeline in London [@remap2022]. For many renting out a single room, earnings are modest: the median annual revenue for a private room let under 90 days is **`{python} f"£{median_home_standard:,.0f}"`** rising to around **`{python} f"£{median_home_frequent:,.0f}"`** for frequent lets; some of these hosts may already be paying income tax on their earnings, in addition to operating costs. 
+For ordinary Londoners, hosting provides a meaningful supplement to household income, helping to offset rising living costs. Older women living alone and women with disabilities increasingly rely on hosting as a flexible financial lifeline [@remap2022]. For many renting out a single room, earnings are modest: the median annual revenue is around **`{python} f"£{median_home_standard:,.0f}"`** for "standard lets", rising to around **`{python} f"£{median_home_frequent:,.0f}"`** for "frequent lets", often alongside operating costs and tax liabilities on income. 
 
-While better-off “professional” hosts could absorb the additional burden without necessarily releasing their properties onto the housing market, individual hosts may see the benefit of letting their property diminished to the point of exiting the market, to the detriment of their finances and security.
+While better-off “professional” hosts may absorb the additional burden, individual hosts may find hosting no longer financially viable, risking market exit and reduced financial security.
 
-Rather than a blanket approach such as raising council tax for all, a targeted strategy, which could combine a tourist tax with a focus on ensuring that professional landlords are registered and paying business rates would be more proportionate, effective, and better aligned with the Mayor’s aim of reducing harm, without compromising London’s vibrancy or the livelihoods of ordinary residents.
+Rather than a blanket increase in council tax for all, a targeted strategy, combining a tourist tax with stricter registration and business rates compliance for professional landlords, would be more proportionate and effective. It is better aligned with the Mayor’s aim of reducing harm, without undermining London’s vibrancy or ordinary residents' livelihoods.
 
 ## 5. The aide: deflecting a distraction
 
-Despite the potential upsides described above to the opposition raising this issue, the aide's conduct is, at the least, a source of  embarrassment for the Mayor's office and, at worst, a criminal offence (under the Prevention of Social Housing Fraud Act 2013).  The appropriate steps must be taken so that public trust in the Mayor's office can be maintained, following the usual protocols around internal investigations.
+While the issue of Airbnb’s coming to the fore has upsides, the aide's conduct is, at the least, a source of embarrassment for the Mayor's office and, at worst, a criminal offence (under the Prevention of Social Housing Fraud Act 2013). Appropriate steps must be taken to uphold public trust in the Mayor's office.
 
 However:
 
--   The aide's full circumstances are not known and any criminal prosecution is a matter for the CPS; in some circumstances it is permitted to let social housing [@shelter].
+-   The aide's full circumstances unknown and any criminal prosecution is a matter for the CPS; in some circumstances it is permitted to let social housing [@shelter].
 
-- Even for multi-property owners, this analysis shows that some hosts may require up to seven properties to reach the London median income. Although the aide is letting two properties, their income may not meet that threshold. 
+-   Even for multi-property owners, our analysis shows that some hosts may require up to seven properties to reach the London median income. Letting two properties, the aide's income may not meet that threshold.
 
-The opposition is clearly using the aide's circumstances to score political points, but in doing so have put themselves in the position of having to support previous initiatives suggested by the Mayor's office: an opportunity that should not be missed. They should not be permitted to use the aide's alleged misdemeanours to distract from the more salient issues around Airbnb's impact on London, or to suggest that individuals should be barred from legitimate ways of boosting their income for greater security.
+The opposition is clearly using the aide's circumstances to score political points, but in doing so have put themselves in the position of having to support previous initiatives suggested by the Mayor's office: an opportunity that should not be missed. They should not be permitted to use the aide's alleged misdemeanours to distract from the more salient issues around Airbnb's impact on London, or to suggest that individuals should be barred from legitimate ways of supplementing their income.
 
 ## 6. Limitations
 
 #### [**Inside Airbnb dataset**]{.underline} [@insideairbnb] 
 
-There are several limitations to this dataset, other than those noted above:
+Inaccuracy in web-scraping may lead to listing numbers being underestimated during the data cleaning process. We further processed the data to remove listings with duplicate IDs, or more than six null fields, which typically contain entries with no reviews or incomplete information.
 
--   Inaccuracy in web-scraping may lead to listing numbers being underestimated during the data cleaning process. We further processed the data to remove listings with duplicate IDs, or more than six null fields, which typically reflects the fact that entries have no reviews or incomplete information.
-
--   The dataset is only a snapshot in time. Listings can be added or deleted and seasonal/temporary listings might be over/under- represented. 
-
+The dataset is a snapshot, potentially misrepresenting seasonal or short-term listings.
 
 #### [**Housing stock dataset**]{.underline} [@valuationofficeagency2024]
 
-Using a dataset containing the raw stock of properties to normalise Airbnb listings might overlook variations in housing stock. Some areas may have less Airbnb-eligible dwellings (eg. care homes) and some may have higher vacancy rates than others.  
+Using total housing stock to normalise Airbnb listings may misrepresent local conditions, as some areas have fewer Airbnb-eligible dwellings (such as care homes) and others higher vacancy rates. 
 
 ## References
