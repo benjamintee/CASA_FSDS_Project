@@ -1385,9 +1385,9 @@ Based on estimated revenues[^7], the median annual earnings per property were
 
 [^7]: Estimated revenues from Inside Airbnb, computed as a function of price and occupancy estimates. The median provides a more accurate measure of central tendency for revenues, given the skew created by luxury homes.
 
--   **£`{python} f"{median_income_single_90d:,.0f}"`** for single-listing hosts and **£`{python} f"{median_income_multi_90d:,.0f}"`** for multi-listing hosts on"standard lets".
+-   **£`{python} f"{median_income_single_90d:,.0f}"`** for single-listing hosts and **£`{python} f"{median_income_multi_90d:,.0f}"`** for multi-listing hosts on ["standard lets"]{.underline}.
 
--   **£`{python} f"{median_income_single_90dmore:,.0f}"`** for single-listing hosts and **£`{python} f"{median_income_multi_90dmore:,.0f}"`** for multi-listing hosts on "frequent lets".
+-   **£`{python} f"{median_income_single_90dmore:,.0f}"`** for single-listing hosts and **£`{python} f"{median_income_multi_90dmore:,.0f}"`** for multi-listing hosts on ["frequent lets"]{.underline}.
 
 ```{python}
 #| lst-label: Figure 6 - Distribution of revenue per property for standard lets and frequent lets hosts
@@ -1507,13 +1507,13 @@ plt.tight_layout()
 plt.show()
 ```
 
-Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, **`{python} f" owning {math.floor(single_listing_host_90d):,} properties"`** becomes the threshold to make more than the London median income.
+Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, **`{python} f"owning {math.floor(single_listing_host_90d):,} properties"`** becomes the threshold to make more than the London median income.
 
 However, with frequent lets, **`{python} f"owning {math.ceil(single_listing_host_90dmore):,} properties"`** is sufficient to make near double the median income of London. Therefore, categorising any host owning two or more entire properties as a “professional” landlord is defensible.
 
-If the opposition’s proposal were implemented using this definition, **`{python} f"{len(df_morethan1):,}"`** properties would be subject to increased council tax, **`{python} f"{df_morethan1_perc:.0f}%"`** of all entire homes listings.
+If the opposition’s proposal were implemented using this definition, **`{python} f"{len(df_morethan1):,}"`** properties would be subject to increased council tax, or **`{python} f"{df_morethan1_perc:.0f}%"`** of all entire homes listings.
 
-These figures do not account for a landlord's operating costs, which reduces bottom lines, especially where they own fewer properties and cannot benefit from economies of scale.
+These figures do not account for a landlord's operating costs, which reduces bottom lines, especially when they own fewer properties and cannot benefit from economies of scale.
 
 #### [Who are London's "professional" landlords?]{.underline}
 
@@ -1557,17 +1557,17 @@ df_100plus_grouped_n = df_100plus_grouped['number_of_properties'].sum() # total 
 host_NA = df.loc[df.host_location.isna(), "host_id"].nunique() / df["host_id"].nunique() *100
 ```
 
-Most of both single **`{python} f"({only1prop_UK_per:.0f}%)"`** and multi-listing **`{python} f"({propmorethan1_UK_per:.0f}%)"`** hosts are UK-based. However, at least one of the hosts that owns over 100 properties is a company based abroad (Dubai). Three others have names suggesting that they are companies. However, these numbers are incomplete because **`{python} f"{host_NA:.0f}%"`** of hosts do not provide a host location; a dialogue with Airbnb around their registration process may be beneficial.
+Most of both single **`{python} f"({only1prop_UK_per:.0f}%)"`** and multi-listing **`{python} f"({propmorethan1_UK_per:.0f}%)"`** hosts are UK-based. However, at least one of the hosts that owns over 100 properties is a company based abroad (Dubai). Three others have names suggesting that they are companies. However, these numbers are incomplete because **`{python} f"{host_NA:.0f}%"`** of hosts do not provide a host location. Hence, a dialogue with Airbnb around their registration process may be beneficial.
 
 ## 3. Evaluating the opposition's proposal
 
 #### [Is council tax an appropriate additional control?]{.underline}
 
-It is not clear that revenues from increasing council tax would outweigh the negative impact of the high proportion of Airbnb lettings in London.
+It is not clear that revenues from increasing council tax would outweigh the negative impact of the high proportion of Airbnbs in London.
 
 All properties in the same band, based on valuation in 1991, pay the same rate of council tax, unless an exemption applies. Council tax is not a mechanism designed to assess current commercial use or income, making it a blunt instrument for targeted market intervention.
 
-The opposition do not explain how the council tax system might be adjusted. However, the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations[@mcnamee2025]. This suggests greater flexibility in the system than has historically been possible, and further work to “piggyback” on these changes could be explored.
+The opposition do not explain how the council tax system might be adjusted. However, the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations [@mcnamee2025]. This suggests greater flexibility in the system than has historically been possible, and further work to “piggyback” on these changes could be explored.
 
 To illustrate potential revenues from council tax adjustments, a **2% - 10%** **premium** was applied to the current council tax Band D rate[^8] for all properties operated by "professional" landlords.
 
