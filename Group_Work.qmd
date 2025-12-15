@@ -69,7 +69,7 @@ Web-friendly HTML version can be found at the following (<https://benjamintee.gi
 
 ## Priorities for Feedback
 
-We would appreciate some comments on (1) The reproducibility of our code and whether this could be improved, and recommended coding conventions that would be helpful to produce a professional product in future, and (2) Any improvements that could be made to the way we have tangled code and prose; the large code chunks in particular, while they seem necessary, do make it difficult to focus on the flow of the narrative when putting the report together. (3) Any quick ways to check wordcount. The difficulty of confirming the wordcount of the overall document has made the drafting process slightly more complicated.
+We would appreciate comments on (1) the reproducibility of our code and whether this could be improved, and recommended coding conventions that would be helpful to produce a professional product in future, (2) any improvements that could be made to the way we have tangled code and prose; the large code chunks in particular, while they seem necessary, do make it difficult to focus on the flow of the narrative when putting the report together, and (3) any quick ways to check wordcount, as the difficulty of confirming the wordcount of the overall document has made the drafting process slightly more complicated.
 
 {{< pagebreak >}}
 
@@ -79,21 +79,21 @@ We would appreciate some comments on (1) The reproducibility of our code and whe
 
 The opposition's proposal will likely gain some traction due to public awareness of measures taken against Airbnb in other holiday destinations [@hedgecoe2025], and of shortage of housing in the UK [@mhclg2024]. The Mayor's aide's circumstances have stirred media interest, feeding into the debate about the housing market and suspicions of political hypocrisy [@mckiernan2025].
 
-While studies have investigated the undesirable consequences for areas that host large proportions of Airbnb properties, such as increased crime rates [@lanfear2024promise], the opposition's proposal focuses on Airbnb's impact on housing stock. This report does likewise by using data from Inside Airbnb[^1], to evaluate Airbnb's penetration into the London property market, and make recommendations on how to manage Airbnb's impact, and the allegations against the aide.
+While studies have investigated the undesirable consequences for areas that host large proportions of Airbnb properties, such as increased crime rates [@lanfear2024promise], the opposition's proposal focuses on Airbnb's impact on housing stock. This report does likewise by using data from Inside Airbnb,[^1] to evaluate Airbnb's penetration into the London property market, and make recommendations on how to manage Airbnb's impact, and the allegations against the aide.
 
-[^1]: Inside Airbnb obtains public information on rentals available for booking at specific months. See limitations section below.
+[^1]: Inside Airbnb obtains public information on rentals available for booking at specific months. See Limitations section below.
 
 In summary:
 
-1.  London's Airbnb listings have expanded faster than housing supply, particularly in inner boroughs[^2], likely heightening market pressures and public concern.
+1.  London's Airbnb listings have expanded faster than housing supply, particularly in inner boroughs,[^2] likely heightening market pressures and public concern.
 2.  Many entire-home listings exceed the 90-day limit, with potential regulatory breaches concentrated among multi-listing "professional" landlords.
 3.  A council tax surcharge is a blunt and politically difficult tool. There are effective alternatives that would target problematic hosts without disadvantaging ordinary residents who rely on modest hosting income.
 4.  The aide's conduct may be subject to criminal sanction and could undermine the Mayor's record. It should be investigated fully but not allowed to dominate the conversation around the opposition's proposal and its deficiencies, or the alternative courses of action.
 
-[^2]: Using the statutory definition of inner / outer London boroughs: [statutory definition](https://www.legislation.gov.uk/uksi/1965/540/article/2/made).
+[^2]: Using the [statutory definition](https://www.legislation.gov.uk/uksi/1965/540/article/2/made) of inner / outer London boroughs.
 
 ```{python}
-#| lst-label: Load common libraries and packages
+#| label: Load common libraries and packages
 #| echo: false
 #| warning: false
 import pandas as pd
@@ -111,7 +111,9 @@ from matplotlib.ticker import FuncFormatter
 ```
 
 ```{python}
-# Set overall font for chart plots
+#| label: Set overall font for chart plots
+#| echo: false
+#| warning: false
 import matplotlib as mpl
 mpl.rcParams.update({
     # Fonts
@@ -142,7 +144,7 @@ mpl.rcParams.update({
 ```
 
 ```{python}
-#| lst-label: Download BibTeX and csl files into the same folder if it has not been downloaded yet
+#| label: Download BibTeX and csl files into the same folder if not been downloaded yet
 #| echo: false
 #| warning: false
 #| output: false
@@ -171,7 +173,7 @@ for bib in bib_name:
 ```
 
 ```{python}
-#| lst-label: Download Airbnb listings data
+#| label: Download Airbnb listings data
 #| echo: false
 #| warning: false
 #| output: false
@@ -226,7 +228,7 @@ print("Done!")
 ```
 
 ```{python}
-#| lst-label: Cleaning the Airbnb listings data (2021-2025) 
+#| label: Cleaning the Airbnb listings data (2021-2025) 
 #| echo: false
 #| warning: false
 #| output: false
@@ -263,7 +265,7 @@ na_summary
 ```
 
 ```{python}
-#| lst-label: Cleaning the data to remove NAs appropriately 
+#| label: Cleaning the data to remove NAs appropriately 
 #| echo: false
 #| warning: false
 #| output: false
@@ -290,7 +292,7 @@ for year, df in dfs.items():
 ```
 
 ```{python}
-#| lst-label: Assign correct variable types to each column for efficiency in processing 
+#| label: Assign correct variable types to each column for efficiency in processing 
 #| echo: false
 #| warning: false
 #| output: false
@@ -349,7 +351,7 @@ print("\nAll dataframes cleaned successfully!")
 ```
 
 ```{python}
-#| lst-label: Load MSOA 2021 geopackage and BORO files from GitHub
+#| label: Load MSOA 2021 geopackage and BORO files from GitHub
 #| echo: false
 #| warning: false
 #| output: false
@@ -387,12 +389,12 @@ Having said that:
 
 -   The growth of Airbnbs has recently far outpaced that of housing stock in London.
 
--   A large proportion of hosts may be flouting the planning permission requirement, although exact numbers are difficult to establish (see limitations section). Once established, appropriate action could be taken against landlords in breach. However, this process is not costless.
+-   A large proportion of hosts may be flouting the planning permission requirement, although exact numbers are difficult to establish (see Limitations section). Once established, appropriate action could be taken against landlords in breach. However, this process is not costless.
 
 #### [Changes in Airbnb listings and housing stock 2021-2025]{.underline}
 
 ```{python}
-#| lst-label: Key statistics for growth trend in listings 2021-2025
+#| label: Key statistics for growth trend in listings 2021-2025
 #| echo: false
 #| warning: false
 #| output: false
@@ -407,7 +409,7 @@ listings_pct_change2223 = (listings_2023 - listings_2022) / listings_2022 * 100
 Since 2021, London has seen a **`{python} f"{listings_pct_change:.0f}%"`** increase in Airbnb listings, rising from **`{python} f"{listings_2021:,}"`** to **`{python} f"{listings_2025:,}"`** listings ([Figure 1]{.underline}).
 
 ```{python}
-#| lst-label: Increase in Airbnb listings by Borough 2021-2025
+#| label: Increase in Airbnb listings by Borough 2021-2025
 #| echo: false
 #| warning: false
 # First, we convert each dataframe in dfs into a gdfs with crs EPSG:27700
@@ -457,7 +459,7 @@ df_boros = pd.DataFrame({
 ```
 
 ```{python}
-#| lst-label: Generate Figure 1
+#| lst-label: Figure 1
 #| echo: false
 #| warning: false
 years = ["2021", "2022", "2023", "2024", "2025"]
@@ -535,7 +537,7 @@ plt.show()
 ```
 
 ```{python}
-#| lst-label: Generate growth rates for top 5 boroughs
+#| label: Generate growth rates for top 5 boroughs
 #| echo: false
 #| warning: false
 # Compile data for number of listings in 2021 and 2025 and percentage change in listings 
@@ -561,7 +563,7 @@ Most of this occurred between 2022-2023, with new listings concentrated in inner
 -   **`{python} f"{top5_boros[0]}"`** alone added **`{python} f"{rounded_top5_abs[0]:,}"`** listings, a **`{python} f"{top5_pct[0]:.0f}%"`** increase.
 
 ```{python}
-#| lst-label: Download data from Valuation Office Agency on Housing Stock 
+#| label: Download data from Valuation Office Agency on Housing Stock 
 #| echo: false
 #| warning: false
 #| output: false
@@ -602,7 +604,7 @@ df_stock_MSOA = df_stock[
 ```
 
 ```{python}
-#| lst-label: Create a stock_table detailing the total number of properties in London each year 
+#| label: Create a stock_table detailing the total number of properties in London each year 
 #| echo: false
 #| warning: false
 stock_table = (
@@ -623,7 +625,7 @@ stock_growth = (summary_stock.loc[2024, "total_stock"] - summary_stock.loc[2020,
 ```
 
 ```{python}
-#| lst-label: Change in stock and listings at the Borough level
+#| label: Change in stock and listings at the Borough level
 #| echo: false
 #| warning: false
 df_stock_LA_wide = (
@@ -738,7 +740,7 @@ plt.show()
 #### [What is the situation in 2025?]{.underline}
 
 ```{python}
-#| lst-label: Aggregation of listings to Boroughs by count
+#| label: Aggregation of listings to Boroughs by count
 #| echo: false
 #| warning: false
 gdf_BORO = gpd.sjoin(gdf, BORO[['gss_code', 'geometry']], how='left', predicate='within')
@@ -867,7 +869,7 @@ plt.show()
 ```
 
 ```{python}
-#| lst-label: Aggregation of listings to MSOA level 
+#| label: Aggregation of listings to MSOA level 
 #| echo: false
 #| warning: false
 # Filter the total stock data for 2024
@@ -888,7 +890,7 @@ MSOA['listing_prop2025'] = MSOA['listing_prop2025'].replace([np.inf, -np.inf], n
 ```
 
 ```{python}
-#| lst-label: Figure 4 - Airbnb Listings as a Proportion of Housing Stock (MSOA, 2025)", Jenks breaks
+#| lst-label: Figure 4 - Airbnb Listings as a Proportion of Housing Stock
 #| echo: false
 #| warning: false
 def MSOA_map_plotter (column:str, Legend_title:str, Map_title:str, Notes:str):
@@ -968,7 +970,7 @@ MSOA_map_plotter (
 #### [Are hosts flouting the regulations?]{.underline}
 
 ```{python}
-#| lst-label: Compute the number of properties and % in each category in 2025 
+#| label: Compute the number of properties and percentage in each category in 2025 
 #| echo: false
 #| warning: false
 df_2025 = dfs['2025'] 
@@ -990,7 +992,7 @@ entire_homes_2025_90_per = round(entire_homes_2025_90_n / entire_homes_2025_n * 
 ```
 
 ```{python}
-#| lst-label: Average percentages of entire homes / apartments let out for more than 90 days by Borough 
+#| label: Average percentages of entire homes / apartments let out for more than 90 days by Borough 
 #| echo: false
 #| warning: false
 # Convert `entire_homes_2025` to GeoDataFrame
@@ -1022,7 +1024,7 @@ top3_names = top3.index.tolist()
 top3_pcts = top3['pct_high_occupancy'].tolist()
 ```
 
-Based on occupancy estimates[^3], **`{python} f"{entire_homes_2025_90_n:,} entire homes"`** were used for 90 or more nights per year ("frequent lets"). This represented **more than 1 in 5 of all entire homes listings**, and **1 in 8 of all listings in London**[^4].
+Based on occupancy estimates,[^3] **`{python} f"{entire_homes_2025_90_n:,} entire homes"`** were used for 90 or more nights per year ("frequent lets"). This represented **more than 1 in 5 of all entire homes listings**, and **1 in 8 of all listings in London.**[^4]
 
 [^3]: Occupancy estimates obtained from Inside Airbnb [@insideairbnb]. The review rate was then used to convert reviews to estimated bookings and the average length of stay for London was multiplied by the estimated bookings for each listing, giving the occupancy rate (out of 365 days). The estimate of potential breaches was calculated using the subset of listings that are "entire homes" and the occupancy rate, which provides a useful proxy for annual use by estimating how many nights the listing was booked in the last 365 days, where raw daily calendar data are unavailable.
 
@@ -1030,7 +1032,7 @@ Based on occupancy estimates[^3], **`{python} f"{entire_homes_2025_90_n:,} entir
 
 Again, inner London boroughs showed the highest rates of intense use. **`{python} f"{top3_names[0]}, {top3_names[1]} and {top3_names[2]}"`** had **`{python} f"{top3_pcts[0]:.0f}%, {top3_pcts[1]:.0f}% and {top3_pcts[2]:.0f}%"`** of entire home listings as frequent lets respectively.
 
-Notwithstanding the sensitivity of assumptions[^5], we expect this to be a conservative estimate, given reports of multiple listings of the same property [@benjamin2025].
+Notwithstanding the sensitivity of assumptions,[^5] we expect this to be a conservative estimate, given reports of multiple listings of the same property [@benjamin2025].
 
 [^5]: The occupancy model assumed (a) a review rate of 50% [@iaassumptions] (Inside Airbnb notes that Airbnb has previously cited an average review rate of over 70%) and (b) average length of stay of 3.1 days for London [@ons2025].
 
@@ -1046,10 +1048,10 @@ The opposition has not defined "professional" landlord, nor provided a plan for 
 
 #### [What is a professional landlord?]{.underline}
 
-Studies suggest that a company or individual that operates [two or more entire homes]{.underline} can be classed as a professional landlord. Such "multi-listing hosts" could be drivers of increase in rent and of Airbnb's profit in London [@todd2021; @cox2016].
+Studies suggest that a company or individual that operates [two or more entire homes]{.underline} can be classed as a professional landlord. Such "multi-listing hosts" could be drivers of increases in rent and of Airbnb's profit in London [@todd2021; @cox2016].
 
 ```{python}
-#| lst-label: Calculate statistics for hosts 
+#| label: Calculate statistics for hosts 
 #| echo: false
 #| warning: false
 host_sizes = (
@@ -1237,12 +1239,12 @@ We test the robustness of this analysis in a London context by: 
 
 -   Establishing the income earned from renting out entire homes on Airbnb. 
 
--   Comparing this with the annual median income in London[^6], **£34,100**, on the basis that a host earning this much could, in theory, treat Airbnb rentals as their sole employment.
+-   Comparing this with the annual median income in London,[^6] **£34,100**, on the basis that a host earning this much could, in theory, treat Airbnb rentals as their sole employment.
 
-[^6]: The median income for London taxpayers was £34,100 [(London Datastore, 2023)](https://data.london.gov.uk/dataset/average-income-of-tax-payers-borough-2g1nq/)
+[^6]: The median income for London taxpayers was £34,100 [(London Datastore, 2023)](https://data.london.gov.uk/dataset/average-income-of-tax-payers-borough-2g1nq/).
 
 ```{python}
-#| lst-label: Computing median earnings for single and multiple listing hosts over the last 365 days 
+#| label: Computing median earnings for single and multiple listing hosts over the last 365 days 
 #| echo: false
 #| warning: false
 #| output: false
@@ -1272,6 +1274,7 @@ print(f"{median_income_single_90d:,.0f}",
 ```
 
 ```{python}
+#| label: Computing income earnings comparison
 #| echo: false
 #| warning: false
 #| output: false
@@ -1289,7 +1292,7 @@ single_listing_host_90dmore = 34100 / median_income_single_90dmore
 ```
 
 ```{python}
-#| lst-label: Computing median earnings for private room hosts over the last 365 days 
+#| label: Computing median earnings for private room hosts over the last 365 days 
 #| echo: false
 #| warning: false
 #| output: false
@@ -1384,7 +1387,7 @@ median_home_standard = private_rooms_summary.loc["Private room (home)", "median_
 median_home_frequent = private_rooms_summary.loc["Private room (home)", "median_frequent"]
 ```
 
-Based on estimated revenues[^7], the median annual earnings per property were
+Based on estimated revenues,[^7] the median annual earnings per property were:
 
 [^7]: Estimated revenues from Inside Airbnb, computed as a function of price and occupancy estimates. The median provides a more accurate measure of central tendency for revenues, given the skew created by luxury homes.
 
@@ -1521,7 +1524,7 @@ These figures do not account for a landlord's operating costs, which reduces bot
 #### [Who are London's "professional" landlords?]{.underline}
 
 ```{python}
-#| lst-label: Breakdown of profile of hosts (UK / Non UK)
+#| label: Breakdown of profile of hosts UK and Non UK
 #| echo: false
 #| warning: false
 #| output: false
@@ -1577,7 +1580,7 @@ To illustrate potential revenues from council tax adjustments, a **2%, 5% and 10
 [^8]: Band D sits in the middle of valuation bands and best represents a typical tax without unfairly skewing towards low or high property values [@mhclg2025a].
 
 ```{python}
-#| lst-label: Simulation of revenue increase for council tax
+#| label: Simulation of revenue increase for council tax
 #| echo: false
 #| warning: false
 #| output: false
@@ -1627,7 +1630,7 @@ else:
 ```
 
 ```{python}
-#| lst-label: Simulation of revenue increase for council tax (2) 
+#| label: Simulation of revenue increase for council tax (2) 
 #| echo: false
 #| warning: false
 #| output: false
@@ -1690,8 +1693,31 @@ summary_table = summary_table.drop(columns=["index"])
 summary_table
 ```
 
-Source: London Datastore, Council tax charges and bands by borough.\
-Note: A conservative range of 2-10% was chosen for simulation, since councils proposing a \>5% increase must hold a successful local referendum [@mhclg2025b].
+```{python}
+#| lst-label: Citation for table
+fig, ax = plt.subplots(figsize=(8, 0.5))
+ax.axis("off")  
+
+fig.subplots_adjust(
+    left=0,
+    right=1,
+    top=1,
+    bottom=0
+)
+
+fig.text(
+    0.00, 0.00,  
+    ("Source: London Datastore, Council tax charges and bands by borough.\n"
+     "Note: A conservative range of 2–10% was chosen for simulation, since councils "
+     "proposing a >5% increase must hold a \nsuccessful local referendum "
+     "(Ministry of Housing and Local Government, 2025–26)."
+    ),
+    ha="left",
+    va="bottom",
+    fontsize=11
+)
+plt.show()
+```
 
 This indicates a potential yield of between **`{python} f"£{total_2/1_000_000:.1f}m"`** and **`{python} f"£{total_10/1_000_000:.1f}m"`**. Inner London boroughs account for **`{python} f"£{inner_2/1_000_000:.1f}m"`** to **`{python} f"£{inner_10/1_000_000:.1f}m"`** of this total.
 
@@ -1700,10 +1726,9 @@ The Mayor could therefore justify the policy as one specifically taxing central 
 However, determining which bands should be affected is not straightforward, as properties of all types and values are available for short-term let on Airbnb and other platforms.
 
 ```{python}
-#| lst-label: Simulation of revenue increase for council tax (2) 
+#| lst-label: Plot spatial revenue distribution of increase in council tax
 #| echo: false
 #| warning: false
-# Plot spatial revenue distribution of increase in council tax under 5% scenario 
 scenario = "Band_D_5"
 
 # Aggregate revenue increase by borough
@@ -1751,7 +1776,6 @@ inner_boundary = BORO[BORO["name"].isin(inner_london)]
 
 # Dissolve into a single outline
 inner_boundary_dissolved = inner_boundary.dissolve()
-
 
 # Plot figure 
 fig, ax = plt.subplots(figsize=(8, 6))
@@ -1834,7 +1858,7 @@ plt.show()
 
 #### [**Can we do better?**]{.underline}
 
-Given that some Airbnb hosts already operate as companies, and that many more would be required to register as “professional” landlords under these proposals, business rates represent a viable targeted alternative that builds on existing regulatory infrastructure rather than creating a parallel scheme. Business rates apply where a property is used for commercial purposes beyond a prescribed threshold: typically 140 per year [@gov.uk]. This approach offers greater clarity, as "professional" hosts would be classified as businesses removing the need for a separate administrative system. However, business rates are triggered by different thresholds, and additional work would be required to align these with planning permission requirements..
+Given that some Airbnb hosts already operate as companies, and that many more would be required to register as “professional” landlords under these proposals, business rates represent a viable targeted alternative that builds on existing regulatory infrastructure rather than creating a parallel scheme. Business rates apply where a property is used for commercial purposes beyond a prescribed threshold [@gov.uk]. This approach offers greater clarity, as "professional" hosts would be classified as businesses removing the need for a separate administrative system. However, business rates are triggered by different thresholds, and additional work would be required to align these with planning permission requirements.
 
 Alternatively, a “[tourist tax]{.underline}”, could be considered. This could raise **£240 million a year** and would not necessarily reduce visitor numbers [@jaffer2025]. This would be more targeted and easily administered, without relying on property valuations or enforcement against non-compliant landlords, since it is typically paid by the tourist.
 
@@ -1845,7 +1869,7 @@ The opposition’s proposal provides an opportunity to emphasise previous steps 
 However, an overly heavy-handed approach risks undermining London’s thriving tourism industry, which contributes **£10 billion a year** to London’s economy and supports around **7% of London’s jobs** [@mayoroflondon2025]. Moreover, London's short letting market is already more tightly regulated than many European equivalents, and overcorrection should be avoided ([Figure 8]{.underline}).
 
 ```{python}
-#| lst-label: Computing a cities based comparison of current entire-homes ownership 
+#| label: Computing a cities based comparison of current entire-homes ownership 
 #| echo: false
 #| warning: false
 #| output: false
@@ -1948,7 +1972,7 @@ dist_df
 ```
 
 ```{python}
-#| lst-label: International Comparison Figure  
+#| lst-label: Plotting Figure for International Comparison
 #| echo: false
 #| warning: false
 # Set color palette and groups and zip them together
@@ -2102,7 +2126,7 @@ fig.suptitle("Figure 8: London's regulatory stance on short-term lets already st
 # Figure Caption
 fig.text(
     0.03, -0.07,
-    "Source: Cities data from Insideairbnb.com. Analysis includes hosts of entire homes/apartments only.\nNote: Barcelona is implementing a ban on short-term rentals from 2026, with the final phase to be \ncompleted by the end of 2028. Likewise, Budapest has committed to a ban from 2026.",
+    "Source: Cities data from Insideairbnb.com. Analysis includes hosts of entire homes/apartments only.\nNote: Barcelona is implementing a ban on short-term rentals from 2026, with the final phase to be \ncompleted by the end of 2028 (Hedgecoe, 2025).",
     fontsize=11,
     ha='left')
 
