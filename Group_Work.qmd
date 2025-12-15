@@ -69,7 +69,7 @@ Web-friendly HTML version can be found at the following (<https://benjamintee.gi
 
 ## Priorities for Feedback
 
-We would appreciate some comments on (1) the reproducibility of our code and whether this could be improved, and whether there are any coding conventions it would be helpful to be aware of to produce a professional product in future, and (2) any improvements that could be made to the way we have tangled code and prose; the large code chunks in particular, while they seem necessary, do make it difficult to focus on the flow of the narrative when putting the report together. The difficulty of confirming the wordcount of the overall document has made the drafting process slightly more complicated.
+We would appreciate some comments on (1) The reproducibility of our code and whether this could be improved, and recommended coding conventions that would be helpful to produce a professional product in future, and (2) Any improvements that could be made to the way we have tangled code and prose; the large code chunks in particular, while they seem necessary, do make it difficult to focus on the flow of the narrative when putting the report together. (3) Any quick ways to check wordcount. The difficulty of confirming the wordcount of the overall document has made the drafting process slightly more complicated.
 
 {{< pagebreak >}}
 
@@ -381,11 +381,11 @@ MSOA = MSOA[['MSOA21CD', 'MSOA21NM', 'geometry', 'name', 'ons_inner', 'sub_2011'
 
 The opposition are behind the times: the increase in short-term lets and its potential to damage the housing supply is a concern that the Mayor's office has already raised and taken concrete steps to tackle.
 
-Since 2015, London landlords letting their property for more than 90 days per year must obtain planning permission for a change of use [@mayoroflondon2023-1]. The Mayor has also proposed a landlord registration system [@mayoroflondon2019] and a licensing system [@mayoroflondon2023]. Airbnb and its competitors are therefore under far more "control" in London than in many other cities.
+Since 2015, London landlords letting their property for more than 90 days per year must obtain planning permission for a change of use [@mayoroflondon2023-1]. The Mayor has also proposed a landlord registration system [@mayoroflondon2019] and a licensing system [@mayoroflondon2023]. Airbnb and its competitors are therefore under far more "control" in London than in many other cities [@bei2023].
 
 Having said that:
 
--   the growth of Airbnbs has recently far outpaced that of housing stock in London.
+-   The growth of Airbnbs has recently far outpaced that of housing stock in London.
 
 -   A large proportion of hosts may be flouting the planning permission requirement, although exact numbers are difficult to establish (see limitations section). Once established, appropriate action could be taken against landlords in breach. However, this process is not costless.
 
@@ -474,7 +474,7 @@ sm = plt.cm.ScalarMappable(
 sm._A = []
 
 # Set out the plot for Airbnb listings from 2021–2025
-fig, axes = plt.subplots(2, 3, figsize=(8, 5.5), sharex=True, sharey=True)
+fig, axes = plt.subplots(2, 3, figsize=(8, 6), sharex=True, sharey=True)
 axes = axes.ravel()
 
 # Plot each map (5 years → fill first 5 axes)
@@ -676,7 +676,7 @@ color_map = {
 
 colors = df_bar["area_type"].map(color_map)
 
-fig, ax = plt.subplots(figsize=(8, 5))
+fig, ax = plt.subplots(figsize=(8, 6))
 
 ax.bar(
     df_bar["name"],
@@ -697,13 +697,13 @@ ax.text(
     s="increase in listings > increease in housing stock",
     ha="right",
     va="bottom",
-    fontsize=12,
+    fontsize=13,
     color="black")
 
 # Axis labels & title 
 ax.set_xticks(range(len(df_bar)))
-ax.set_xticklabels(df_bar["name"], rotation= 90, ha="right", fontsize=10)
-ax.set_ylabel("Ratio of increase in listings \nto housing stock", fontsize=10)
+ax.set_xticklabels(df_bar["name"], rotation= 90, ha="right", fontsize=11)
+ax.set_ylabel("Ratio of increase in listings \nto housing stock", fontsize=11)
 ax.tick_params(axis="y")
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
@@ -713,7 +713,7 @@ handles = [
     plt.Rectangle((0,0),1,1, color="tomato"),
     plt.Rectangle((0,0),1,1, color="skyblue")
 ]
-legend = ax.legend(handles, ["Inner London", "Outer London"], fontsize=12)
+legend = ax.legend(handles, ["Inner London", "Outer London"], fontsize=13)
 legend.get_frame().set_linewidth(0)
 legend.get_frame().set_facecolor("none")
 
@@ -807,7 +807,7 @@ color_map = {
 colors = df_bar["area_type"].map(color_map)
 
 # Plot the figure 
-fig, ax = plt.subplots(figsize=(8, 5))
+fig, ax = plt.subplots(figsize=(8, 6))
 
 ax.bar(
     df_bar["name"],
@@ -827,11 +827,12 @@ ax.text(
     y=overall_mean + overall_mean*0.02,  
     s=f"Average: {overall_mean:.1f}%",
     ha="right",
-    va="bottom")
+    va="bottom",
+    fontsize=13)
 
 # Axis labels and title
 ax.set_xticks(range(len(df_bar)))
-ax.set_xticklabels(df_bar["name"], rotation=90, ha="right", fontsize=10)
+ax.set_xticklabels(df_bar["name"], rotation=90, ha="right", fontsize=11)
 ax.tick_params(axis="y", labelsize=12)
 ax.set_ylabel("Listings as % of Housing Stock")
 
@@ -961,6 +962,8 @@ MSOA_map_plotter (
     "Figure 4: At MSOA-level, up to 1 in 8 homes in inner London \nwere listed on Airbnb",
     "Source: Listings data from Insideairbnb.com, Housing Stock from UK Valuation Office Agency.\nNote: As housing stock data for 2025 was unavailable, the latest available data for 2024 was used.")
 ```
+
+{{< pagebreak >}}
 
 #### [Are hosts flouting the regulations?]{.underline}
 
@@ -1148,7 +1151,7 @@ The data show that a **small number of hosts are responsible for a disproportion
 #| warning: false
 fig, (ax1, ax2) = plt.subplots(
     ncols=2,
-    figsize=(8, 5),
+    figsize=(8, 6),
     gridspec_kw={'width_ratios': [4, 1]})
 
 colors = ["skyblue", "tomato"]
@@ -1201,7 +1204,7 @@ for y, (count, pct) in zip(y_pos, zip(host_count.values, host_pct.values)):
         f"{count:,}\n({pct:.0f}%)",   
         va="center",
         ha="left",
-        fontsize=11)
+        fontsize=12)
 
 # Include a horizontal separator between "1" and "2" (single vs multi hosts) 
 separator_y = 0.5
@@ -1228,7 +1231,7 @@ plt.subplots_adjust(wspace=0.03)
 plt.show()
 ```
 
-Therefore, using the two-property threshold, **`{python} f"{df_morethan1_hosts_perc:.0f}%"`** of Airbnb hosts currently letting entire homes in London would be treated as "professional" landlords.
+Therefore, using the two-property threshold, **`{python} f"{df_morethan1_hosts_perc:.0f}%"`** of Airbnb hosts letting entire homes in London would be treated as "professional" landlords.
 
 We test the robustness of this analysis in a London context by: 
 
@@ -1507,7 +1510,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, **`{python} f"owning {math.floor(single_listing_host_90d):,} properties"`** becomes the threshold to make more than the London median income.
+Using the more conservative income from single-listing hosts on standard lets, **£`{python} f"{median_income_single_90d:,.0f}"`**, **`{python} f"owning {math.floor(single_listing_host_90d):,} properties"`** is the threshold to make more than the London median income.
 
 However, with frequent lets, **`{python} f"owning {math.ceil(single_listing_host_90dmore):,} properties"`** is sufficient to make near double the median income of London. Therefore, categorising any host owning two or more entire properties as a “professional” landlord is defensible.
 
@@ -1569,9 +1572,9 @@ All properties in the same band, based on valuation in 1991, pay the same rate o
 
 The opposition do not explain how the council tax system might be adjusted. However, the recent 2025 Budget outlines plans to modify the council tax system from 2028 to apply a surcharge on luxury properties, using 2026 valuations [@mcnamee2025]. This suggests greater flexibility in the system than has historically been possible, and further work to “piggyback” on these changes could be explored.
 
-To illustrate potential revenues from council tax adjustments, a **2% - 10%** **premium** was applied to the current council tax Band D rate[^8] for all properties operated by "professional" landlords.
+To illustrate potential revenues from council tax adjustments, a **2%, 5% and 10%** **premium** was applied to the current council tax Band D rate[^8] for all properties operated by "professional" landlords.
 
-[^8]: Band D sits in the middle of valuation bands and best represents a typical tax without unfairly skewing towards low or high property values \[@mhclg2025a\].
+[^8]: Band D sits in the middle of valuation bands and best represents a typical tax without unfairly skewing towards low or high property values [@mhclg2025a].
 
 ```{python}
 #| lst-label: Simulation of revenue increase for council tax
@@ -1751,7 +1754,7 @@ inner_boundary_dissolved = inner_boundary.dissolve()
 
 
 # Plot figure 
-fig, ax = plt.subplots(figsize=(8, 5))
+fig, ax = plt.subplots(figsize=(8, 6))
 
 # Plot each class manually (for discrete legend)
 for i, color in enumerate(class_colors):
