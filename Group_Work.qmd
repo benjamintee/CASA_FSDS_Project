@@ -381,7 +381,7 @@ MSOA = MSOA[['MSOA21CD', 'MSOA21NM', 'geometry', 'name', 'ons_inner', 'sub_2011'
 
 The opposition are behind the times: the increase in short-term lets and its potential to damage the housing supply is a concern that the Mayor's office has already raised and taken concrete steps to tackle.
 
-Since 2015, London landlords letting their property for more than 90 days per year must obtain planning permission for a change of use [@mayoroflondonn.d.]. The Mayor has also proposed a landlord registration system [@mayoroflondon2019] and a licensing system [@mayoroflondon2023]. Airbnb and its competitors are therefore under far more "control" in London than in many other cities.
+Since 2015, London landlords letting their property for more than 90 days per year must obtain planning permission for a change of use [@mayoroflondon2023-1]. The Mayor has also proposed a landlord registration system [@mayoroflondon2019] and a licensing system [@mayoroflondon2023]. Airbnb and its competitors are therefore under far more "control" in London than in many other cities.
 
 Having said that:
 
